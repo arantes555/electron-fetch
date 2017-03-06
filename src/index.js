@@ -59,8 +59,11 @@ export default function fetch (url, opts) {
     const req = send(options)
     if (net) {
       for (let headerName in headers) {
-        for (let headerValue in headers[ headerName ]) {
-          req.setHeader(headerName, headerValue)
+        if (typeof headers[ headerName ] === 'string') req.setHeader(headerName, headers[ headerName ])
+        else {
+          for (let headerValue of headers[ headerName ]) {
+            req.setHeader(headerName, headerValue)
+          }
         }
       }
     }
@@ -116,6 +119,7 @@ export default function fetch (url, opts) {
 
       // normalize location header for manual redirect mode
       const headers = new Headers()
+      console.log(res.headers)
       for (const name of Object.keys(res.headers)) {
         if (Array.isArray(res.headers[ name ])) {
           for (const val of res.headers[ name ]) {
