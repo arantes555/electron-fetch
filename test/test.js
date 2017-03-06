@@ -1306,7 +1306,7 @@ describe('node-fetch', () => {
     expect(() => headers.set('Hé-y', 'ok')).to.throw(TypeError)
 
     // 'o k' is valid value but invalid name
-    expect(() => new Headers({ 'He-y': 'o k' })).not.to.throw(TypeError)
+    expect(() => new Headers({ 'He-y': 'o k' })).to.throw(TypeError)
   })
 
   it('should send request with connection keep-alive if agent is provided', function () {

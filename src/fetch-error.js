@@ -12,9 +12,19 @@
  * @param   String      systemError  For Node.js system error
  * @return  FetchError
  */
+
+const netErrorMap = {
+  'ERR_CONNECTION_REFUSED': 'ECONNREFUSED'
+}
+
 export default function FetchError (message, type, systemError) {
   Error.call(this, message)
-
+  const regex = /^.*net::(.*)/
+  if (regex.test(message)) {
+    let errorCode = regex.exec(message)[1]
+    if (netErrorMap.hasOwnProperty(errorCode)) errorCode = netErrorMap[errorCode]
+    systemError = { code: errorCode }
+  }
   this.message = message
   this.type = type
 

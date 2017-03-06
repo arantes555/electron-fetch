@@ -14,7 +14,7 @@
   "scripts": {
     "build": "cross-env BABEL_ENV=rollup rollup -c",
     "prepublish": "npm run build",
-    "test": "cross-env BABEL_ENV=test mocha --compilers js:babel-register test/test.js",
+    "test": "cross-env BABEL_ENV=test electron-mocha --compilers js:babel-register test/test.js",
     "posttest": "standard",
     "report": "cross-env BABEL_ENV=coverage nyc --reporter lcov --reporter text mocha -R spec test/test.js",
     "coverage": "cross-env BABEL_ENV=coverage nyc --reporter json --reporter text mocha -R spec test/test.js && codecov -f coverage/coverage-final.json"
@@ -44,6 +44,8 @@
     "chai-string": "^1.3.0",
     "codecov": "^1.0.1",
     "cross-env": "^3.2.3",
+    "electron": "^1.6.1",
+    "electron-mocha": "^3.3.0",
     "form-data": ">=1.0.0",
     "is-builtin-module": "^1.0.0",
     "mocha": "^3.1.2",

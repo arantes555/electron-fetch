@@ -16,6 +16,12 @@ import Headers from './headers'
 import Request, {getNodeRequestOptions} from './request'
 import FetchError from './fetch-error'
 
+let net
+if (process.versions[ 'electron' ]) {
+  console.log('Fetch running on electron')
+  net = require('electron').net
+}
+
 /**
  * Fetch function
  *
@@ -37,7 +43,7 @@ export default function fetch (url, opts) {
     const request = new Request(url, opts)
     const options = getNodeRequestOptions(request)
 
-    const send = (options.protocol === 'https:' ? https : http).request
+    const send = (net || (options.protocol === 'https:' ? https : http)).request
 
     // http.request only support string as host header, this hack make custom host header possible
     if (options.headers.host) {
@@ -45,7 +51,19 @@ export default function fetch (url, opts) {
     }
 
     // send request
+    let headers
+    if (net) {
+      headers = options.headers
+      delete options.headers
+    }
     const req = send(options)
+    if (net) {
+      for (let headerName in headers) {
+        for (let headerValue in headers[ headerName ]) {
+          req.setHeader(headerName, headerValue)
+        }
+      }
+    }
     let reqTimeout
 
     if (request.timeout) {
