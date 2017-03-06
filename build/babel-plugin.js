@@ -1,21 +1,21 @@
 // This Babel plugin makes it possible to do CommonJS-style function exports
 
-const walked = Symbol('walked');
+const walked = Symbol('walked')
 
 module.exports = ({ types: t }) => ({
   visitor: {
     Program: {
-      exit(program) {
+      exit (program) {
         if (program[walked]) {
-          return;
+          return
         }
 
         for (let path of program.get('body')) {
           if (path.isExpressionStatement()) {
-            const expr = path.get('expression');
+            const expr = path.get('expression')
             if (expr.isAssignmentExpression() &&
                 expr.get('left').matchesPattern('exports.*')) {
-              const prop = expr.get('left').get('property');
+              const prop = expr.get('left').get('property')
               if (prop.isIdentifier({ name: 'default' })) {
                 program.unshiftContainer('body', [
                   t.expressionStatement(
@@ -34,15 +34,15 @@ module.exports = ({ types: t }) => ({
                       expr.node.left, t.identifier('exports')
                     )
                   )
-                ]);
-                path.remove();
+                ])
+                path.remove()
               }
             }
           }
         }
 
-        program[walked] = true;
+        program[walked] = true
       }
     }
   }
-});
+})

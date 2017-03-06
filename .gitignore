@@ -33,3 +33,4 @@ node_modules
 
 # Babel-compiled files
 lib
+.idea/

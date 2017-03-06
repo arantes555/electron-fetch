@@ -1,8 +1,8 @@
-import isBuiltin from 'is-builtin-module';
-import babel from 'rollup-plugin-babel';
-import tweakDefault from './build/rollup-plugin';
+import isBuiltin from 'is-builtin-module'
+import babel from 'rollup-plugin-babel'
+import tweakDefault from './build/rollup-plugin'
 
-process.env.BABEL_ENV = 'rollup';
+process.env.BABEL_ENV = 'rollup'
 
 export default {
   entry: 'src/index.js',
@@ -19,9 +19,9 @@ export default {
   ],
   external: function (id) {
     if (isBuiltin(id)) {
-      return true;
+      return true
     }
-    id = id.split('/').slice(0, id[0] === '@' ? 2 : 1).join('/');
-    return !!require('./package.json').dependencies[id];
+    id = id.split('/').slice(0, id[0] === '@' ? 2 : 1).join('/')
+    return !!require('./package.json').dependencies[id]
   }
-};
+}
