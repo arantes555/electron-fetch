@@ -14,7 +14,9 @@
  */
 
 const netErrorMap = {
-  'ERR_CONNECTION_REFUSED': 'ECONNREFUSED'
+  'ERR_CONNECTION_REFUSED': 'ECONNREFUSED',
+  'ERR_EMPTY_RESPONSE': 'ECONNRESET',
+  'ERR_NAME_NOT_RESOLVED': 'ENOTFOUND'
 }
 
 export default function FetchError (message, type, systemError) {

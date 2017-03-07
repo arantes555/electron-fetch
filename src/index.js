@@ -85,6 +85,12 @@ export default function fetch (url, opts) {
 
     req.on('response', res => {
       clearTimeout(reqTimeout)
+      console.log('Request.url:', request.url)
+      console.log('Response.statusCode:', res.statusCode)
+      console.log('Response.statusMessage:', res.statusMessage)
+      console.log('Response.url:', res.url)
+      console.log('Response.location:', res.location)
+      console.log('Response.headers:', res.headers)
 
       // handle redirect
       if (fetch.isRedirect(res.statusCode) && request.redirect !== 'manual') {
@@ -119,7 +125,6 @@ export default function fetch (url, opts) {
 
       // normalize location header for manual redirect mode
       const headers = new Headers()
-      console.log(res.headers)
       for (const name of Object.keys(res.headers)) {
         if (Array.isArray(res.headers[ name ])) {
           for (const val of res.headers[ name ]) {
@@ -144,57 +149,9 @@ export default function fetch (url, opts) {
         timeout: request.timeout
       }
 
-      // HTTP-network fetch step 16.1.2
-      const codings = headers.get('Content-Encoding')
-
-      // HTTP-network fetch step 16.1.3: handle content codings
-
-      // in following scenarios we ignore compression support
-      // 1. compression support is disabled
-      // 2. HEAD request
-      // 3. no Content-Encoding header
-      // 4. no content response (204)
-      // 5. content not modified response (304)
-      if (!request.compress || request.method === 'HEAD' || codings === null || res.statusCode === 204 || res.statusCode === 304) {
-        resolve(new Response(body, responseOptions))
-        return
-      }
-
-      // Be less strict when decoding compressed responses, since sometimes
-      // servers send slightly invalid responses that are still accepted
-      // by common browsers.
-      // Always using Z_SYNC_FLUSH is what cURL does.
-      const zlibOptions = {
-        flush: zlib.Z_SYNC_FLUSH,
-        finishFlush: zlib.Z_SYNC_FLUSH
-      }
-
-      // for gzip
-      if (codings === 'gzip' || codings === 'x-gzip') {
-        body = body.pipe(zlib.createGunzip(zlibOptions))
-        resolve(new Response(body, responseOptions))
-        return
-      }
-
-      // for deflate
-      if (codings === 'deflate' || codings === 'x-deflate') {
-        // handle the infamous raw deflate response from old servers
-        // a hack for old IIS and Apache servers
-        const raw = res.pipe(new PassThrough())
-        raw.once('data', chunk => {
-          // see http://stackoverflow.com/questions/37519828
-          if ((chunk[ 0 ] & 0x0F) === 0x08) {
-            body = body.pipe(zlib.createInflate(zlibOptions))
-          } else {
-            body = body.pipe(zlib.createInflateRaw(zlibOptions))
-          }
-          resolve(new Response(body, responseOptions))
-        })
-        return
-      }
-
-      // otherwise, use response as-is
-      resolve(new Response(body, responseOptions))
+      const response = new Response(body, responseOptions)
+      console.log('No compression. Fetch response:', Object.assign({}, response, { body: 'BODY' }))
+      resolve(response)
     })
 
     writeToStream(req, request)
