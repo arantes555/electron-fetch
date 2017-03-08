@@ -16,11 +16,10 @@ import Headers from './headers'
 import Request, {getNodeRequestOptions} from './request'
 import FetchError from './fetch-error'
 
-let net, electronSession
+let net
 if (process.versions[ 'electron' ]) {
   console.log('Fetch running on electron')
   net = require('electron').net
-  electronSession = require('electron').session.fromPartition('electron-fetch')
 }
 
 /**
@@ -58,11 +57,6 @@ export default function fetch (url, opts) {
       delete options.headers
     }
     const req = send(options)
-    electronSession.webRequest.onBeforeRedirect({urls: [
-      request.url
-    ]}, options => {
-
-    })
     if (net) {
       for (let headerName in headers) {
         if (typeof headers[ headerName ] === 'string') req.setHeader(headerName, headers[ headerName ])
