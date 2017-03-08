@@ -68,7 +68,7 @@ function checkIsHttpToken (val) {
         if (!isValidTokenChar(val.charCodeAt(3))) {
           return false
         }
-        for (var i = 4; i < len; i++) {
+        for (let i = 4; i < len; i++) {
           if (!isValidTokenChar(val.charCodeAt(i))) {
             return false
           }
@@ -94,7 +94,7 @@ export {checkIsHttpToken}
 function checkInvalidHeaderChar (val) {
   val += ''
   if (val.length < 1) { return false }
-  var c = val.charCodeAt(0)
+  let c = val.charCodeAt(0)
   if ((c <= 31 && c !== 9) || c > 255 || c === 127) { return true }
   if (val.length < 2) {
     return false
@@ -110,7 +110,7 @@ function checkInvalidHeaderChar (val) {
   if ((c <= 31 && c !== 9) || c > 255 || c === 127) {
     return true
   }
-  for (var i = 3; i < val.length; ++i) {
+  for (let i = 3; i < val.length; ++i) {
     c = val.charCodeAt(i)
     if ((c <= 31 && c !== 9) || c > 255 || c === 127) { return true }
   }

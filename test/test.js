@@ -1685,7 +1685,7 @@ describe('node-fetch', () => {
 
   it('should support arrayBuffer() method in Request constructor', function () {
     url = base
-    var req = new Request(url, {
+    const req = new Request(url, {
       method: 'POST',
       body: 'a=1'
     })
@@ -1735,7 +1735,7 @@ describe('node-fetch', () => {
 
   it('should support blob() method in Request constructor', function () {
     url = base
-    var req = new Request(url, {
+    const req = new Request(url, {
       method: 'POST',
       body: new Buffer('a=1')
     })

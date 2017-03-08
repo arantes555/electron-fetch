@@ -119,7 +119,7 @@ fetch('http://httpbin.org/post', { method: 'POST', body: stream })
 
 // post with JSON
 
-var body = { a: 1 };
+const body = { a: 1 };
 fetch('http://httpbin.org/post', { 
 	method: 'POST',
 	body:    JSON.stringify(body),
