@@ -16,14 +16,11 @@ const DISTURBED = Symbol('disturbed')
  *
  * Cannot use ES6 class because Body must be called with .call().
  *
- * @param   Stream  body  Readable stream
- * @param   Object  opts  Response options
- * @return  Void
+ * @param {Stream} body Readable stream
+ * @param {number} size
+ * @param {number} timeout
  */
-export default function Body (body, {
-                                size = 0,
-                                timeout = 0
-                              } = {}) {
+export default function Body (body, { size = 0, timeout = 0 } = {}) {
   if (body == null) {
     // body is undefined or null
     body = null
@@ -54,7 +51,7 @@ Body.prototype = {
   /**
    * Decode response as ArrayBuffer
    *
-   * @return  Promise
+   * @return {Promise}
    */
   arrayBuffer () {
     return consumeBody.call(this).then(buf => buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength))
@@ -63,7 +60,7 @@ Body.prototype = {
   /**
    * Return raw response as Blob
    *
-   * @return Promise
+   * @return {Promise}
    */
   blob () {
     let ct = (this.headers && this.headers.get('content-type')) || ''
@@ -81,7 +78,7 @@ Body.prototype = {
   /**
    * Decode response as json
    *
-   * @return  Promise
+   * @return {Promise}
    */
   json () {
     return consumeBody.call(this).then(buffer => JSON.parse(buffer.toString()))
@@ -90,7 +87,7 @@ Body.prototype = {
   /**
    * Decode response as text
    *
-   * @return  Promise
+   * @return {Promise}
    */
   text () {
     return consumeBody.call(this).then(buffer => buffer.toString())
@@ -99,7 +96,7 @@ Body.prototype = {
   /**
    * Decode response as buffer (non-spec api)
    *
-   * @return  Promise
+   * @return {Promise}
    */
   buffer () {
     return consumeBody.call(this)
@@ -109,7 +106,7 @@ Body.prototype = {
    * Decode response as text, while automatically detecting the encoding and
    * trying to decode to UTF-8 (non-spec api)
    *
-   * @return  Promise
+   * @return {Promise}
    */
   textConverted () {
     return consumeBody.call(this).then(buffer => convertBody(buffer, this.headers))
@@ -130,7 +127,7 @@ Body.mixIn = function (proto) {
 /**
  * Decode buffers into utf-8 string
  *
- * @return  Promise
+ * @return {Promise}
  */
 function consumeBody (body) {
   if (this[ DISTURBED ]) {
@@ -216,9 +213,9 @@ function consumeBody (body) {
  * Detect buffer encoding and convert to target encoding
  * ref: http://www.w3.org/TR/2011/WD-html5-20110113/parsing.html#determining-the-character-encoding
  *
- * @param   Buffer  buffer    Incoming buffer
- * @param   String  encoding  Target encoding
- * @return  String
+ * @param {Buffer} buffer   Incoming buffer
+ * @param {Headers} headers
+ * @return {string}
  */
 function convertBody (buffer, headers) {
   const ct = headers.get('content-type')
@@ -265,17 +262,17 @@ function convertBody (buffer, headers) {
 
   // turn raw buffers into a single utf-8 buffer
   return convert(
-    buffer
-    , 'UTF-8'
-    , charset
+    buffer,
+    'UTF-8',
+    charset
   ).toString()
 }
 
 /**
  * Clone body given Res/Req instance
  *
- * @param   Mixed  instance  Response or Request instance
- * @return  Mixed
+ * @param {Response|Request} instance Response or Request instance
+ * @return {String|Blob|Buffer|Stream}
  */
 export function clone (instance) {
   let p1, p2
@@ -309,7 +306,7 @@ export function clone (instance) {
  *
  * This function assumes that instance.body is present and non-null.
  *
- * @param   Mixed  instance  Response or Request instance
+ * @param {Response|Request} instance Response or Request instance
  */
 export function extractContentType (instance) {
   const { body } = instance

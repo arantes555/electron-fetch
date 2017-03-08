@@ -11,9 +11,8 @@ import Body, {clone} from './body'
 /**
  * Response class
  *
- * @param   Stream  body  Readable stream
- * @param   Object  opts  Response options
- * @return  Void
+ * @param {Stream} body Readable stream
+ * @param {Object} opts Response options
  */
 export default class Response {
   constructor (body = null, opts = {}) {
@@ -42,7 +41,7 @@ export default class Response {
   /**
    * Clone this response
    *
-   * @return  Response
+   * @return {Response}
    */
   clone () {
     return new Response(clone(this), {

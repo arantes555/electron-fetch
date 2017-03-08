@@ -25,9 +25,9 @@ if (process.versions[ 'electron' ]) {
 /**
  * Fetch function
  *
- * @param   Mixed    url   Absolute url or Request instance
- * @param   Object   opts  Fetch options
- * @return  Promise
+ * @param {String|Request} url Absolute url or Request instance
+ * @param {Object} opts Fetch options
+ * @return {Promise}
  */
 export default function fetch (url, opts) {
   // allow custom promise
@@ -203,8 +203,8 @@ export default function fetch (url, opts) {
 /**
  * Redirect code matching
  *
- * @param   Number   code  Status code
- * @return  Boolean
+ * @param {number} code Status code
+ * @return {boolean}
  */
 fetch.isRedirect = code => code === 301 || code === 302 || code === 303 || code === 307 || code === 308
 

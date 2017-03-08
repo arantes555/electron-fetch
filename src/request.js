@@ -13,9 +13,8 @@ const PARSED_URL = Symbol('url')
 /**
  * Request class
  *
- * @param   Mixed   input  Url or Request instance
- * @param   Object  init   Custom options
- * @return  Void
+ * @param {Mixed} input Url or Request instance
+ * @param {Object} init Custom options
  */
 export default class Request {
   constructor (input, init = {}) {
@@ -97,7 +96,7 @@ export default class Request {
   /**
    * Clone this request
    *
-   * @return  Request
+   * @return {Request}
    */
   clone () {
     return new Request(this)

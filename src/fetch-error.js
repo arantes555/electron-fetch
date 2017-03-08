@@ -7,10 +7,10 @@
 /**
  * Create FetchError instance
  *
- * @param   String      message      Error message for human
- * @param   String      type         Error type for machine
- * @param   String      systemError  For Node.js system error
- * @return  FetchError
+ * @param {string} message Error message for human
+ * @param {string} type Error type for machine
+ * @param {string} systemError For Node.js system error
+ * @return {FetchError}
  */
 
 const netErrorMap = {

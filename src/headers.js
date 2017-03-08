@@ -27,8 +27,7 @@ export default class Headers {
   /**
    * Headers class
    *
-   * @param   Object  headers  Response headers
-   * @return  Void
+   * @param {Object} init Response headers
    */
   constructor (init = undefined) {
     this[ MAP ] = Object.create(null)
@@ -82,8 +81,8 @@ export default class Headers {
   /**
    * Return first header value given name
    *
-   * @param   String  name  Header name
-   * @return  Mixed
+   * @param {string} name Header name
+   * @return {string}
    */
   get (name) {
     const list = this[ MAP ][ sanitizeName(name) ]
@@ -97,9 +96,8 @@ export default class Headers {
   /**
    * Iterate over all headers
    *
-   * @param   Function  callback  Executed for each item with parameters (value, name, thisArg)
-   * @param   Boolean   thisArg   `this` context for callback function
-   * @return  Void
+   * @param {function} callback Executed for each item with parameters (value, name, thisArg)
+   * @param {boolean} thisArg `this` context for callback function
    */
   forEach (callback, thisArg = undefined) {
     let pairs = getHeaderPairs(this)
@@ -115,9 +113,8 @@ export default class Headers {
   /**
    * Overwrite header values given name
    *
-   * @param   String  name   Header name
-   * @param   String  value  Header value
-   * @return  Void
+   * @param {string} name Header name
+   * @param {string} value Header value
    */
   set (name, value) {
     this[ MAP ][ sanitizeName(name) ] = [ sanitizeValue(value) ]
@@ -126,9 +123,8 @@ export default class Headers {
   /**
    * Append a value onto existing header
    *
-   * @param   String  name   Header name
-   * @param   String  value  Header value
-   * @return  Void
+   * @param {string} name Header name
+   * @param {string} value Header value
    */
   append (name, value) {
     if (!this.has(name)) {
@@ -142,8 +138,8 @@ export default class Headers {
   /**
    * Check for header name existence
    *
-   * @param   String   name  Header name
-   * @return  Boolean
+   * @param {string} name Header name
+   * @return {boolean}
    */
   has (name) {
     return !!this[ MAP ][ sanitizeName(name) ]
@@ -152,8 +148,7 @@ export default class Headers {
   /**
    * Delete all header values given name
    *
-   * @param   String  name  Header name
-   * @return  Void
+   * @param {string} name Header name
    */
   delete (name) {
     delete this[ MAP ][ sanitizeName(name) ]
@@ -162,7 +157,7 @@ export default class Headers {
   /**
    * Return raw headers (non-spec api)
    *
-   * @return  Object
+   * @return {Object}
    */
   raw () {
     return this[ MAP ]
@@ -171,7 +166,7 @@ export default class Headers {
   /**
    * Get an iterator on keys.
    *
-   * @return  Iterator
+   * @return {Iterator}
    */
   keys () {
     return createHeadersIterator(this, 'key')
@@ -180,7 +175,7 @@ export default class Headers {
   /**
    * Get an iterator on values.
    *
-   * @return  Iterator
+   * @return {Iterator}
    */
   values () {
     return createHeadersIterator(this, 'value')
@@ -191,7 +186,7 @@ export default class Headers {
    *
    * This is the default iterator of the Headers object.
    *
-   * @return  Iterator
+   * @return {Iterator}
    */
   [Symbol.iterator] () {
     return createHeadersIterator(this, 'key+value')
