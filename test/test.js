@@ -4,19 +4,21 @@ import chai from 'chai'
 import chaiPromised from 'chai-as-promised'
 import chaiIterator from 'chai-iterator'
 import chaiString from 'chai-string'
+import dirtyChai from 'dirty-chai'
 import then from 'promise'
-import {spawn} from 'child_process'
+import { spawn } from 'child_process'
 import * as stream from 'stream'
 import resumer from 'resumer'
 import FormData from 'form-data'
-import {parse as parseURL} from 'url'
-import {URL} from 'whatwg-url'
+import { parse as parseURL } from 'url'
+import { URL } from 'whatwg-url'
 import * as http from 'http'
 import * as fs from 'fs'
 
 chai.use(chaiPromised)
 chai.use(chaiIterator)
 chai.use(chaiString)
+chai.use(dirtyChai)
 const expect = chai.expect
 
 import TestServer from './server'
@@ -110,7 +112,7 @@ describe('node-fetch', () => {
     url = 'http://localhost:50000/'
     return expect(fetch(url)).to.eventually.be.rejected
       .and.be.an.instanceOf(FetchError)
-      .and.include({ type: 'system', code: 'ECONNREFUSED', errno: 'ECONNREFUSED' })
+      .and.include({type: 'system', code: 'ECONNREFUSED', errno: 'ECONNREFUSED'})
   })
 
   it('should resolve into response', function () {
@@ -119,10 +121,10 @@ describe('node-fetch', () => {
       expect(res).to.be.an.instanceof(Response)
       expect(res.headers).to.be.an.instanceof(Headers)
       expect(res.body).to.be.an.instanceof(stream.Transform)
-      expect(res.bodyUsed).to.be.false
+      expect(res.bodyUsed).to.be.false()
 
       expect(res.url).to.equal(url)
-      expect(res.ok).to.be.true
+      expect(res.ok).to.be.true()
       expect(res.status).to.equal(200)
       expect(res.statusText).to.equal('OK')
     })
@@ -133,7 +135,7 @@ describe('node-fetch', () => {
     return fetch(url).then(res => {
       expect(res.headers.get('content-type')).to.equal('text/plain')
       return res.text().then(result => {
-        expect(res.bodyUsed).to.be.true
+        expect(res.bodyUsed).to.be.true()
         expect(result).to.be.a('string')
         expect(result).to.equal('text')
       })
@@ -145,7 +147,7 @@ describe('node-fetch', () => {
     return fetch(url).then(res => {
       expect(res.headers.get('content-type')).to.equal('text/html')
       return res.text().then(result => {
-        expect(res.bodyUsed).to.be.true
+        expect(res.bodyUsed).to.be.true()
         expect(result).to.be.a('string')
         expect(result).to.equal('<html></html>')
       })
@@ -157,9 +159,9 @@ describe('node-fetch', () => {
     return fetch(url).then(res => {
       expect(res.headers.get('content-type')).to.equal('application/json')
       return res.json().then(result => {
-        expect(res.bodyUsed).to.be.true
+        expect(res.bodyUsed).to.be.true()
         expect(result).to.be.an('object')
-        expect(result).to.deep.equal({ name: 'value' })
+        expect(result).to.deep.equal({name: 'value'})
       })
     })
   })
@@ -167,24 +169,24 @@ describe('node-fetch', () => {
   it('should send request with custom headers', function () {
     url = `${base}inspect`
     opts = {
-      headers: { 'x-custom-header': 'abc' }
+      headers: {'x-custom-header': 'abc'}
     }
     return fetch(url, opts).then(res => {
       return res.json()
     }).then(res => {
-      expect(res.headers[ 'x-custom-header' ]).to.equal('abc')
+      expect(res.headers['x-custom-header']).to.equal('abc')
     })
   })
 
   it('should accept headers instance', function () {
     url = `${base}inspect`
     opts = {
-      headers: new Headers({ 'x-custom-header': 'abc' })
+      headers: new Headers({'x-custom-header': 'abc'})
     }
     return fetch(url, opts).then(res => {
       return res.json()
     }).then(res => {
-      expect(res.headers[ 'x-custom-header' ]).to.equal('abc')
+      expect(res.headers['x-custom-header']).to.equal('abc')
     })
   })
 
@@ -198,7 +200,7 @@ describe('node-fetch', () => {
     return fetch(url, opts).then(res => {
       return res.json()
     }).then(res => {
-      expect(res.headers[ 'host' ]).to.equal('example.com')
+      expect(res.headers['host']).to.equal('example.com')
     })
   })
 
@@ -207,7 +209,7 @@ describe('node-fetch', () => {
     return fetch(url).then(res => {
       expect(res.url).to.equal(`${base}inspect`)
       expect(res.status).to.equal(200)
-      expect(res.ok).to.be.true
+      expect(res.ok).to.be.true()
     })
   })
 
@@ -360,20 +362,20 @@ describe('node-fetch', () => {
     return fetch(url, opts).then(res => {
       expect(res.url).to.equal(url)
       expect(res.status).to.equal(200)
-      expect(res.headers.get('location')).to.be.null
+      expect(res.headers.get('location')).to.be.null()
     })
   })
 
   it('should follow redirect code 301 and keep existing headers', function () {
     url = `${base}redirect/301`
     opts = {
-      headers: new Headers({ 'x-custom-header': 'abc' })
+      headers: new Headers({'x-custom-header': 'abc'})
     }
     return fetch(url, opts).then(res => {
       // expect(res.url).to.equal(`${base}inspect`) // Not compatible with electron.net
       return res.json()
     }).then(res => {
-      expect(res.headers[ 'x-custom-header' ]).to.equal('abc')
+      expect(res.headers['x-custom-header']).to.equal('abc')
     })
   })
 
@@ -392,7 +394,7 @@ describe('node-fetch', () => {
     return fetch(url, opts).then(res => {
       expect(res.url).to.equal(url)
       expect(res.status).to.equal(301)
-      expect(res.headers.get('location')).to.be.null
+      expect(res.headers.get('location')).to.be.null()
     })
   })
 
@@ -402,9 +404,9 @@ describe('node-fetch', () => {
       expect(res.headers.get('content-type')).to.equal('text/plain')
       expect(res.status).to.equal(400)
       expect(res.statusText).to.equal('Bad Request')
-      expect(res.ok).to.be.false
+      expect(res.ok).to.be.false()
       return res.text().then(result => {
-        expect(res.bodyUsed).to.be.true
+        expect(res.bodyUsed).to.be.true()
         expect(result).to.be.a('string')
         expect(result).to.equal('client error')
       })
@@ -417,9 +419,9 @@ describe('node-fetch', () => {
       expect(res.headers.get('content-type')).to.equal('text/plain')
       expect(res.status).to.equal(500)
       expect(res.statusText).to.equal('Internal Server Error')
-      expect(res.ok).to.be.false
+      expect(res.ok).to.be.false()
       return res.text().then(result => {
-        expect(res.bodyUsed).to.be.true
+        expect(res.bodyUsed).to.be.true()
         expect(result).to.be.a('string')
         expect(result).to.equal('server error')
       })
@@ -453,10 +455,10 @@ describe('node-fetch', () => {
     return fetch(url).then(res => {
       expect(res.status).to.equal(204)
       expect(res.statusText).to.equal('No Content')
-      expect(res.ok).to.be.true
+      expect(res.ok).to.be.true()
       return res.text().then(result => {
         expect(result).to.be.a('string')
-        expect(result).to.be.empty
+        expect(result).to.be.empty()
       })
     })
   })
@@ -467,10 +469,10 @@ describe('node-fetch', () => {
       expect(res.status).to.equal(204)
       expect(res.statusText).to.equal('No Content')
       expect(res.headers.get('content-encoding')).to.equal('gzip')
-      expect(res.ok).to.be.true
+      expect(res.ok).to.be.true()
       return res.text().then(result => {
         expect(result).to.be.a('string')
-        expect(result).to.be.empty
+        expect(result).to.be.empty()
       })
     })
   })
@@ -480,10 +482,10 @@ describe('node-fetch', () => {
     return fetch(url).then(res => {
       expect(res.status).to.equal(304)
       expect(res.statusText).to.equal('Not Modified')
-      expect(res.ok).to.be.false
+      expect(res.ok).to.be.false()
       return res.text().then(result => {
         expect(result).to.be.a('string')
-        expect(result).to.be.empty
+        expect(result).to.be.empty()
       })
     })
   })
@@ -494,10 +496,10 @@ describe('node-fetch', () => {
       expect(res.status).to.equal(304)
       expect(res.statusText).to.equal('Not Modified')
       expect(res.headers.get('content-encoding')).to.equal('gzip')
-      expect(res.ok).to.be.false
+      expect(res.ok).to.be.false()
       return res.text().then(result => {
         expect(result).to.be.a('string')
-        expect(result).to.be.empty
+        expect(result).to.be.empty()
       })
     })
   })
@@ -600,8 +602,8 @@ describe('node-fetch', () => {
       timeout: 100
     }
     return fetch(url, opts).then(res => {
-      expect(res.ok).to.be.true
-      return expect(res.text()).to.eventually.be.rejected
+      expect(res.ok).to.be.true()
+      return expect(res.text()).to.eventually.be.rejected()
         .and.be.an.instanceOf(FetchError)
         .and.have.property('type', 'body-timeout')
     })
@@ -609,7 +611,7 @@ describe('node-fetch', () => {
 
   it('should clear internal timeout on fetch response', function (done) {
     this.timeout(1000)
-    spawn('node', [ '-e', `require('./')('${base}hello', { timeout: 5000 })` ])
+    spawn('node', ['-e', `require('./')('${base}hello', { timeout: 5000 })`])
       .on('exit', () => {
         done()
       })
@@ -617,7 +619,7 @@ describe('node-fetch', () => {
 
   it('should clear internal timeout on fetch redirect', function (done) {
     this.timeout(1000)
-    spawn('node', [ '-e', `require('./')('${base}redirect/301', { timeout: 5000 })` ])
+    spawn('node', ['-e', `require('./')('${base}redirect/301', { timeout: 5000 })`])
       .on('exit', () => {
         done()
       })
@@ -625,7 +627,7 @@ describe('node-fetch', () => {
 
   it('should clear internal timeout on fetch error', function (done) {
     this.timeout(1000)
-    spawn('node', [ '-e', `require('./')('${base}error/reset', { timeout: 5000 })` ])
+    spawn('node', ['-e', `require('./')('${base}error/reset', { timeout: 5000 })`])
       .on('exit', () => {
         done()
       })
@@ -634,7 +636,7 @@ describe('node-fetch', () => {
   it('should set default User-Agent', function () {
     url = `${base}inspect`
     fetch(url).then(res => res.json()).then(res => {
-      expect(res.headers[ 'user-agent' ]).to.startWith('node-fetch/')
+      expect(res.headers['user-agent']).to.startWith('node-fetch/')
     })
   })
 
@@ -646,7 +648,7 @@ describe('node-fetch', () => {
       }
     }
     fetch(url, opts).then(res => res.json()).then(res => {
-      expect(res.headers[ 'user-agent' ]).to.equal('faked')
+      expect(res.headers['user-agent']).to.equal('faked')
     })
   })
 
@@ -678,9 +680,9 @@ describe('node-fetch', () => {
       return res.json()
     }).then(res => {
       expect(res.method).to.equal('POST')
-      expect(res.headers[ 'transfer-encoding' ]).to.be.undefined
-      expect(res.headers[ 'content-type' ]).to.be.undefined
-      expect(res.headers[ 'content-length' ]).to.equal('0')
+      expect(res.headers['transfer-encoding']).to.be.undefined()
+      expect(res.headers['content-type']).to.be.undefined()
+      expect(res.headers['content-length']).to.equal('0')
     })
   })
 
@@ -695,9 +697,9 @@ describe('node-fetch', () => {
     }).then(res => {
       expect(res.method).to.equal('POST')
       expect(res.body).to.equal('a=1')
-      expect(res.headers[ 'transfer-encoding' ]).to.be.undefined
-      expect(res.headers[ 'content-type' ]).to.equal('text/plain;charset=UTF-8')
-      expect(res.headers[ 'content-length' ]).to.equal('3')
+      expect(res.headers['transfer-encoding']).to.be.undefined()
+      expect(res.headers['content-type']).to.equal('text/plain;charset=UTF-8')
+      expect(res.headers['content-length']).to.equal('3')
     })
   })
 
@@ -712,9 +714,9 @@ describe('node-fetch', () => {
     }).then(res => {
       expect(res.method).to.equal('POST')
       expect(res.body).to.equal('a=1')
-      expect(res.headers[ 'transfer-encoding' ]).to.be.undefined
-      expect(res.headers[ 'content-type' ]).to.be.undefined
-      expect(res.headers[ 'content-length' ]).to.equal('3')
+      expect(res.headers['transfer-encoding']).to.be.undefined()
+      expect(res.headers['content-type']).to.be.undefined()
+      expect(res.headers['content-length']).to.equal('3')
     })
   })
 
@@ -722,16 +724,16 @@ describe('node-fetch', () => {
     url = `${base}inspect`
     opts = {
       method: 'POST',
-      body: new Blob([ 'a=1' ])
+      body: new Blob(['a=1'])
     }
     return fetch(url, opts).then(res => {
       return res.json()
     }).then(res => {
       expect(res.method).to.equal('POST')
       expect(res.body).to.equal('a=1')
-      expect(res.headers[ 'transfer-encoding' ]).to.be.undefined
-      expect(res.headers[ 'content-type' ]).to.be.undefined
-      expect(res.headers[ 'content-length' ]).to.equal('3')
+      expect(res.headers['transfer-encoding']).to.be.undefined()
+      expect(res.headers['content-type']).to.be.undefined()
+      expect(res.headers['content-length']).to.equal('3')
     })
   })
 
@@ -739,7 +741,7 @@ describe('node-fetch', () => {
     url = `${base}inspect`
     opts = {
       method: 'POST',
-      body: new Blob([ 'a=1' ], {
+      body: new Blob(['a=1'], {
         type: 'text/plain;charset=UTF-8'
       })
     }
@@ -748,9 +750,9 @@ describe('node-fetch', () => {
     }).then(res => {
       expect(res.method).to.equal('POST')
       expect(res.body).to.equal('a=1')
-      expect(res.headers[ 'transfer-encoding' ]).to.be.undefined
-      expect(res.headers[ 'content-type' ]).to.equal('text/plain;charset=utf-8')
-      expect(res.headers[ 'content-length' ]).to.equal('3')
+      expect(res.headers['transfer-encoding']).to.be.undefined()
+      expect(res.headers['content-type']).to.equal('text/plain;charset=utf-8')
+      expect(res.headers['content-length']).to.equal('3')
     })
   })
 
@@ -769,8 +771,8 @@ describe('node-fetch', () => {
       expect(res.method).to.equal('POST')
       expect(res.body).to.equal('a=1')
       // expect(res.headers[ 'transfer-encoding' ]).to.equal('chunked') // Not compatible with electron.net, i think
-      expect(res.headers[ 'content-type' ]).to.be.undefined
-      expect(res.headers[ 'content-length' ]).to.be.undefined // why the fuck shouldn't it be 'a=1' like when FormData??
+      expect(res.headers[ 'content-type' ]).to.be.undefined()
+      expect(res.headers[ 'content-length' ]).to.be.undefined() // why the fuck shouldn't it be 'a=1' like when FormData??
     })
   })
 
@@ -787,8 +789,8 @@ describe('node-fetch', () => {
       return res.json()
     }).then(res => {
       expect(res.method).to.equal('POST')
-      expect(res.headers[ 'content-type' ]).to.startWith('multipart/form-data;boundary=')
-      expect(res.headers[ 'content-length' ]).to.be.a('string')
+      expect(res.headers['content-type']).to.startWith('multipart/form-data;boundary=')
+      expect(res.headers['content-length']).to.be.a('string')
       expect(res.body).to.equal('a=1')
     })
   })
@@ -807,8 +809,8 @@ describe('node-fetch', () => {
       return res.json()
     }).then(res => {
       expect(res.method).to.equal('POST')
-      expect(res.headers[ 'content-type' ]).to.startWith('multipart/form-data;boundary=')
-      expect(res.headers[ 'content-length' ]).to.be.undefined
+      expect(res.headers['content-type']).to.startWith('multipart/form-data;boundary=')
+      expect(res.headers['content-length']).to.be.undefined()
       expect(res.body).to.contain('my_field=')
     })
   })
@@ -818,7 +820,7 @@ describe('node-fetch', () => {
     form.append('a', '1')
 
     const headers = form.getHeaders()
-    headers[ 'b' ] = '2'
+    headers['b'] = '2'
 
     url = `${base}multipart`
     opts = {
@@ -830,8 +832,8 @@ describe('node-fetch', () => {
       return res.json()
     }).then(res => {
       expect(res.method).to.equal('POST')
-      expect(res.headers[ 'content-type' ]).to.startWith('multipart/form-data; boundary=')
-      expect(res.headers[ 'content-length' ]).to.be.a('string')
+      expect(res.headers['content-type']).to.startWith('multipart/form-data; boundary=')
+      expect(res.headers['content-length']).to.be.a('string')
       expect(res.headers.b).to.equal('2')
       expect(res.body).to.equal('a=1')
     })
@@ -842,15 +844,15 @@ describe('node-fetch', () => {
     // note that fetch simply calls tostring on an object
     opts = {
       method: 'POST',
-      body: { a: 1 }
+      body: {a: 1}
     }
     return fetch(url, opts).then(res => {
       return res.json()
     }).then(res => {
       expect(res.method).to.equal('POST')
       expect(res.body).to.equal('[object Object]')
-      expect(res.headers[ 'content-type' ]).to.equal('text/plain;charset=UTF-8')
-      expect(res.headers[ 'content-length' ]).to.equal('15')
+      expect(res.headers['content-type']).to.equal('text/plain;charset=UTF-8')
+      expect(res.headers['content-length']).to.equal('15')
     })
   })
 
@@ -869,9 +871,9 @@ describe('node-fetch', () => {
     }).then(res => {
       expect(res.method).to.equal('POST')
       expect(res.body).to.equal('a=1')
-      expect(res.headers[ 'transfer-encoding' ]).to.be.undefined
-      expect(res.headers[ 'content-type' ]).to.equal('text/plain;charset=UTF-8')
-      expect(res.headers[ 'content-length' ]).to.equal('3')
+      expect(res.headers['transfer-encoding']).to.be.undefined()
+      expect(res.headers['content-type']).to.equal('text/plain;charset=UTF-8')
+      expect(res.headers['content-length']).to.equal('3')
     })
   })
 
@@ -912,8 +914,8 @@ describe('node-fetch', () => {
     }).then(res => {
       expect(res.method).to.equal('DELETE')
       expect(res.body).to.equal('a=1')
-      expect(res.headers[ 'transfer-encoding' ]).to.be.undefined
-      expect(res.headers[ 'content-length' ]).to.equal('3')
+      expect(res.headers['transfer-encoding']).to.be.undefined()
+      expect(res.headers['content-length']).to.equal('3')
     })
   })
 
@@ -979,7 +981,7 @@ describe('node-fetch', () => {
     return fetch(url).then(res => {
       expect(res.headers.get('content-type')).to.equal('text/plain')
       return res.text().then(result => {
-        expect(res.bodyUsed).to.be.true
+        expect(res.bodyUsed).to.be.true()
         return expect(res.text()).to.eventually.be.rejectedWith(Error)
       })
     })
@@ -1067,7 +1069,7 @@ describe('node-fetch', () => {
     url = `${base}encoding/utf8`
     return fetch(url).then(res => {
       expect(res.status).to.equal(200)
-      expect(res.headers.get('content-type')).to.be.null
+      expect(res.headers.get('content-type')).to.be.null()
       return res.textConverted().then(result => {
         expect(result).to.equal('中文')
       })
@@ -1153,9 +1155,9 @@ describe('node-fetch', () => {
     url = `${base}json`
     return fetch(url).then(res => {
       const r1 = res.clone()
-      return Promise.all([ res.json(), r1.text() ]).then(results => {
-        expect(results[ 0 ]).to.deep.equal({ name: 'value' })
-        expect(results[ 1 ]).to.equal('{"name":"value"}')
+      return Promise.all([res.json(), r1.text()]).then(results => {
+        expect(results[0]).to.deep.equal({name: 'value'})
+        expect(results[1]).to.equal('{"name":"value"}')
       })
     })
   })
@@ -1165,7 +1167,7 @@ describe('node-fetch', () => {
     return fetch(url).then(res => {
       const r1 = res.clone()
       return res.json().then(result => {
-        expect(result).to.deep.equal({ name: 'value' })
+        expect(result).to.deep.equal({name: 'value'})
         return r1.text().then(result => {
           expect(result).to.equal('{"name":"value"}')
         })
@@ -1180,7 +1182,7 @@ describe('node-fetch', () => {
       return r1.text().then(result => {
         expect(result).to.equal('{"name":"value"}')
         return res.json().then(result => {
-          expect(result).to.deep.equal({ name: 'value' })
+          expect(result).to.deep.equal({name: 'value'})
         })
       })
     })
@@ -1208,98 +1210,98 @@ describe('node-fetch', () => {
 
   it('should allow iterating through all headers with forEach', function () {
     const headers = new Headers([
-      [ 'b', '2' ],
-      [ 'c', '4' ],
-      [ 'b', '3' ],
-      [ 'a', '1' ]
+      ['b', '2'],
+      ['c', '4'],
+      ['b', '3'],
+      ['a', '1']
     ])
     expect(headers).to.have.property('forEach')
 
     const result = []
     headers.forEach((val, key) => {
-      result.push([ key, val ])
+      result.push([key, val])
     })
 
     expect(result).to.deep.equal([
-      [ 'a', '1' ],
-      [ 'b', '2,3' ],
-      [ 'c', '4' ]
+      ['a', '1'],
+      ['b', '2,3'],
+      ['c', '4']
     ])
   })
 
   it('should allow iterating through all headers with for-of loop', function () {
     const headers = new Headers([
-      [ 'b', '2' ],
-      [ 'c', '4' ],
-      [ 'a', '1' ]
+      ['b', '2'],
+      ['c', '4'],
+      ['a', '1']
     ])
     headers.append('b', '3')
-    expect(headers).to.be.iterable
+    expect(headers).to.be.iterable()
 
     const result = []
     for (let pair of headers) {
       result.push(pair)
     }
     expect(result).to.deep.equal([
-      [ 'a', '1' ],
-      [ 'b', '2,3' ],
-      [ 'c', '4' ]
+      ['a', '1'],
+      ['b', '2,3'],
+      ['c', '4']
     ])
   })
 
   it('should allow iterating through all headers with entries()', function () {
     const headers = new Headers([
-      [ 'b', '2' ],
-      [ 'c', '4' ],
-      [ 'a', '1' ]
+      ['b', '2'],
+      ['c', '4'],
+      ['a', '1']
     ])
     headers.append('b', '3')
 
     expect(headers.entries()).to.be.iterable
       .and.to.deep.iterate.over([
-      [ 'a', '1' ],
-      [ 'b', '2,3' ],
-      [ 'c', '4' ]
+      ['a', '1'],
+      ['b', '2,3'],
+      ['c', '4']
       ])
   })
 
   it('should allow iterating through all headers with keys()', function () {
     const headers = new Headers([
-      [ 'b', '2' ],
-      [ 'c', '4' ],
-      [ 'a', '1' ]
+      ['b', '2'],
+      ['c', '4'],
+      ['a', '1']
     ])
     headers.append('b', '3')
 
     expect(headers.keys()).to.be.iterable
-      .and.to.iterate.over([ 'a', 'b', 'c' ])
+      .and.to.iterate.over(['a', 'b', 'c'])
   })
 
   it('should allow iterating through all headers with values()', function () {
     const headers = new Headers([
-      [ 'b', '2' ],
-      [ 'c', '4' ],
-      [ 'a', '1' ]
+      ['b', '2'],
+      ['c', '4'],
+      ['a', '1']
     ])
     headers.append('b', '3')
 
     expect(headers.values()).to.be.iterable
-      .and.to.iterate.over([ '1', '2,3', '4' ])
+      .and.to.iterate.over(['1', '2,3', '4'])
   })
 
   it('should allow deleting header', function () {
     url = `${base}cookie`
     return fetch(url).then(res => {
       res.headers.delete('set-cookie')
-      expect(res.headers.get('set-cookie')).to.be.null
+      expect(res.headers.get('set-cookie')).to.be.null()
     })
   })
 
-  it.only('should reject illegal header', function () {
+  it('should reject illegal header', function () {
     const headers = new Headers()
-    expect(() => new Headers({ 'He y': 'ok' })).to.throw(TypeError)
-    expect(() => new Headers({ 'Hé-y': 'ok' })).to.throw(TypeError)
-    expect(() => new Headers({ 'He-y': 'ăk' })).to.throw(TypeError)
+    expect(() => new Headers({'He y': 'ok'})).to.throw(TypeError)
+    expect(() => new Headers({'Hé-y': 'ok'})).to.throw(TypeError)
+    expect(() => new Headers({'He-y': 'ăk'})).to.throw(TypeError)
     expect(() => headers.append('Hé-y', 'ok')).to.throw(TypeError)
     expect(() => headers.delete('Hé-y')).to.throw(TypeError)
     expect(() => headers.get('Hé-y')).to.throw(TypeError)
@@ -1307,7 +1309,7 @@ describe('node-fetch', () => {
     expect(() => headers.set('Hé-y', 'ok')).to.throw(TypeError)
 
     // 'o k' is valid value but invalid name
-    expect(() => new Headers({ 'He-y': 'o k' })).not.to.throw(TypeError)
+    expect(() => new Headers({'He-y': 'o k'})).not.to.throw(TypeError)
   })
 
   it.skip('should send request with connection keep-alive if agent is provided', function () { // Not compatible with electron.net
@@ -1320,7 +1322,7 @@ describe('node-fetch', () => {
     return fetch(url, opts).then(res => {
       return res.json()
     }).then(res => {
-      expect(res.headers[ 'connection' ]).to.equal('keep-alive')
+      expect(res.headers['connection']).to.equal('keep-alive')
     })
   })
 
@@ -1332,12 +1334,12 @@ describe('node-fetch', () => {
 
     const res = new FakeHeader()
     res.a = 'string'
-    res.b = [ '1', '2' ]
+    res.b = ['1', '2']
     res.c = ''
     res.d = []
     res.e = 1
-    res.f = [ 1, 2 ]
-    res.g = { a: 1 }
+    res.f = [1, 2]
+    res.g = {a: 1}
     res.h = undefined
     res.i = null
     res.j = NaN
@@ -1346,28 +1348,28 @@ describe('node-fetch', () => {
     res.m = new Buffer('test')
 
     const h1 = new Headers(res)
-    h1.set('n', [ 1, 2 ])
-    h1.append('n', [ '3', 4 ])
+    h1.set('n', [1, 2])
+    h1.append('n', ['3', 4])
 
     const h1Raw = h1.raw()
 
-    expect(h1Raw[ 'a' ]).to.include('string')
-    expect(h1Raw[ 'b' ]).to.include('1,2')
-    expect(h1Raw[ 'c' ]).to.include('')
-    expect(h1Raw[ 'd' ]).to.include('')
-    expect(h1Raw[ 'e' ]).to.include('1')
-    expect(h1Raw[ 'f' ]).to.include('1,2')
-    expect(h1Raw[ 'g' ]).to.include('[object Object]')
-    expect(h1Raw[ 'h' ]).to.include('undefined')
-    expect(h1Raw[ 'i' ]).to.include('null')
-    expect(h1Raw[ 'j' ]).to.include('NaN')
-    expect(h1Raw[ 'k' ]).to.include('true')
-    expect(h1Raw[ 'l' ]).to.include('false')
-    expect(h1Raw[ 'm' ]).to.include('test')
-    expect(h1Raw[ 'n' ]).to.include('1,2')
-    expect(h1Raw[ 'n' ]).to.include('3,4')
+    expect(h1Raw['a']).to.include('string')
+    expect(h1Raw['b']).to.include('1,2')
+    expect(h1Raw['c']).to.include('')
+    expect(h1Raw['d']).to.include('')
+    expect(h1Raw['e']).to.include('1')
+    expect(h1Raw['f']).to.include('1,2')
+    expect(h1Raw['g']).to.include('[object Object]')
+    expect(h1Raw['h']).to.include('undefined')
+    expect(h1Raw['i']).to.include('null')
+    expect(h1Raw['j']).to.include('NaN')
+    expect(h1Raw['k']).to.include('true')
+    expect(h1Raw['l']).to.include('false')
+    expect(h1Raw['m']).to.include('test')
+    expect(h1Raw['n']).to.include('1,2')
+    expect(h1Raw['n']).to.include('3,4')
 
-    expect(h1Raw[ 'z' ]).to.be.undefined
+    expect(h1Raw['z']).to.be.undefined()
   })
 
   it('should wrap headers', function () {
@@ -1384,50 +1386,50 @@ describe('node-fetch', () => {
     h3.append('a', '2')
     const h3Raw = h3.raw()
 
-    expect(h1Raw[ 'a' ]).to.include('1')
-    expect(h1Raw[ 'a' ]).to.not.include('2')
+    expect(h1Raw['a']).to.include('1')
+    expect(h1Raw['a']).to.not.include('2')
 
-    expect(h2Raw[ 'a' ]).to.include('1')
-    expect(h2Raw[ 'a' ]).to.not.include('2')
-    expect(h2Raw[ 'b' ]).to.include('1')
+    expect(h2Raw['a']).to.include('1')
+    expect(h2Raw['a']).to.not.include('2')
+    expect(h2Raw['b']).to.include('1')
 
-    expect(h3Raw[ 'a' ]).to.include('1')
-    expect(h3Raw[ 'a' ]).to.include('2')
-    expect(h3Raw[ 'b' ]).to.include('1')
+    expect(h3Raw['a']).to.include('1')
+    expect(h3Raw['a']).to.include('2')
+    expect(h3Raw['b']).to.include('1')
   })
 
   it('should accept headers as an iterable of tuples', function () {
     let headers
 
     headers = new Headers([
-      [ 'a', '1' ],
-      [ 'b', '2' ],
-      [ 'a', '3' ]
+      ['a', '1'],
+      ['b', '2'],
+      ['a', '3']
     ])
     expect(headers.get('a')).to.equal('1,3')
     expect(headers.get('b')).to.equal('2')
 
     headers = new Headers([
-      new Set([ 'a', '1' ]),
-      [ 'b', '2' ],
-      new Map([ [ 'a', null ], [ '3', null ] ]).keys()
+      new Set(['a', '1']),
+      ['b', '2'],
+      new Map([['a', null], ['3', null]]).keys()
     ])
     expect(headers.get('a')).to.equal('1,3')
     expect(headers.get('b')).to.equal('2')
 
     headers = new Headers(new Map([
-      [ 'a', '1' ],
-      [ 'b', '2' ]
+      ['a', '1'],
+      ['b', '2']
     ]))
     expect(headers.get('a')).to.equal('1')
     expect(headers.get('b')).to.equal('2')
   })
 
   it('should throw a TypeError if non-tuple exists in a headers initializer', function () {
-    expect(() => new Headers([ [ 'b', '2', 'huh?' ] ])).to.throw(TypeError)
-    expect(() => new Headers([ 'b2' ])).to.throw(TypeError)
+    expect(() => new Headers([['b', '2', 'huh?']])).to.throw(TypeError)
+    expect(() => new Headers(['b2'])).to.throw(TypeError)
     expect(() => new Headers('b2')).to.throw(TypeError)
-    expect(() => new Headers({ [Symbol.iterator]: 42 })).to.throw(TypeError)
+    expect(() => new Headers({[Symbol.iterator]: 42})).to.throw(TypeError)
   })
 
   it('should support fetch with Request instance', function () {
@@ -1435,7 +1437,7 @@ describe('node-fetch', () => {
     const req = new Request(url)
     return fetch(req).then(res => {
       expect(res.url).to.equal(url)
-      expect(res.ok).to.be.true
+      expect(res.ok).to.be.true()
       expect(res.status).to.equal(200)
     })
   })
@@ -1446,7 +1448,7 @@ describe('node-fetch', () => {
     const req = new Request(urlObj)
     return fetch(req).then(res => {
       expect(res.url).to.equal(url)
-      expect(res.ok).to.be.true
+      expect(res.ok).to.be.true()
       expect(res.status).to.equal(200)
     })
   })
@@ -1457,7 +1459,7 @@ describe('node-fetch', () => {
     const req = new Request(urlObj)
     return fetch(req).then(res => {
       expect(res.url).to.equal(url)
-      expect(res.ok).to.be.true
+      expect(res.ok).to.be.true()
       expect(res.status).to.equal(200)
     })
   })
@@ -1475,10 +1477,10 @@ describe('node-fetch', () => {
         method: 'POST',
         body: blob
       })
-    }).then(res => res.json()).then(({ body, headers }) => {
+    }).then(res => res.json()).then(({body, headers}) => {
       expect(body).to.equal('world')
-      expect(headers[ 'content-type' ]).to.equal(type)
-      expect(headers[ 'content-length' ]).to.equal(String(length))
+      expect(headers['content-type']).to.equal(type)
+      expect(headers['content-length']).to.equal(String(length))
     })
   })
 
@@ -1529,13 +1531,13 @@ describe('node-fetch', () => {
   })
 
   it('should throw error with GET/HEAD requests with body', function () {
-    expect(() => new Request('.', { body: '' }))
+    expect(() => new Request('.', {body: ''}))
       .to.throw(TypeError)
-    expect(() => new Request('.', { body: 'a' }))
+    expect(() => new Request('.', {body: 'a'}))
       .to.throw(TypeError)
-    expect(() => new Request('.', { body: '', method: 'HEAD' }))
+    expect(() => new Request('.', {body: '', method: 'HEAD'}))
       .to.throw(TypeError)
-    expect(() => new Request('.', { body: 'a', method: 'HEAD' }))
+    expect(() => new Request('.', {body: 'a', method: 'HEAD'}))
       .to.throw(TypeError)
   })
 
@@ -1587,12 +1589,12 @@ describe('node-fetch', () => {
     })
     return res.blob().then(function (result) {
       expect(result).to.be.an.instanceOf(Blob)
-      expect(result.isClosed).to.be.false
+      expect(result.isClosed).to.be.false()
       expect(result.size).to.equal(3)
       expect(result.type).to.equal('text/plain')
 
       result.close()
-      expect(result.isClosed).to.be.true
+      expect(result.isClosed).to.be.true()
       expect(result.size).to.equal(0)
       expect(result.type).to.equal('text/plain')
     })
@@ -1614,7 +1616,7 @@ describe('node-fetch', () => {
     expect(cl.url).to.equal(base)
     expect(cl.status).to.equal(346)
     expect(cl.statusText).to.equal('production')
-    expect(cl.ok).to.be.false
+    expect(cl.ok).to.be.false()
     // clone body shouldn't be the same body
     expect(cl.body).to.not.equal(body)
     return cl.text().then(result => {
@@ -1646,7 +1648,7 @@ describe('node-fetch', () => {
   })
 
   it('should support blob as body in Response constructor', function () {
-    const res = new Response(new Blob([ 'a=1' ]))
+    const res = new Response(new Blob(['a=1']))
     return res.text().then(result => {
       expect(result).to.equal('a=1')
     })
@@ -1740,12 +1742,12 @@ describe('node-fetch', () => {
     expect(req.url).to.equal(url)
     return req.blob().then(function (result) {
       expect(result).to.be.an.instanceOf(Blob)
-      expect(result.isClosed).to.be.false
+      expect(result.isClosed).to.be.false()
       expect(result.size).to.equal(3)
       expect(result.type).to.equal('')
 
       result.close()
-      expect(result.isClosed).to.be.true
+      expect(result.isClosed).to.be.true()
       expect(result.size).to.equal(0)
       expect(result.type).to.equal('')
     })
@@ -1785,9 +1787,9 @@ describe('node-fetch', () => {
     // expect(cl.agent).to.equal(agent)
     // clone body shouldn't be the same body
     expect(cl.body).to.not.equal(body)
-    return Promise.all([ cl.text(), req.text() ]).then(results => {
-      expect(results[ 0 ]).to.equal('a=1')
-      expect(results[ 1 ]).to.equal('a=1')
+    return Promise.all([cl.text(), req.text()]).then(results => {
+      expect(results[0]).to.equal('a=1')
+      expect(results[1]).to.equal('a=1')
     })
   })
 
@@ -1824,7 +1826,7 @@ describe('node-fetch', () => {
     }
     return fetch(url, opts).then(res => {
       expect(res.status).to.equal(200)
-      expect(res.ok).to.be.true
+      expect(res.ok).to.be.true()
     })
   })
 })
