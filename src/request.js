@@ -39,7 +39,7 @@ export default class Request {
 
     let method = init.method || input.method || 'GET'
 
-    if ((init.body != null || input instanceof Request && input.body !== null) &&
+    if ((init.body != null || (input instanceof Request && input.body !== null)) &&
       (method === 'GET' || method === 'HEAD')) {
       throw new TypeError('Request with GET/HEAD method cannot have body')
     }

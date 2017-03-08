@@ -1772,7 +1772,7 @@ describe('node-fetch', () => {
         b: '2'
       },
       follow: 3,
-      compress: false,
+      compress: false // ,
       // agent
     })
     const cl = req.clone()

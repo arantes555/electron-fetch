@@ -66,7 +66,7 @@ Body.prototype = {
    * @return Promise
    */
   blob () {
-    let ct = this.headers && this.headers.get('content-type') || ''
+    let ct = (this.headers && this.headers.get('content-type')) || ''
     return consumeBody.call(this).then(buf => Object.assign(
       // Prevent copying
       new Blob([], {
@@ -356,8 +356,8 @@ export function getTotalBytes (instance) {
     return body.length
   } else if (body && typeof body.getLengthSync === 'function') {
     // detect form data input from form-data module
-    if (body._lengthRetrievers && body._lengthRetrievers.length === 0 || // 1.x
-      body.hasKnownLength && body.hasKnownLength()) { // 2.x
+    if ((body._lengthRetrievers && body._lengthRetrievers.length === 0) || // 1.x
+      (body.hasKnownLength && body.hasKnownLength())) { // 2.x
       return body.getLengthSync()
     }
     return null

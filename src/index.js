@@ -162,7 +162,6 @@ export default function fetch (url, opts) {
       // 5. content not modified response (304)
       if (!net && request.compress && request.method !== 'HEAD' && codings !== null &&
         res.statusCode !== 204 && res.statusCode !== 304) {
-
         // Be less strict when decoding compressed responses, since sometimes
         // servers send slightly invalid responses that are still accepted
         // by common browsers.
