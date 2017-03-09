@@ -190,7 +190,7 @@ const createTestSuite = (useElectronNet) => {
     it('should follow redirect code 301', function () {
       url = `${base}redirect/301`
       return fetch(url, { useElectronNet }).then(res => {
-        // expect(res.url).to.equal(`${base}inspect`) // actually follows the redirects, just does not update the res.url ...
+        if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`) // actually follows the redirects, just does not update the res.url ...
         expect(res.status).to.equal(200)
         expect(res.ok).to.be.true()
       })
@@ -199,7 +199,7 @@ const createTestSuite = (useElectronNet) => {
     it('should follow redirect code 302', function () {
       url = `${base}redirect/302`
       return fetch(url, { useElectronNet }).then(res => {
-        // expect(res.url).to.equal(`${base}inspect`)
+        if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
       })
     })
@@ -207,7 +207,7 @@ const createTestSuite = (useElectronNet) => {
     it('should follow redirect code 303', function () {
       url = `${base}redirect/303`
       return fetch(url, { useElectronNet }).then(res => {
-        // expect(res.url).to.equal(`${base}inspect`)
+        if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
       })
     })
@@ -215,7 +215,7 @@ const createTestSuite = (useElectronNet) => {
     it('should follow redirect code 307', function () {
       url = `${base}redirect/307`
       return fetch(url, { useElectronNet }).then(res => {
-        // expect(res.url).to.equal(`${base}inspect`)
+        if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
       })
     })
@@ -223,7 +223,7 @@ const createTestSuite = (useElectronNet) => {
     it('should follow redirect code 308', function () {
       url = `${base}redirect/308`
       return fetch(url, { useElectronNet }).then(res => {
-        // expect(res.url).to.equal(`${base}inspect`)
+        if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
       })
     })
@@ -231,7 +231,7 @@ const createTestSuite = (useElectronNet) => {
     it('should follow redirect chain', function () {
       url = `${base}redirect/chain`
       return fetch(url, { useElectronNet }).then(res => {
-        // expect(res.url).to.equal(`${base}inspect`)
+        if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
       })
     })
@@ -244,7 +244,7 @@ const createTestSuite = (useElectronNet) => {
         useElectronNet
       }
       return fetch(url, opts).then(res => {
-        // expect(res.url).to.equal(`${base}inspect`)
+        if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
         return res.json().then(result => {
           expect(result.method).to.equal('GET')
@@ -261,7 +261,7 @@ const createTestSuite = (useElectronNet) => {
         useElectronNet
       }
       return fetch(url, opts).then(res => {
-        // expect(res.url).to.equal(`${base}inspect`)
+        if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
         return res.json().then(result => {
           expect(result.method).to.equal('GET')
@@ -278,7 +278,7 @@ const createTestSuite = (useElectronNet) => {
         useElectronNet
       }
       return fetch(url, opts).then(res => {
-        // expect(res.url).to.equal(`${base}inspect`)
+        if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
         return res.json().then(result => {
           expect(result.method).to.equal('GET')
@@ -294,7 +294,6 @@ const createTestSuite = (useElectronNet) => {
           follow: 1,
           useElectronNet
         }
-        console.log(useElectronNet)
         return expect(fetch(url, opts)).to.eventually.be.rejected
           .and.be.an.instanceOf(FetchError)
           .and.have.property('type', 'max-redirect')
@@ -368,7 +367,7 @@ const createTestSuite = (useElectronNet) => {
         useElectronNet
       }
       return fetch(url, opts).then(res => {
-        // expect(res.url).to.equal(`${base}inspect`) // Not compatible with electron.net
+        if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`) // Not compatible with electron.net
         return res.json()
       }).then(res => {
         expect(res.headers[ 'x-custom-header' ]).to.equal('abc')
