@@ -152,7 +152,7 @@ export default class Headers {
    */
   delete (name) {
     delete this[ MAP ][ sanitizeName(name) ]
-  };
+  }
 
   /**
    * Return raw headers (non-spec api)

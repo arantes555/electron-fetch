@@ -13,7 +13,7 @@ const PARSED_URL = Symbol('url')
 /**
  * Request class
  *
- * @param {Mixed} input Url or Request instance
+ * @param {string|Request} input Url or Request instance
  * @param {Object} init Custom options
  */
 export default class Request {
@@ -78,7 +78,7 @@ export default class Request {
         ? input.compress
         : true
     this.counter = init.counter || input.counter || 0
-    this.agent = init.agent || input.agent
+    this.session = init.session || input.session
 
     this[ PARSED_URL ] = parsedURL
     Object.defineProperty(this, Symbol.toStringTag, {

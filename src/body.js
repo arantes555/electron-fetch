@@ -272,7 +272,7 @@ function convertBody (buffer, headers) {
  * Clone body given Res/Req instance
  *
  * @param {Response|Request} instance Response or Request instance
- * @return {String|Blob|Buffer|Stream}
+ * @return {string|Blob|Buffer|Stream}
  */
 export function clone (instance) {
   let p1, p2
