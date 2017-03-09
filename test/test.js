@@ -569,7 +569,7 @@ const createTestSuite = (useElectronNet) => {
       })
     }
 
-    it('should allow custom timeout', function () { // TODO: make it happen
+    it('should allow custom timeout', function () {
       this.timeout(500)
       url = `${base}timeout`
       opts = {
@@ -590,8 +590,7 @@ const createTestSuite = (useElectronNet) => {
       }
       return fetch(url, opts).then(res => {
         expect(res.ok).to.be.true()
-        return expect(res.text()).to.eventually.be.rejected()
-          .and.be.an.instanceOf(FetchError)
+        return expect(res.text()).to.eventually.be.rejectedWith(FetchError)
           .and.have.property('type', 'body-timeout')
       })
     })
@@ -771,7 +770,7 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
-    it('should allow POST request with form-data as body', function () { // TODO: makes the tests crash => needs fixing
+    it('should allow POST request with form-data as body', function () {
       const form = new FormData()
       form.append('a', '1')
 
@@ -791,7 +790,7 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
-    it('should allow POST request with form-data using stream as body', function () { // TODO: makes the tests crash => needs fixing
+    it('should allow POST request with form-data using stream as body', function () {
       const form = new FormData()
       form.append('my_field', fs.createReadStream('test/dummy.txt'))
 
@@ -812,7 +811,7 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
-    it('should allow POST request with form-data as body and custom headers', function () { // TODO: makes the tests crash => needs fixing
+    it('should allow POST request with form-data as body and custom headers', function () {
       const form = new FormData()
       form.append('a', '1')
 
@@ -987,7 +986,7 @@ const createTestSuite = (useElectronNet) => {
       url = `${base}plain`
       return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('text/plain')
-        return res.text().then(result => {
+        return res.text().then(() => {
           expect(res.bodyUsed).to.be.true()
           return expect(res.text()).to.eventually.be.rejectedWith(Error)
         })
@@ -1200,7 +1199,7 @@ const createTestSuite = (useElectronNet) => {
     it('should not allow cloning a response after its been used', function () {
       url = `${base}hello`
       return fetch(url, { useElectronNet }).then(res =>
-        res.text().then(result => {
+        res.text().then(() => {
           expect(() => {
             res.clone()
           }).to.throw(Error)

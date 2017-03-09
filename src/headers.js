@@ -114,7 +114,7 @@ export default class Headers {
    * Overwrite header values given name
    *
    * @param {string} name Header name
-   * @param {string} value Header value
+   * @param {string|Array.<string|*>|*} value Header value
    */
   set (name, value) {
     this[ MAP ][ sanitizeName(name) ] = [ sanitizeValue(value) ]
@@ -124,7 +124,7 @@ export default class Headers {
    * Append a value onto existing header
    *
    * @param {string} name Header name
-   * @param {string} value Header value
+   * @param {string|Array.<string|*>|*} value Header value
    */
   append (name, value) {
     if (!this.has(name)) {

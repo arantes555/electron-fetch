@@ -16,7 +16,7 @@ const DISTURBED = Symbol('disturbed')
  *
  * Cannot use ES6 class because Body must be called with .call().
  *
- * @param {Stream} body Readable stream
+ * @param {Stream|string|Blob|Buffer|null} body Readable stream
  * @param {number} size
  * @param {number} timeout
  */
