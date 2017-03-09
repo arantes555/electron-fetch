@@ -39,6 +39,7 @@ Why not simply use node-fetch? Well, Electron's `net` module does a better job t
 
 - Removed node-fetch specific options, such as specifying the `agent`, and `compression`.
 - Added electron-specific option to specify the `Session`.
+- Added electron-specific option `useElectronNet`, which can be set to false when running on Electron in order to behave as Node.js.
 - Removed possibility to use custom Promise implementation (it's 2017, `Promise` is available everywhere!).
 - Removed the possibility to forbid content compression (incompatible with Electron's `net` module, and of limited interest)
 - [`standard`-ized](http://standardjs.com) the code.
@@ -195,7 +196,8 @@ const defaultOptions = {
 	follow: 20,         // (/!\ only works when running on Node.js) maximum redirect count. 0 to not follow redirect
 	timeout: 0,         // req/res timeout in ms, it resets on redirect. 0 to disable (OS limit applies)
 	size: 0,            // maximum response body size in bytes. 0 to disable
-	session: session.defaultSession // (/!\ only works when running on Electron) Electron Session object.
+	session: session.defaultSession, // (/!\ only works when running on Electron) Electron Session object.,
+	useElectronNet: true // When running on Electron, defaults to true. On Node.js, defaults to false and cannot be set to true.
 }
 ```
 
@@ -233,6 +235,7 @@ The following electron-fetch extension properties are provided:
 - `follow` (/!\ only works when running on Node.js)
 - `counter` (/!\ only works when running on Node.js)
 - `session` (/!\ only works when running on Electron)
+- `useElectronNet` (/!\ only works when running on Electron, throws when set to true on Node.js)
 
 See [options](#fetch-options) for exact meaning of these extensions.
 

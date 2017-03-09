@@ -24,7 +24,7 @@ Known differences
 
 - There is currently no built-in caching, as server-side caching varies by use-cases.
 
-- Current implementation lacks server-side cookie store, you will need to extract `Set-Cookie` headers manually.
+- Current implementation lacks cookie store, you will need to extract `Set-Cookie` headers manually.
 
 - If you are using `res.clone()` and writing an isomorphic app, note that stream on Node.js have a smaller internal buffer size (16Kb, aka `highWaterMark`) from client-side browsers (>1Mb, not consistent across browsers).
 

@@ -385,9 +385,10 @@ export function writeToStream (dest, instance) {
     dest.end()
   } else {
     // body is stream
-    if (process.versions.electron) {
+    if (instance.useElectronNet) {
       dest.chunkedEncoding = instance.chunkedEncoding
     }
-    body.pipe(new PassThrough()).pipe(dest) // I have to put a PassThrough because somehow, FormData streams are not eaten by electron/net
+    body.pipe(new PassThrough()) // I have to put a PassThrough because somehow, FormData streams are not eaten by electron/net
+      .pipe(dest)
   }
 }

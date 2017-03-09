@@ -28,15 +28,16 @@ if (process.versions[ 'electron' ]) {
  * @param {Object} [opts] Fetch options
  * @return {Promise}
  */
-export default function fetch (url, opts) {
+export default function fetch (url, opts = {}) {
   // wrap http.request into fetch
   return new Promise((resolve, reject) => {
     // build request object
     const request = new Request(url, opts)
     const options = getNodeRequestOptions(request)
 
-    const send = ((electron && electron.net) || (options.protocol === 'https:' ? https : http))
-      .request
+    const send = request.useElectronNet
+      ? electron.net.request
+      : (options.protocol === 'https:' ? https : http).request
 
     // http.request only support string as host header, this hack make custom host header possible
     if (options.headers.host) {
@@ -45,13 +46,13 @@ export default function fetch (url, opts) {
 
     // send request
     let headers
-    if (electron) {
+    if (request.useElectronNet) {
       headers = options.headers
       delete options.headers
       options.session = options.session || electron.session.defaultSession
     }
     const req = send(options)
-    if (electron) {
+    if (request.useElectronNet) {
       for (let headerName in headers) {
         if (typeof headers[ headerName ] === 'string') req.setHeader(headerName, headers[ headerName ])
         else {
@@ -141,12 +142,12 @@ export default function fetch (url, opts) {
       // HTTP-network fetch step 16.1.3: handle content codings
 
       // in following scenarios we ignore compression support
-      // 1. compression support is disabled
+      // 1. running on Electron/net module (it manages it for us)
       // 2. HEAD request
       // 3. no Content-Encoding header
       // 4. no content response (204)
       // 5. content not modified response (304)
-      if (!electron && request.method !== 'HEAD' && codings !== null &&
+      if (!request.useElectronNet && request.method !== 'HEAD' && codings !== null &&
         res.statusCode !== 204 && res.statusCode !== 304) {
         // Be less strict when decoding compressed responses, since sometimes
         // servers send slightly invalid responses that are still accepted

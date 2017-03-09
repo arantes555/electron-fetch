@@ -59,6 +59,15 @@ export default class Request {
     this.redirect = init.redirect || input.redirect || 'follow'
     this.headers = new Headers(init.headers || input.headers || {})
     this.chunkedEncoding = false
+    this.useElectronNet = init.useElectronNet !== undefined // have to do this instead of || because it can be set to false
+      ? init.useElectronNet
+      : input.useElectronNet
+
+    if (this.useElectronNet && !process.versions.electron) throw new Error('Cannot use Electron/net module on Node.js!')
+
+    if (this.useElectronNet === undefined) {
+      this.useElectronNet = Boolean(process.versions.electron)
+    }
 
     if (init.body != null) {
       const contentType = extractContentType(this)
