@@ -2,8 +2,17 @@
 Changelog
 =========
 
+# electron-fetch 1.x
 
-# 2.x release
+## v1.0.0
+
+First electron-fetch version
+
+- Made everything compatible with Electron's `net` module.
+- Removed node-fetch specific options `agent` and `compress`.
+- Added electron-specific option `session`.
+
+# node-fetch 2.x release (base of fork)
 
 ## v2.0.0
 
@@ -48,7 +57,7 @@ This is a major release. Check [our upgrade guide](https://github.com/bitinn/nod
 - Enhance: add a list of default headers in README
 
 
-# 1.x release
+# node-fetch 1.x release
 
 ## v1.6.3
 
@@ -181,7 +190,7 @@ This is a major release. Check [our upgrade guide](https://github.com/bitinn/nod
 - Enhance: better test coverage and doc
 
 
-# 0.x release
+# node-fetch 0.x release
 
 ## v0.1
 

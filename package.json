@@ -18,11 +18,11 @@
     "test:electron": "cross-env BABEL_ENV=test electron-mocha --compilers js:babel-register test/test.js",
     "test:node": "cross-env BABEL_ENV=test mocha --compilers js:babel-register test/test.js",
     "report": "cross-env BABEL_ENV=coverage nyc --reporter lcov --reporter text mocha -R spec test/test.js",
-    "coverage": "cross-env BABEL_ENV=coverage nyc --reporter json --reporter text mocha -R spec test/test.js"
+    "coverage": "cross-env BABEL_ENV=coverage nyc --reporter json --reporter text mocha -R spec test/test.js && codecov -f coverage/coverage-final.json"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tex0l/electron-fetch.git"
+    "url": "https://github.com/arantes555/electron-fetch.git"
   },
   "keywords": [
     "fetch",
@@ -32,9 +32,9 @@
   "author": "David Frank",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bitinn/node-fetch/issues"
+    "url": "https://github.com/arantes555/electron-fetch/issues"
   },
-  "homepage": "https://github.com/bitinn/node-fetch",
+  "homepage": "https://github.com/arantes555/electron-fetch",
   "devDependencies": {
     "babel-eslint": "^7.1.1",
     "babel-plugin-istanbul": "^4.0.0",

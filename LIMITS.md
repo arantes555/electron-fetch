@@ -2,15 +2,17 @@
 Known differences
 =================
 
-*As of 2.x release*
+*As of 1.x release*
 
-- Topics such as Cross-Origin, Content Security Policy, Mixed Content, Service Workers are ignored, given our server-side context.
+- Topics such as Cross-Origin, Content Security Policy, Mixed Content, Service Workers are ignored.
 
 - URL input must be an absolute URL, using either `http` or `https` as scheme.
 
 - On the upside, there are no forbidden headers.
 
-- `res.url` contains the final url when following redirects.
+- `res.url` DOES NOT contain the final url when following redirects while running on Electron, due to a limit in Electron's net module (see https://github.com/electron/electron/issues/8868).
+
+- Impossible to control redirection behaviour when running on Electron (see https://github.com/electron/electron/issues/8868).
 
 - For convenience, `res.body` is a Node.js [Readable stream][readable-stream], so decoding can be handled independently.
 

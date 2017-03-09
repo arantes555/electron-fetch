@@ -1,164 +1,169 @@
 
-node-fetch
+electron-fetch
 ==========
 
 [![npm version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
 [![coverage status][codecov-image]][codecov-url]
 
-A light-weight module that brings `window.fetch` to Node.js
+A light-weight module that brings `window.fetch` to Electron's background process.
+Forked from [`node-fetch`](https://github.com/bitinn/node-fetch).
 
 
 ## Motivation
 
-Instead of implementing `XMLHttpRequest` in Node.js to run browser-specific [Fetch polyfill](https://github.com/github/fetch), why not go from native `http` to `fetch` API directly? Hence `node-fetch`, minimal code for a `window.fetch` compatible API on Node.js runtime.
+Instead of implementing `XMLHttpRequest` over Electron's `net` module to run browser-specific [Fetch polyfill](https://github.com/github/fetch), why not go from native `net.request` to `fetch` API directly? Hence `electron-fetch`, minimal code for a `window.fetch` compatible API on Electron's background runtime.
 
-See Matt Andrews' [isomorphic-fetch](https://github.com/matthew-andrews/isomorphic-fetch) for isomorphic usage (exports `node-fetch` for server-side, `whatwg-fetch` for client-side).
+Why not simply use node-fetch? Well, Electron's `net` module does a better job than Node.js' `http` module at handling web proxies.
 
 
 ## Features
 
 - Stay consistent with `window.fetch` API.
+- Runs on both Electron and Node.js, using either Electron's `net` module, or Node.js `http` module as backend.
 - Make conscious trade-off when following [whatwg fetch spec][whatwg-fetch] and [stream spec](https://streams.spec.whatwg.org/) implementation details, document known difference.
-- Use native promise, but allow substituting it with [insert your favorite promise library].
+- Use native promise.
 - Use native stream for body, on both request and response.
 - Decode content encoding (gzip/deflate) properly, and convert string output (such as `res.text()` and `res.json()`) to UTF-8 automatically.
-- Useful extensions such as timeout, redirect limit, response size limit, [explicit errors][] for troubleshooting.
+- Useful extensions such as timeout, redirect limit (when running on Node.js), response size limit, [explicit errors][] for troubleshooting.
 
 
 ## Difference from client-side fetch
 
-- See [Known Differences](https://github.com/bitinn/node-fetch/blob/master/LIMITS.md) for details.
+- See [Known Differences](https://github.com/arantes555/electron-fetch/blob/master/LIMITS.md) for details.
 - If you happen to use a missing feature that `window.fetch` offers, feel free to open an issue.
 - Pull requests are welcomed too!
 
 
+## Difference from node-fetch
+
+- Removed node-fetch specific options, such as specifying the `agent`, and `compression`.
+- Added electron-specific option to specify the `Session`.
+- Removed possibility to use custom Promise implementation (it's 2017, `Promise` is available everywhere!).
+- Removed the possibility to forbid content compression (incompatible with Electron's `net` module, and of limited interest)
+- [`standard`-ized](http://standardjs.com) the code.
+
 ## Install
 
 ```sh
-$ npm install node-fetch --save
+$ npm install electron-fetch --save
 ```
 
 
 ## Usage
 
 ```javascript
-import fetch from 'node-fetch';
+import fetch from 'electron-fetch'
 // or
-// const fetch = require('node-fetch');
-
-// if you are using your own Promise library, set it through fetch.Promise. Eg.
-
-// import Bluebird from 'bluebird';
-// fetch.Promise = Bluebird;
+// const fetch = require('electron-fetch');
 
 // plain text or html
 
 fetch('https://github.com/')
 	.then(res => res.text())
-	.then(body => console.log(body));
+	.then(body => console.log(body))
 
 // json
 
 fetch('https://api.github.com/users/github')
 	.then(res => res.json())
-	.then(json => console.log(json));
+	.then(json => console.log(json))
 
 // catching network error
 // 3xx-5xx responses are NOT network errors, and should be handled in then()
 // you only need one catch() at the end of your promise chain
 
 fetch('http://domain.invalid/')
-	.catch(err => console.error(err));
+	.catch(err => console.error(err))
 
 // stream
 // the node.js way is to use stream when possible
 
 fetch('https://assets-cdn.github.com/images/modules/logos_page/Octocat.png')
 	.then(res => {
-		const dest = fs.createWriteStream('./octocat.png');
-		res.body.pipe(dest);
-	});
+		const dest = fs.createWriteStream('./octocat.png')
+		res.body.pipe(dest)
+	})
 
 // buffer
 // if you prefer to cache binary data in full, use buffer()
-// note that buffer() is a node-fetch only API
+// note that buffer() is a electron-fetch only API
 
-import fileType from 'file-type';
+import fileType from 'file-type'
 
 fetch('https://assets-cdn.github.com/images/modules/logos_page/Octocat.png')
 	.then(res => res.buffer())
 	.then(buffer => fileType(buffer))
-	.then(type => { /* ... */ });
+	.then(type => { /* ... */ })
 
 // meta
 
 fetch('https://github.com/')
 	.then(res => {
-		console.log(res.ok);
-		console.log(res.status);
-		console.log(res.statusText);
-		console.log(res.headers.raw());
-		console.log(res.headers.get('content-type'));
-	});
+		console.log(res.ok)
+		console.log(res.status)
+		console.log(res.statusText)
+		console.log(res.headers.raw())
+		console.log(res.headers.get('content-type'))
+	})
 
 // post
 
 fetch('http://httpbin.org/post', { method: 'POST', body: 'a=1' })
 	.then(res => res.json())
-	.then(json => console.log(json));
+	.then(json => console.log(json))
 
 // post with stream from file
 
-import { createReadStream } from 'fs';
+import { createReadStream } from 'fs'
 
-const stream = createReadStream('input.txt');
+const stream = createReadStream('input.txt')
 fetch('http://httpbin.org/post', { method: 'POST', body: stream })
 	.then(res => res.json())
-	.then(json => console.log(json));
+	.then(json => console.log(json))
 
 // post with JSON
 
-const body = { a: 1 };
+const body = { a: 1 }
 fetch('http://httpbin.org/post', { 
 	method: 'POST',
 	body:    JSON.stringify(body),
 	headers: { 'Content-Type': 'application/json' },
 })
 	.then(res => res.json())
-	.then(json => console.log(json));
+	.then(json => console.log(json))
 
 // post with form-data (detect multipart)
 
-import FormData from 'form-data';
+import FormData from 'form-data'
 
-const form = new FormData();
-form.append('a', 1);
+const form = new FormData()
+form.append('a', 1)
 fetch('http://httpbin.org/post', { method: 'POST', body: form })
 	.then(res => res.json())
-	.then(json => console.log(json));
+	.then(json => console.log(json))
 
 // post with form-data (custom headers)
 // note that getHeaders() is non-standard API
 
-import FormData from 'form-data';
+import FormData from 'form-data'
 
-const form = new FormData();
-form.append('a', 1);
+const form = new FormData()
+form.append('a', 1)
 fetch('http://httpbin.org/post', { method: 'POST', body: form, headers: form.getHeaders() })
 	.then(res => res.json())
-	.then(json => console.log(json));
+	.then(json => console.log(json))
 
 // node 7+ with async function
 
 (async function () {
-	const res = await fetch('https://api.github.com/users/github');
-	const json = await res.json();
-	console.log(json);
-})();
+	const res = await fetch('https://api.github.com/users/github')
+	const json = await res.json()
+	console.log(json)
+})()
 ```
 
-See [test cases](https://github.com/bitinn/node-fetch/blob/master/test/test.js) for more examples.
+See [test cases](https://github.com/arantes555/electron-fetch/blob/master/test/test.js) for more examples.
 
 
 ## API
@@ -179,19 +184,18 @@ Perform an HTTP(S) fetch.
 The default values are shown after each option key.
 
 ```js
-{
+const defaultOptions = {
 	// These properties are part of the Fetch Standard
 	method: 'GET',
 	headers: {},        // request headers. format is the identical to that accepted by the Headers constructor (see below)
 	body: null,         // request body. can be null, a string, a Buffer, a Blob, or a Node.js Readable stream
-	redirect: 'follow', // set to `manual` to extract redirect headers, `error` to reject redirect
+	redirect: 'follow', // (/!\ only works when running on Node.js) set to `manual` to extract redirect headers, `error` to reject redirect
 
-	// The following properties are node-fetch extensions
-	follow: 20,         // maximum redirect count. 0 to not follow redirect
+	// The following properties are electron-fetch extensions
+	follow: 20,         // (/!\ only works when running on Node.js) maximum redirect count. 0 to not follow redirect
 	timeout: 0,         // req/res timeout in ms, it resets on redirect. 0 to disable (OS limit applies)
-	compress: true,     // support gzip/deflate content encoding. false to disable
 	size: 0,            // maximum response body size in bytes. 0 to disable
-	agent: null         // http(s).Agent instance, allows custom proxy, certificate etc.
+	session: session.defaultSession // (/!\ only works when running on Electron) Electron Session object.
 }
 ```
 
@@ -201,11 +205,11 @@ If no values are set, the following request headers will be sent automatically:
 
 Header            | Value
 ----------------- | --------------------------------------------------------
-`Accept-Encoding` | `gzip,deflate` _(when `options.compress === true`)_
+`Accept-Encoding` | `gzip,deflate`
 `Accept`          | `*/*`
-`Connection`      | `close` _(when no `options.agent` is present)_
+`Connection`      | `close`
 `Content-Length`  | _(automatically calculated, if possible)_
-`User-Agent`      | `node-fetch/1.0 (+https://github.com/bitinn/node-fetch)`
+`User-Agent`      | `electron-fetch/1.0 (+https://github.com/arantes555/electron-fetch)`
 
 <a id="class-request"></a>
 ### Class: Request
@@ -224,12 +228,11 @@ Due to the nature of Node.js, the following properties are not implemented at th
 - `integrity`
 - `keepalive`
 
-The following node-fetch extension properties are provided:
+The following electron-fetch extension properties are provided:
 
-- `follow`
-- `compress`
-- `counter`
-- `agent`
+- `follow` (/!\ only works when running on Node.js)
+- `counter` (/!\ only works when running on Node.js)
+- `session` (/!\ only works when running on Electron)
 
 See [options](#fetch-options) for exact meaning of these extensions.
 
@@ -249,7 +252,7 @@ In most cases, directly `fetch(url, options)` is simpler than creating a `Reques
 
 An HTTP(S) response. This class implements the [Body](#iface-body) interface.
 
-The following properties are not implemented in node-fetch at this moment:
+The following properties are not implemented in electron-fetch at this moment:
 
 - `Response.error()`
 - `Response.redirect()`
@@ -266,7 +269,7 @@ The following properties are not implemented in node-fetch at this moment:
 
 Constructs a new `Response` object. The constructor is identical to that in the [browser](https://developer.mozilla.org/en-US/docs/Web/API/Response/Response).
 
-Because Node.js does not implement service workers (for which this class was designed), one rarely has to construct a `Response` directly.
+Because Node.js & Electron's background do not implement service workers (for which this class was designed), one rarely has to construct a `Response` directly.
 
 <a id="class-headers"></a>
 ### Class: Headers
@@ -287,22 +290,22 @@ Construct a new `Headers` object. `init` can be either `null`, a `Headers` objec
 const meta = {
   'Content-Type': 'text/xml',
   'Breaking-Bad': '<3'
-};
-const headers = new Headers(meta);
+}
+const headers = new Headers(meta)
 
 // The above is equivalent to
 const meta = [
   [ 'Content-Type', 'text/xml' ],
   [ 'Breaking-Bad', '<3' ]
-];
-const headers = new Headers(meta);
+]
+const headers = new Headers(meta)
 
 // You can in fact use any iterable objects, like a Map or even another Headers
-const meta = new Map();
-meta.set('Content-Type', 'text/xml');
-meta.set('Breaking-Bad', '<3');
-const headers = new Headers(meta);
-const copyOfHeaders = new Headers(headers);
+const meta = new Map()
+meta.set('Content-Type', 'text/xml')
+meta.set('Breaking-Bad', '<3')
+const headers = new Headers(meta)
+const copyOfHeaders = new Headers(headers)
 ```
 
 <a id="iface-body"></a>
@@ -310,7 +313,7 @@ const copyOfHeaders = new Headers(headers);
 
 `Body` is an abstract interface with methods that are applicable to both `Request` and `Response` classes.
 
-The following methods are not yet implemented in node-fetch at this moment:
+The following methods are not yet implemented in electron-fetch at this moment:
 
 - `formData()`
 
@@ -320,7 +323,7 @@ The following methods are not yet implemented in node-fetch at this moment:
 
 * Node.js [`Readable` stream][node-readable]
 
-The data encapsulated in the `Body` object. Note that while the [Fetch Standard][whatwg-fetch] requires the property to always be a WHATWG `ReadableStream`, in node-fetch it is a Node.js [`Readable` stream][node-readable].
+The data encapsulated in the `Body` object. Note that while the [Fetch Standard][whatwg-fetch] requires the property to always be a WHATWG `ReadableStream`, in electron-fetch it is a Node.js [`Readable` stream][node-readable].
 
 #### body.bodyUsed
 
@@ -343,7 +346,7 @@ Consume the body and return a promise that will resolve to one of these formats.
 
 #### body.buffer()
 
-<small>*(node-fetch extension)*</small>
+<small>*(electron-fetch extension)*</small>
 
 * Returns: <code>Promise&lt;Buffer&gt;</code>
 
@@ -351,7 +354,7 @@ Consume the body and return a promise that will resolve to a Buffer.
 
 #### body.textConverted()
 
-<small>*(node-fetch extension)*</small>
+<small>*(electron-fetch extension)*</small>
 
 * Returns: <code>Promise&lt;String&gt;</code>
 
@@ -360,7 +363,7 @@ Identical to `body.text()`, except instead of always converting to UTF-8, encodi
 <a id="class-fetcherror"></a>
 ### Class: FetchError
 
-<small>*(node-fetch extension)*</small>
+<small>*(electron-fetch extension)*</small>
 
 An operational error in the fetching process. See [ERROR-HANDLING.md][] for more info.
 
@@ -372,15 +375,16 @@ MIT
 ## Acknowledgement
 
 Thanks to [github/fetch](https://github.com/github/fetch) for providing a solid implementation reference.
+Thanks to [node-fetch](https://github.com/bitinn/node-fetch) for providing a solid base to fork.
 
 
-[npm-image]: https://img.shields.io/npm/v/node-fetch.svg?style=flat-square
-[npm-url]: https://www.npmjs.com/package/node-fetch
-[travis-image]: https://img.shields.io/travis/bitinn/node-fetch.svg?style=flat-square
-[travis-url]: https://travis-ci.org/bitinn/node-fetch
-[codecov-image]: https://img.shields.io/codecov/c/github/bitinn/node-fetch.svg?style=flat-square
-[codecov-url]: https://codecov.io/gh/bitinn/node-fetch
-[ERROR-HANDLING.md]: https://github.com/bitinn/node-fetch/blob/master/ERROR-HANDLING.md
+[npm-image]: https://img.shields.io/npm/v/electron-fetch.svg?style=flat-square
+[npm-url]: https://www.npmjs.com/package/electron-fetch
+[travis-image]: https://img.shields.io/travis/arantes555/electron-fetch.svg?style=flat-square
+[travis-url]: https://travis-ci.org/arantes555/electron-fetch
+[codecov-image]: https://img.shields.io/codecov/c/github/arantes555/electron-fetch.svg?style=flat-square
+[codecov-url]: https://codecov.io/gh/arantes555/electron-fetch
+[ERROR-HANDLING.md]: https://github.com/arantes555/electron-fetch/blob/master/ERROR-HANDLING.md
 [whatwg-fetch]: https://fetch.spec.whatwg.org/
 [response-init]: https://fetch.spec.whatwg.org/#responseinit
 [node-readable]: https://nodejs.org/api/stream.html#stream_readable_streams

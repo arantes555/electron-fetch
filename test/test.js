@@ -51,7 +51,7 @@ after(done => {
 
 const isElectron = Boolean(process.versions.electron)
 
-describe('node-fetch', () => {
+describe('electron-fetch', () => {
   it('should return a promise', function () {
     url = 'http://example.com/'
     const p = fetch(url)
