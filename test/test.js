@@ -5,14 +5,12 @@ import chaiPromised from 'chai-as-promised'
 import chaiIterator from 'chai-iterator'
 import chaiString from 'chai-string'
 import dirtyChai from 'dirty-chai'
-import then from 'promise'
 import {spawn} from 'child_process'
 import * as stream from 'stream'
 import resumer from 'resumer'
 import FormData from 'form-data'
 import {parse as parseURL} from 'url'
 import {URL} from 'whatwg-url'
-import * as http from 'http'
 import * as fs from 'fs'
 
 chai.use(chaiPromised)
@@ -37,9 +35,7 @@ import ResponseOrig from '../src/response.js'
 import Body from '../src/body.js'
 import Blob from '../src/blob.js'
 
-const supportToString = ({
-    [Symbol.toStringTag]: 'z'
-  }).toString() === '[object z]'
+const supportToString = ({ [Symbol.toStringTag]: 'z' }).toString() === '[object z]'
 
 const local = new TestServer()
 const base = `http://${local.hostname}:${local.port}/`
@@ -53,31 +49,14 @@ after(done => {
   local.stop(done)
 })
 
+const isElectron = Boolean(process.versions.electron)
+
 describe('node-fetch', () => {
   it('should return a promise', function () {
     url = 'http://example.com/'
     const p = fetch(url)
-    expect(p).to.be.an.instanceof(fetch.Promise)
+    expect(p).to.be.an.instanceof(Promise)
     expect(p).to.have.property('then')
-  })
-
-  it('should allow custom promise', function () {
-    url = 'http://example.com/'
-    const old = fetch.Promise
-    fetch.Promise = then
-    expect(fetch(url)).to.be.an.instanceof(then)
-    expect(fetch(url)).to.not.be.an.instanceof(old)
-    fetch.Promise = old
-  })
-
-  it('should throw error when no promise implementation are found', function () {
-    url = 'http://example.com/'
-    const old = fetch.Promise
-    fetch.Promise = undefined
-    expect(() => {
-      fetch(url)
-    }).to.throw(Error)
-    fetch.Promise = old
   })
 
   it('should expose Headers, Response and Request constructors', function () {
@@ -85,13 +64,15 @@ describe('node-fetch', () => {
     expect(Headers).to.equal(HeadersOrig)
     expect(Response).to.equal(ResponseOrig)
     expect(Request).to.equal(RequestOrig)
-  });
-
-  (supportToString ? it : it.skip)('should support proper toString output for Headers, Response and Request objects', function () {
-    expect(new Headers().toString()).to.equal('[object Headers]')
-    expect(new Response().toString()).to.equal('[object Response]')
-    expect(new Request(base).toString()).to.equal('[object Request]')
   })
+
+  if (supportToString) {
+    it('should support proper toString output for Headers, Response and Request objects', function () {
+      expect(new Headers().toString()).to.equal('[object Headers]')
+      expect(new Response().toString()).to.equal('[object Response]')
+      expect(new Request(base).toString()).to.equal('[object Request]')
+    })
+  }
 
   it('should reject with error if url is protocol relative', function () {
     url = '//example.com/'
@@ -301,60 +282,62 @@ describe('node-fetch', () => {
     })
   })
 
-  it.skip('should obey maximum redirect, reject case', function () { // Not compatible with electron.net
-    url = `${base}redirect/chain`
-    opts = {
-      follow: 1
-    }
-    return expect(fetch(url, opts)).to.eventually.be.rejected
-      .and.be.an.instanceOf(FetchError)
-      .and.have.property('type', 'max-redirect')
-  })
-
-  it.skip('should obey redirect chain, resolve case', function () { // useless, follow option not compatible
-    url = `${base}redirect/chain`
-    opts = {
-      follow: 2
-    }
-    return fetch(url, opts).then(res => {
-      expect(res.url).to.equal(`${base}inspect`)
-      expect(res.status).to.equal(200)
+  if (!isElectron) {
+    it('should obey maximum redirect, reject case', function () { // Not compatible with electron.net
+      url = `${base}redirect/chain`
+      opts = {
+        follow: 1
+      }
+      return expect(fetch(url, opts)).to.eventually.be.rejected
+        .and.be.an.instanceOf(FetchError)
+        .and.have.property('type', 'max-redirect')
     })
-  })
 
-  it.skip('should allow not following redirect', function () { // Not compatible with electron.net
-    url = `${base}redirect/301`
-    opts = {
-      follow: 0
-    }
-    return expect(fetch(url, opts)).to.eventually.be.rejected
-      .and.be.an.instanceOf(FetchError)
-      .and.have.property('type', 'max-redirect')
-  })
-
-  it.skip('should support redirect mode, manual flag', function () { // Not compatible with electron.net
-    url = `${base}redirect/301`
-    opts = {
-      redirect: 'manual'
-    }
-    return fetch(url, opts).then(res => {
-      expect(res.url).to.equal(url)
-      expect(res.status).to.equal(301)
-      expect(res.headers.get('location')).to.equal(`${base}inspect`)
+    it('should obey redirect chain, resolve case', function () { // useless, follow option not compatible
+      url = `${base}redirect/chain`
+      opts = {
+        follow: 2
+      }
+      return fetch(url, opts).then(res => {
+        expect(res.url).to.equal(`${base}inspect`)
+        expect(res.status).to.equal(200)
+      })
     })
-  })
 
-  it.skip('should support redirect mode, error flag', function () { // Not compatible with electron.net
-    url = `${base}redirect/301`
-    opts = {
-      redirect: 'error'
-    }
-    return expect(fetch(url, opts)).to.eventually.be.rejected
-      .and.be.an.instanceOf(FetchError)
-      .and.have.property('type', 'no-redirect')
-  })
+    it('should allow not following redirect', function () { // Not compatible with electron.net
+      url = `${base}redirect/301`
+      opts = {
+        follow: 0
+      }
+      return expect(fetch(url, opts)).to.eventually.be.rejected
+        .and.be.an.instanceOf(FetchError)
+        .and.have.property('type', 'max-redirect')
+    })
 
-  it('should support redirect mode, manual flag when there is no redirect', function () { // Pretty useless, but why not
+    it('should support redirect mode, manual flag', function () { // Not compatible with electron.net
+      url = `${base}redirect/301`
+      opts = {
+        redirect: 'manual'
+      }
+      return fetch(url, opts).then(res => {
+        expect(res.url).to.equal(url)
+        expect(res.status).to.equal(301)
+        expect(res.headers.get('location')).to.equal(`${base}inspect`)
+      })
+    })
+
+    it('should support redirect mode, error flag', function () { // Not compatible with electron.net
+      url = `${base}redirect/301`
+      opts = {
+        redirect: 'error'
+      }
+      return expect(fetch(url, opts)).to.eventually.be.rejected
+        .and.be.an.instanceOf(FetchError)
+        .and.have.property('type', 'no-redirect')
+    })
+  }
+
+  it('should support redirect mode, manual flag when there is no redirect', function () { // Pretty useless on electron, but why not
     url = `${base}hello`
     opts = {
       redirect: 'manual'
@@ -548,42 +531,30 @@ describe('node-fetch', () => {
     })
   })
 
-  // TODO: impossible to catch, cf https://github.com/electron/electron/issues/8867
-  it.skip('should skip decompression if unsupported', function () {
-    url = `${base}sdch`
-    return fetch(url).then(res => {
-      expect(res.headers.get('content-type')).to.equal('text/plain')
-      return res.text().then(result => {
-        expect(result).to.be.a('string')
-        expect(result).to.equal('fake sdch string')
+  if (!isElectron) {
+    // TODO: impossible to catch, cf https://github.com/electron/electron/issues/8867
+    it('should skip decompression if unsupported', function () {
+      url = `${base}sdch`
+      return fetch(url).then(res => {
+        expect(res.headers.get('content-type')).to.equal('text/plain')
+        return res.text().then(result => {
+          expect(result).to.be.a('string')
+          expect(result).to.equal('fake sdch string')
+        })
       })
     })
-  })
 
-  // TODO: impossible to catch, cf https://github.com/electron/electron/issues/8867#issuecomment-285306575
-  it.skip('should reject if response compression is invalid', function () {
-    url = `${base}invalid-content-encoding`
-    return fetch(url).then(res => {
-      expect(res.headers.get('content-type')).to.equal('text/plain')
-      return expect(res.text()).to.eventually.be.rejected
-        .and.be.an.instanceOf(FetchError)
-        .and.have.property('code', 'Z_DATA_ERROR')
-    })
-  })
-
-  it.skip('should allow disabling auto decompression', function () { // Not compatible with electron.net
-    url = `${base}gzip`
-    opts = {
-      compress: false
-    }
-    return fetch(url, opts).then(res => {
-      expect(res.headers.get('content-type')).to.equal('text/plain')
-      return res.text().then(result => {
-        expect(result).to.be.a('string')
-        expect(result).to.not.equal('hello world')
+    // TODO: impossible to catch, cf https://github.com/electron/electron/issues/8867#issuecomment-285306575
+    it('should reject if response compression is invalid', function () {
+      url = `${base}invalid-content-encoding`
+      return fetch(url).then(res => {
+        expect(res.headers.get('content-type')).to.equal('text/plain')
+        return expect(res.text()).to.eventually.be.rejected
+          .and.be.an.instanceOf(FetchError)
+          .and.have.property('code', 'Z_DATA_ERROR')
       })
     })
-  })
+  }
 
   it('should allow custom timeout', function () { // TODO: make it happen
     this.timeout(500)
@@ -636,8 +607,8 @@ describe('node-fetch', () => {
 
   it('should set default User-Agent', function () {
     url = `${base}inspect`
-    fetch(url).then(res => res.json()).then(res => {
-      expect(res.headers[ 'user-agent' ]).to.startWith('node-fetch/')
+    return fetch(url).then(res => res.json()).then(res => {
+      expect(res.headers[ 'user-agent' ]).to.startWith('electron-fetch/')
     })
   })
 
@@ -757,7 +728,7 @@ describe('node-fetch', () => {
     })
   })
 
-  it('should allow POST request with readable stream as body', function () { // TODO: something weird is happening...
+  it('should allow POST request with readable stream as body', function () {
     let body = resumer().queue('a=1').end()
     body = body.pipe(new stream.PassThrough())
 
@@ -771,13 +742,13 @@ describe('node-fetch', () => {
     }).then(res => {
       expect(res.method).to.equal('POST')
       expect(res.body).to.equal('a=1')
-      // expect(res.headers[ 'transfer-encoding' ]).to.equal('chunked') // Not compatible with electron.net, i think
+      expect(res.headers[ 'transfer-encoding' ]).to.equal('chunked')
       expect(res.headers[ 'content-type' ]).to.be.undefined()
-      expect(res.headers[ 'content-length' ]).to.be.undefined() // why the fuck shouldn't it be 'a=1' like when FormData??
+      expect(res.headers[ 'content-length' ]).to.be.undefined()
     })
   })
 
-  it.skip('should allow POST request with form-data as body', function () { // TODO: makes the tests crash => needs fixing
+  it('should allow POST request with form-data as body', function () { // TODO: makes the tests crash => needs fixing
     const form = new FormData()
     form.append('a', '1')
 
@@ -796,7 +767,7 @@ describe('node-fetch', () => {
     })
   })
 
-  it.skip('should allow POST request with form-data using stream as body', function () { // TODO: makes the tests crash => needs fixing
+  it('should allow POST request with form-data using stream as body', function () { // TODO: makes the tests crash => needs fixing
     const form = new FormData()
     form.append('my_field', fs.createReadStream('test/dummy.txt'))
 
@@ -816,7 +787,7 @@ describe('node-fetch', () => {
     })
   })
 
-  it.skip('should allow POST request with form-data as body and custom headers', function () { // TODO: makes the tests crash => needs fixing
+  it('should allow POST request with form-data as body and custom headers', function () { // TODO: makes the tests crash => needs fixing
     const form = new FormData()
     form.append('a', '1')
 
@@ -1258,11 +1229,12 @@ describe('node-fetch', () => {
     headers.append('b', '3')
 
     expect(headers.entries()).to.be.iterable
-      .and.to.deep.iterate.over([
-      [ 'a', '1' ],
-      [ 'b', '2,3' ],
-      [ 'c', '4' ]
-    ])
+      .and.to.deep.iterate.over(
+      [
+        [ 'a', '1' ],
+        [ 'b', '2,3' ],
+        [ 'c', '4' ]
+      ])
   })
 
   it('should allow iterating through all headers with keys()', function () {
@@ -1310,20 +1282,6 @@ describe('node-fetch', () => {
 
     // 'o k' is valid value but invalid name
     expect(() => new Headers({ 'He-y': 'o k' })).not.to.throw(TypeError)
-  })
-
-  it.skip('should send request with connection keep-alive if agent is provided', function () { // Not compatible with electron.net
-    url = `${base}inspect`
-    opts = {
-      agent: new http.Agent({
-        keepAlive: true
-      })
-    }
-    return fetch(url, opts).then(res => {
-      return res.json()
-    }).then(res => {
-      expect(res.headers[ 'connection' ]).to.equal('keep-alive')
-    })
   })
 
   it('should ignore unsupported attributes while reading headers', function () {
@@ -1763,7 +1721,6 @@ describe('node-fetch', () => {
     url = base
     let body = resumer().queue('a=1').end()
     body = body.pipe(new stream.PassThrough())
-    // const agent = new http.Agent() // Not compatible with electron.net
     const req = new Request(url, {
       body,
       method: 'POST',
@@ -1771,9 +1728,7 @@ describe('node-fetch', () => {
       headers: {
         b: '2'
       },
-      follow: 3,
-      compress: false // ,
-      // agent
+      follow: 3
     })
     const cl = req.clone()
     expect(cl.url).to.equal(url)
@@ -1781,10 +1736,8 @@ describe('node-fetch', () => {
     expect(cl.redirect).to.equal('manual')
     expect(cl.headers.get('b')).to.equal('2')
     expect(cl.follow).to.equal(3)
-    expect(cl.compress).to.equal(false)
     expect(cl.method).to.equal('POST')
     expect(cl.counter).to.equal(0)
-    // expect(cl.agent).to.equal(agent)
     // clone body shouldn't be the same body
     expect(cl.body).to.not.equal(body)
     return Promise.all([ cl.text(), req.text() ]).then(results => {

@@ -10,7 +10,7 @@ import * as https from 'https'
 import * as zlib from 'zlib'
 import {PassThrough} from 'stream'
 
-import Body, {writeToStream} from './body'
+import {writeToStream} from './body'
 import Response from './response'
 import Headers from './headers'
 import Request, {getNodeRequestOptions} from './request'
@@ -18,27 +18,19 @@ import FetchError from './fetch-error'
 
 let electron
 if (process.versions[ 'electron' ]) {
-  console.log('Fetch running on electron')
-  electron = require('electron');
+  electron = require('electron')
 }
 
 /**
  * Fetch function
  *
  * @param {string|Request} url Absolute url or Request instance
- * @param {Object} opts Fetch options
+ * @param {Object} [opts] Fetch options
  * @return {Promise}
  */
 export default function fetch (url, opts) {
-  // allow custom promise
-  if (!fetch.Promise) {
-    throw new Error('native promise missing, set fetch.Promise to your favorite alternative')
-  }
-
-  Body.Promise = fetch.Promise
-
   // wrap http.request into fetch
-  return new fetch.Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     // build request object
     const request = new Request(url, opts)
     const options = getNodeRequestOptions(request)
@@ -72,12 +64,10 @@ export default function fetch (url, opts) {
     let reqTimeout
 
     if (request.timeout) {
-      req.once('socket', socket => {
-        reqTimeout = setTimeout(() => {
-          req.abort()
-          reject(new FetchError(`network timeout at: ${request.url}`, 'request-timeout'))
-        }, request.timeout)
-      })
+      reqTimeout = setTimeout(() => {
+        req.abort()
+        reject(new FetchError(`network timeout at: ${request.url}`, 'request-timeout'))
+      }, request.timeout)
     }
 
     req.on('error', err => {
@@ -87,12 +77,6 @@ export default function fetch (url, opts) {
 
     req.on('response', res => {
       clearTimeout(reqTimeout)
-      console.log('Request.url:', request.url)
-      console.log('Response.statusCode:', res.statusCode)
-      console.log('Response.statusMessage:', res.statusMessage)
-      console.log('Response.url:', res.url)
-      console.log('Response.location:', res.location)
-      console.log('Response.headers:', res.headers)
 
       // handle redirect
       if (fetch.isRedirect(res.statusCode) && request.redirect !== 'manual') {
@@ -162,7 +146,7 @@ export default function fetch (url, opts) {
       // 3. no Content-Encoding header
       // 4. no content response (204)
       // 5. content not modified response (304)
-      if (!electron && request.compress && request.method !== 'HEAD' && codings !== null &&
+      if (!electron && request.method !== 'HEAD' && codings !== null &&
         res.statusCode !== 204 && res.statusCode !== 304) {
         // Be less strict when decoding compressed responses, since sometimes
         // servers send slightly invalid responses that are still accepted
@@ -187,14 +171,12 @@ export default function fetch (url, opts) {
               body = body.pipe(zlib.createInflateRaw(zlibOptions))
             }
             const response = new Response(body, responseOptions)
-            console.log('Fetch response:', Object.assign({}, response, { body: 'BODY' }))
             resolve(response)
           })
         }
       }
 
       const response = new Response(body, responseOptions)
-      console.log('Fetch response:', Object.assign({}, response, { body: 'BODY' }))
       resolve(response)
     })
 
@@ -210,8 +192,6 @@ export default function fetch (url, opts) {
  */
 fetch.isRedirect = code => code === 301 || code === 302 || code === 303 || code === 307 || code === 308
 
-// expose Promise
-fetch.Promise = global.Promise
 export {
   Headers,
   Request,

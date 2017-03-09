@@ -131,34 +131,34 @@ Body.mixIn = function (proto) {
  */
 function consumeBody (body) {
   if (this[ DISTURBED ]) {
-    return Body.Promise.reject(new Error(`body used already for: ${this.url}`))
+    return Promise.reject(new Error(`body used already for: ${this.url}`))
   }
 
   this[ DISTURBED ] = true
 
   // body is null
   if (this.body === null) {
-    return Body.Promise.resolve(new Buffer(0))
+    return Promise.resolve(new Buffer(0))
   }
 
   // body is string
   if (typeof this.body === 'string') {
-    return Body.Promise.resolve(new Buffer(this.body))
+    return Promise.resolve(new Buffer(this.body))
   }
 
   // body is blob
   if (this.body instanceof Blob) {
-    return Body.Promise.resolve(this.body[ BUFFER ])
+    return Promise.resolve(this.body[ BUFFER ])
   }
 
   // body is buffer
   if (Buffer.isBuffer(this.body)) {
-    return Body.Promise.resolve(this.body)
+    return Promise.resolve(this.body)
   }
 
   // istanbul ignore if: should never happen
   if (!(this.body instanceof Stream)) {
-    return Body.Promise.resolve(new Buffer(0))
+    return Promise.resolve(new Buffer(0))
   }
 
   // body is stream
@@ -167,7 +167,7 @@ function consumeBody (body) {
   let accumBytes = 0
   let abort = false
 
-  return new Body.Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     let resTimeout
 
     // allow timeout on slow response body
@@ -385,9 +385,9 @@ export function writeToStream (dest, instance) {
     dest.end()
   } else {
     // body is stream
-    body.pipe(dest)
+    if (process.versions.electron) {
+      dest.chunkedEncoding = instance.chunkedEncoding
+    }
+    body.pipe(new PassThrough()).pipe(dest) // I have to put a PassThrough because somehow, FormData streams are not eaten by electron/net
   }
 }
-
-// expose Promise
-Body.Promise = global.Promise

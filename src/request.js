@@ -58,6 +58,7 @@ export default class Request {
     this.method = method.toUpperCase()
     this.redirect = init.redirect || input.redirect || 'follow'
     this.headers = new Headers(init.headers || input.headers || {})
+    this.chunkedEncoding = false
 
     if (init.body != null) {
       const contentType = extractContentType(this)
@@ -72,11 +73,6 @@ export default class Request {
       : input.follow !== undefined
         ? input.follow
         : 20
-    this.compress = init.compress !== undefined
-      ? init.compress
-      : input.compress !== undefined
-        ? input.compress
-        : true
     this.counter = init.counter || input.counter || 0
     this.session = init.session || input.session
 
@@ -143,23 +139,24 @@ export function getNodeRequestOptions (request) {
   }
   if (contentLengthValue) {
     headers.set('Content-Length', contentLengthValue)
+  } else {
+    request.chunkedEncoding = true
   }
 
   // HTTP-network-or-cache fetch step 12
   if (!headers.has('User-Agent')) {
-    headers.set('User-Agent', 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)')
+    headers.set('User-Agent', 'electron-fetch/1.0 (+https://github.com/tex0l/node-fetch)')
   }
 
   // HTTP-network-or-cache fetch step 16
-  if (request.compress) {
-    headers.set('Accept-Encoding', 'gzip,deflate')
-  }
+  headers.set('Accept-Encoding', 'gzip,deflate')
+
   if (!headers.has('Connection') && !request.agent) {
     headers.set('Connection', 'close')
   }
 
   // HTTP-network fetch step 4
-  // chunked encoding is handled by Node.js
+  // chunked encoding is handled by Node.js when not running in electron
 
   return Object.assign({}, parsedURL, {
     method: request.method,

@@ -1,7 +1,7 @@
 {
-  "name": "node-fetch",
-  "version": "2.0.0-alpha.3",
-  "description": "A light-weight module that brings window.fetch to node.js",
+  "name": "electron-fetch",
+  "version": "1.0.0-aplha1",
+  "description": "A light-weight module that brings window.fetch to electron's background process",
   "main": "lib/index.js",
   "module": "lib/index.es.js",
   "files": [
@@ -14,15 +14,15 @@
   "scripts": {
     "build": "cross-env BABEL_ENV=rollup rollup -c",
     "prepublish": "npm run build",
-    "test": "npm run test:electron",
-    "test:electron": "cross-env BABEL_ENV=test electron-mocha --compilers js:babel-register test/test.js && standard",
-    "test:node": "cross-env BABEL_ENV=test mocha --compilers js:babel-register test/test.js && standard",
+    "test": "npm run test:electron && npm run test:node && standard",
+    "test:electron": "cross-env BABEL_ENV=test electron-mocha --compilers js:babel-register test/test.js",
+    "test:node": "cross-env BABEL_ENV=test mocha --compilers js:babel-register test/test.js",
     "report": "cross-env BABEL_ENV=coverage nyc --reporter lcov --reporter text mocha -R spec test/test.js",
-    "coverage": "cross-env BABEL_ENV=coverage nyc --reporter json --reporter text mocha -R spec test/test.js && codecov -f coverage/coverage-final.json"
+    "coverage": "cross-env BABEL_ENV=coverage nyc --reporter json --reporter text mocha -R spec test/test.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bitinn/node-fetch.git"
+    "url": "https://github.com/tex0l/electron-fetch.git"
   },
   "keywords": [
     "fetch",
@@ -47,18 +47,18 @@
     "codecov": "^1.0.1",
     "cross-env": "^3.2.3",
     "dirty-chai": "^1.2.2",
-    "electron": "^1.6.1",
+    "electron": "^1.6.2",
     "electron-mocha": "^3.3.0",
     "form-data": ">=1.0.0",
     "is-builtin-module": "^1.0.0",
     "mocha": "^3.1.2",
-    "nyc": "^10.0.0",
+    "nyc": "^10.1.2",
     "parted": "^0.1.1",
     "promise": "^7.1.1",
     "resumer": "0.0.0",
     "rollup": "^0.41.4",
     "rollup-plugin-babel": "^2.7.1",
-    "standard": "^9.0.0",
+    "standard": "^9.0.1",
     "whatwg-url": "^4.0.0"
   },
   "dependencies": {

@@ -65,7 +65,7 @@ export default class TestServer {
       res.setHeader('Content-Type', 'text/plain')
       res.setHeader('Content-Encoding', 'gzip')
       zlib.gzip('hello world', function (err, buffer) {
-        console.error(err)
+        if (err) console.error(err)
         res.end(buffer)
       })
     }
@@ -76,7 +76,7 @@ export default class TestServer {
       res.setHeader('Content-Encoding', 'gzip')
       zlib.gzip('hello world', function (err, buffer) {
         // truncate the CRC checksum and size check at the end of the stream
-        console.error(err)
+        if (err) console.error(err)
         res.end(buffer.slice(0, buffer.length - 8))
       })
     }
@@ -86,7 +86,7 @@ export default class TestServer {
       res.setHeader('Content-Type', 'text/plain')
       res.setHeader('Content-Encoding', 'deflate')
       zlib.deflate('hello world', function (err, buffer) {
-        console.error(err)
+        if (err) console.error(err)
         res.end(buffer)
       })
     }
@@ -96,7 +96,7 @@ export default class TestServer {
       res.setHeader('Content-Type', 'text/plain')
       res.setHeader('Content-Encoding', 'deflate')
       zlib.deflateRaw('hello world', function (err, buffer) {
-        console.error(err)
+        if (err) console.error(err)
         res.end(buffer)
       })
     }
