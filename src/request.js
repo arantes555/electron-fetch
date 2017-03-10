@@ -63,6 +63,7 @@ export default class Request {
       ? init.useElectronNet
       : input.useElectronNet
 
+    // istanbul ignore if
     if (this.useElectronNet && !process.versions.electron) throw new Error('Cannot use Electron/net module on Node.js!')
 
     if (this.useElectronNet === undefined) {
@@ -154,13 +155,13 @@ export function getNodeRequestOptions (request) {
 
   // HTTP-network-or-cache fetch step 12
   if (!headers.has('User-Agent')) {
-    headers.set('User-Agent', 'electron-fetch/1.0 (+https://github.com/arantes555/electron-fetch)')
+    headers.set('User-Agent', `electron-fetch/1.0 ${request.useElectronNet ? 'electron' : 'node'} (+https://github.com/arantes555/electron-fetch)`)
   }
 
   // HTTP-network-or-cache fetch step 16
   headers.set('Accept-Encoding', 'gzip,deflate')
 
-  if (!headers.has('Connection') && !request.agent) {
+  if (!headers.has('Connection')) {
     headers.set('Connection', 'close')
   }
 
@@ -169,7 +170,6 @@ export function getNodeRequestOptions (request) {
 
   return Object.assign({}, parsedURL, {
     method: request.method,
-    headers: headers.raw(),
-    agent: request.agent
+    headers: headers.raw()
   })
 }

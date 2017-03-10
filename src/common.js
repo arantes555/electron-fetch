@@ -28,7 +28,7 @@
  * so take care when making changes to the implementation so that the source
  * code size does not exceed v8's default max_inlined_source_size setting.
  **/
-/* istanbul ignore next */
+// istanbul ignore next
 function isValidTokenChar (ch) {
   if (ch >= 94 && ch <= 122) { return true }
   if (ch >= 65 && ch <= 90) {
@@ -51,7 +51,7 @@ function isValidTokenChar (ch) {
   }
   return false
 }
-/* istanbul ignore next */
+// istanbul ignore next
 function checkIsHttpToken (val) {
   if (typeof val !== 'string' || val.length === 0) { return false }
   if (!isValidTokenChar(val.charCodeAt(0))) {
@@ -90,7 +90,7 @@ export {checkIsHttpToken}
  * so take care when making changes to the implementation so that the source
  * code size does not exceed v8's default max_inlined_source_size setting.
  **/
-/* istanbul ignore next */
+// istanbul ignore next
 function checkInvalidHeaderChar (val) {
   val += ''
   if (val.length < 1) { return false }

@@ -116,7 +116,7 @@ Body.prototype = {
 
 Body.mixIn = function (proto) {
   for (const name of Object.getOwnPropertyNames(Body.prototype)) {
-    // istanbul ignore else: future proof
+    // istanbul ignore else
     if (!(name in proto)) {
       const desc = Object.getOwnPropertyDescriptor(Body.prototype, name)
       Object.defineProperty(proto, name, desc)
@@ -353,6 +353,7 @@ export function getTotalBytes (instance) {
     return body.length
   } else if (body && typeof body.getLengthSync === 'function') {
     // detect form data input from form-data module
+    // istanbul ignore next
     if ((body._lengthRetrievers && body._lengthRetrievers.length === 0) || // 1.x
       (body.hasKnownLength && body.hasKnownLength())) { // 2.x
       return body.getLengthSync()

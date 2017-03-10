@@ -187,6 +187,21 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
+    it('should accept connection header', function () {
+      url = `${base}inspect`
+      opts = {
+        headers: {
+          connection: 'close'
+        },
+        useElectronNet
+      }
+      return fetch(url, opts).then(res => {
+        return res.json()
+      }).then(res => {
+        expect(res.headers[ 'connection' ]).to.equal('close')
+      })
+    })
+
     it('should follow redirect code 301', function () {
       url = `${base}redirect/301`
       return fetch(url, { useElectronNet }).then(res => {
@@ -287,7 +302,19 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
-    if (!useElectronNet) {
+    if (useElectronNet) {
+      it('should default to using electron net module', function () {
+        url = `${base}inspect`
+        return fetch(url)
+          .then(res => {
+            expect(res.useElectronNet).to.be.true()
+            return res.json()
+          })
+          .then(resBody => {
+            expect(resBody.headers[ 'user-agent' ]).to.startWith('electron-fetch/1.0 electron')
+          })
+      })
+    } else {
       it('should obey maximum redirect, reject case', function () { // Not compatible with electron.net
         url = `${base}redirect/chain`
         opts = {

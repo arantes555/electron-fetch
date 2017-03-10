@@ -22,6 +22,7 @@ export default class Response {
     this.status = opts.status || 200
     this.statusText = opts.statusText || STATUS_CODES[ this.status ]
     this.headers = new Headers(opts.headers)
+    this.useElectronNet = opts.useElectronNet
 
     Object.defineProperty(this, Symbol.toStringTag, {
       value: 'Response',
@@ -49,7 +50,8 @@ export default class Response {
       status: this.status,
       statusText: this.statusText,
       headers: this.headers,
-      ok: this.ok
+      ok: this.ok,
+      useElectronNet: this.useElectronNet
     })
   }
 }

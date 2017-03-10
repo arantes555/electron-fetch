@@ -17,6 +17,7 @@ import Request, {getNodeRequestOptions} from './request'
 import FetchError from './fetch-error'
 
 let electron
+// istanbul ignore else
 if (process.versions[ 'electron' ]) {
   electron = require('electron')
 }
@@ -133,7 +134,8 @@ export default function fetch (url, opts = {}) {
         statusText: res.statusMessage,
         headers: headers,
         size: request.size,
-        timeout: request.timeout
+        timeout: request.timeout,
+        useElectronNet: request.useElectronNet
       }
 
       // HTTP-network fetch step 16.1.2
