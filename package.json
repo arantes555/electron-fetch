@@ -16,11 +16,8 @@
     "prepublish": "npm run build",
     "test": "npm run test:electron && standard",
     "test:electron": "xvfb-maybe cross-env BABEL_ENV=test electron-mocha --compilers js:babel-register test/test.js",
-    "instrument": "nyc instrument src --output cov --no-compact --complete-copy --es-modules",
-    "precoverage": "npm run instrument",
-    "prereport": "npm run instrument",
-    "coverage": "xvfb-maybe cross-env BABEL_ENV=coverage electron-mocha -R spec --compilers js:babel-register test/test.js -r test/coverage.js -R test/coverage-reporter.js",
-    "report": "xvfb-maybe cross-env BABEL_ENV=coverage electron-mocha -R spec --compilers js:babel-register test/test.js -r test/coverage.js -R test/coverage-reporter.js && codecov -f coverage/coverage-final.json"
+    "coverage": "xvfb-maybe cross-env BABEL_ENV=coverage electron-mocha --compilers js:babel-register test/test.js -R test/coverage-reporter.js",
+    "report": "npm run coverage && codecov -f coverage/coverage-final.json"
   },
   "repository": {
     "type": "git",
