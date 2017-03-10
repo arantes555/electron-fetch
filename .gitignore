@@ -13,6 +13,7 @@ lib-cov
 # Coverage directory used by tools like nyc and istanbul
 .nyc_output
 coverage
+cov
 
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
