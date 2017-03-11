@@ -583,18 +583,17 @@ const createTestSuite = (useElectronNet) => {
           })
         })
       })
-
-      // TODO: impossible to catch, cf https://github.com/electron/electron/issues/8867#issuecomment-285306575
-      it('should reject if response compression is invalid', function () {
-        url = `${base}invalid-content-encoding`
-        return fetch(url, { useElectronNet }).then(res => {
-          expect(res.headers.get('content-type')).to.equal('text/plain')
-          return expect(res.text()).to.eventually.be.rejected
-            .and.be.an.instanceOf(FetchError)
-            .and.have.property('code', 'Z_DATA_ERROR')
-        })
-      })
     }
+
+    it('should reject if response compression is invalid', function () {
+      url = `${base}invalid-content-encoding`
+      return fetch(url, { useElectronNet }).then(res => {
+        expect(res.headers.get('content-type')).to.equal('text/plain')
+        return expect(res.text()).to.eventually.be.rejected
+          .and.be.an.instanceOf(FetchError)
+          .and.have.property('code', 'Z_DATA_ERROR')
+      })
+    })
 
     it('should allow custom timeout', function () {
       this.timeout(500)

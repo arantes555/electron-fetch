@@ -127,7 +127,9 @@ export default function fetch (url, opts = {}) {
       }
 
       // prepare response
-      let body = res.pipe(new PassThrough())
+      let body = new PassThrough()
+      res.on('error', err => body.emit('error', err))
+      res.pipe(body)
       const responseOptions = {
         url: request.url,
         status: res.statusCode,
