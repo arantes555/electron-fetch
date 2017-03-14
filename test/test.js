@@ -89,6 +89,7 @@ const createTestSuite = (useElectronNet) => {
     })
 
     it('should reject with error on network failure', function () {
+      this.timeout(5000) // on windows, 2s are not enough to get the network failure
       url = 'http://localhost:50000/'
       return expect(fetch(url, { useElectronNet })).to.eventually.be.rejected
         .and.be.an.instanceOf(FetchError)
@@ -607,7 +608,7 @@ const createTestSuite = (useElectronNet) => {
         .and.have.property('type', 'request-timeout')
     })
 
-    it('should allow custom timeout on response body', function () {
+    it('should allow custom timeout on response body', function () { // This fails on windows and we get a request-timeout
       this.timeout(500)
       url = `${base}slow`
       opts = {
@@ -621,7 +622,7 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
-    it('should clear internal timeout on fetch response', function (done) {
+    it('should clear internal timeout on fetch response', function (done) { // these tests don't make much sense on electron..
       this.timeout(1000)
       spawn('node', [ '-e', `require('./')('${base}hello', { timeout: 5000 })` ])
         .on('exit', () => {
