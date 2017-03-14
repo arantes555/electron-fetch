@@ -4,7 +4,7 @@
  * Headers class offers convenient helpers
  */
 
-import {checkInvalidHeaderChar, checkIsHttpToken} from './common.js'
+import { checkInvalidHeaderChar, checkIsHttpToken } from './common.js'
 
 function sanitizeName (name) {
   name += ''
@@ -202,12 +202,14 @@ Object.defineProperty(Headers.prototype, Symbol.toStringTag, {
 })
 
 function getHeaderPairs (headers, kind) {
-  const keys = Object.keys(headers[ MAP ]).sort()
-  return keys.map(
-    kind === 'key'
-      ? k => [ k ]
-      : k => [ k, headers.get(k) ]
-  )
+  if (kind === 'key') return Object.keys(headers[ MAP ]).sort().map(k => [ k ])
+  const pairs = []
+  for (let key of Object.keys(headers[ MAP ]).sort()) {
+    for (let value of headers[ MAP ][ key ]) {
+      pairs.push([ key, value ])
+    }
+  }
+  return pairs
 }
 
 const INTERNAL = Symbol('internal')

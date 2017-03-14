@@ -5,12 +5,12 @@ import chaiPromised from 'chai-as-promised'
 import chaiIterator from 'chai-iterator'
 import chaiString from 'chai-string'
 import dirtyChai from 'dirty-chai'
-import {spawn} from 'child_process'
+import { spawn } from 'child_process'
 import * as stream from 'stream'
 import resumer from 'resumer'
 import FormData from 'form-data'
-import {parse as parseURL} from 'url'
-import {URL} from 'whatwg-url'
+import { parse as parseURL } from 'url'
+import { URL } from 'whatwg-url'
 import * as fs from 'fs'
 
 chai.use(chaiPromised)
@@ -157,6 +157,19 @@ const createTestSuite = (useElectronNet) => {
         return res.json()
       }).then(res => {
         expect(res.headers[ 'x-custom-header' ]).to.equal('abc')
+      })
+    })
+
+    it('should send request with custom Cookie headers', function () {
+      url = `${base}inspect`
+      opts = {
+        headers: { 'Cookie': 'toto=tata' },
+        useElectronNet
+      }
+      return fetch(url, opts).then(res => {
+        return res.json()
+      }).then(res => {
+        expect(res.headers[ 'cookie' ]).to.equal('toto=tata')
       })
     })
 
@@ -1257,7 +1270,8 @@ const createTestSuite = (useElectronNet) => {
 
       expect(result).to.deep.equal([
         [ 'a', '1' ],
-        [ 'b', '2,3' ],
+        [ 'b', '2' ],
+        [ 'b', '3' ],
         [ 'c', '4' ]
       ])
     })
@@ -1277,7 +1291,8 @@ const createTestSuite = (useElectronNet) => {
       }
       expect(result).to.deep.equal([
         [ 'a', '1' ],
-        [ 'b', '2,3' ],
+        [ 'b', '2' ],
+        [ 'b', '3' ],
         [ 'c', '4' ]
       ])
     })
@@ -1294,7 +1309,8 @@ const createTestSuite = (useElectronNet) => {
         .and.to.deep.iterate.over(
         [
           [ 'a', '1' ],
-          [ 'b', '2,3' ],
+          [ 'b', '2' ],
+          [ 'b', '3' ],
           [ 'c', '4' ]
         ])
     })
@@ -1320,7 +1336,7 @@ const createTestSuite = (useElectronNet) => {
       headers.append('b', '3')
 
       expect(headers.values()).to.be.iterable
-        .and.to.iterate.over([ '1', '2,3', '4' ])
+        .and.to.iterate.over([ '1', '2', '3', '4' ])
     })
 
     it('should allow deleting header', function () {
