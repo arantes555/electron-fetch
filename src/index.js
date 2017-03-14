@@ -50,7 +50,7 @@ export default function fetch (url, opts = {}) {
     if (request.useElectronNet) {
       headers = options.headers
       delete options.headers
-      options.session = options.session || electron.session.defaultSession
+      options.session = options.session || electron.session.fromPartition('electron-fetch')
     }
     const req = send(options)
     if (request.useElectronNet) {
