@@ -27,9 +27,10 @@
   "keywords": [
     "fetch",
     "http",
-    "promise"
+    "promise",
+    "electron"
   ],
-  "author": "David Frank",
+  "author": "Mehdi Kouhen",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/arantes555/electron-fetch/issues"

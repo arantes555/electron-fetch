@@ -4,16 +4,16 @@
  * a request API compatible with window.fetch
  */
 
-import {resolve as resolveURL} from 'url'
+import { resolve as resolveURL } from 'url'
 import * as http from 'http'
 import * as https from 'https'
 import * as zlib from 'zlib'
-import {PassThrough} from 'stream'
+import { PassThrough } from 'stream'
 
-import {writeToStream} from './body'
+import { writeToStream } from './body'
 import Response from './response'
 import Headers from './headers'
-import Request, {getNodeRequestOptions} from './request'
+import Request, { getNodeRequestOptions } from './request'
 import FetchError from './fetch-error'
 
 let electron
@@ -21,6 +21,9 @@ let electron
 if (process.versions[ 'electron' ]) {
   electron = require('electron')
 }
+const isReady = (!electron || electron.app.isReady())
+  ? Promise.resolve()
+  : new Promise(resolve => electron.app.once('ready', resolve))
 
 /**
  * Fetch function
@@ -31,7 +34,7 @@ if (process.versions[ 'electron' ]) {
  */
 export default function fetch (url, opts = {}) {
   // wrap http.request into fetch
-  return new Promise((resolve, reject) => {
+  return isReady.then(() => new Promise((resolve, reject) => {
     // build request object
     const request = new Request(url, opts)
     const options = getNodeRequestOptions(request)
@@ -186,7 +189,7 @@ export default function fetch (url, opts = {}) {
     })
 
     writeToStream(req, request)
-  })
+  }))
 }
 
 /**
