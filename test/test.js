@@ -1864,6 +1864,24 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
+    it('should send an https post request', function () {
+      this.timeout(5000)
+      const body = 'tototata'
+      return fetch('https://httpbin.org/post', {
+        url: 'https://httpbin.org/post',
+        method: 'POST',
+        body,
+        useElectronNet
+      }).then(res => {
+        expect(res.status).to.equal(200)
+        expect(res.ok).to.be.true()
+        return res.json()
+      }).then(res => {
+        console.log('res is', res)
+        expect(res.data).to.equal(body)
+      })
+    })
+
     it('should work with google analytics', function () {
       this.timeout(5000)
       return fetch('https://www.google-analytics.com/debug/collect', {
