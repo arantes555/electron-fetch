@@ -54,6 +54,7 @@ export default function fetch (url, opts = {}) {
     if (options.headers.host) {
       options.headers.host = options.headers.host[ 0 ]
     }
+    debug('options', options)
 
     // send request
     let headers
@@ -62,7 +63,6 @@ export default function fetch (url, opts = {}) {
       delete options.headers
       options.session = options.session || electron.session.fromPartition('electron-fetch')
     }
-    debug('options', options)
     const req = send(options)
     if (request.useElectronNet) {
       for (let headerName in headers) {
