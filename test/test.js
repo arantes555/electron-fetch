@@ -17,7 +17,7 @@ chai.use(chaiPromised)
 chai.use(chaiIterator)
 chai.use(chaiString)
 chai.use(dirtyChai)
-const expect = chai.expect
+const { assert, expect } = chai
 
 import TestServer from './server'
 
@@ -1861,6 +1861,37 @@ const createTestSuite = (useElectronNet) => {
       return fetch(url, opts).then(res => {
         expect(res.status).to.equal(200)
         expect(res.ok).to.be.true()
+      })
+    })
+
+    if (!useElectronNet) { // TODO: does not work on electron, see https://github.com/electron/electron/issues/8074
+      it('should throw on https with bad cert', function () {
+        this.timeout(5000)
+        url = 'https://expired.badssl.com//'
+        opts = {
+          method: 'GET',
+          useElectronNet
+        }
+        return fetch(url, opts)
+          .then(res => assert(false), err => assert(true))
+      })
+    }
+
+    it('should send an https post request', function () {
+      this.timeout(5000)
+      const body = 'tototata'
+      return fetch('https://httpbin.org/post', {
+        url: 'https://httpbin.org/post',
+        method: 'POST',
+        body,
+        useElectronNet
+      }).then(res => {
+        expect(res.status).to.equal(200)
+        expect(res.ok).to.be.true()
+        return res.json()
+      }).then(res => {
+        console.log('res is', res)
+        expect(res.data).to.equal(body)
       })
     })
   })
