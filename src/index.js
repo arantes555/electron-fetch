@@ -220,10 +220,10 @@ export default function fetch (url, opts = {}) {
         const response = new Response(body, responseOptions)
         resolve(response)
       })
-    }, 0)
 
-    debug('writing to request')
-    writeToStream(req, request)
+      debug('writing to request')
+      writeToStream(req, request)
+    }, 0)
   }))
 }
 
