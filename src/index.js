@@ -25,6 +25,12 @@ const isReady = (!electron || electron.app.isReady())
   ? Promise.resolve()
   : new Promise(resolve => electron.app.once('ready', resolve))
 
+const debug = (...args) => {
+  if (process.env.DEBUG_FETCH) console.log('[FETCH]', ...args)
+}
+
+isReady.then(() => debug('app is ready'))
+
 /**
  * Fetch function
  *
@@ -33,6 +39,7 @@ const isReady = (!electron || electron.app.isReady())
  * @return {Promise}
  */
 export default function fetch (url, opts = {}) {
+  debug('requested fetch to url', url)
   // wrap http.request into fetch
   return isReady.then(() => new Promise((resolve, reject) => {
     // build request object
@@ -42,7 +49,7 @@ export default function fetch (url, opts = {}) {
     const send = request.useElectronNet
       ? electron.net.request
       : (options.protocol === 'https:' ? https : http).request
-
+    debug('using electron net?', Boolean(request.useElectronNet))
     // http.request only support string as host header, this hack make custom host header possible
     if (options.headers.host) {
       options.headers.host = options.headers.host[ 0 ]
@@ -55,6 +62,7 @@ export default function fetch (url, opts = {}) {
       delete options.headers
       options.session = options.session || electron.session.fromPartition('electron-fetch')
     }
+    debug('options', options)
     const req = send(options)
     if (request.useElectronNet) {
       for (let headerName in headers) {
@@ -71,20 +79,24 @@ export default function fetch (url, opts = {}) {
     if (request.timeout) {
       reqTimeout = setTimeout(() => {
         req.abort()
+        debug('timeout')
         reject(new FetchError(`network timeout at: ${request.url}`, 'request-timeout'))
       }, request.timeout)
     }
 
     req.on('error', err => {
       clearTimeout(reqTimeout)
+      debug('error', err)
       reject(new FetchError(`request to ${request.url} failed, reason: ${err.message}`, 'system', err))
     })
 
     req.on('response', res => {
       clearTimeout(reqTimeout)
+      debug('response')
 
       // handle redirect
       if (fetch.isRedirect(res.statusCode) && request.redirect !== 'manual') {
+        debug('is redirect', res.statusCode)
         if (request.redirect === 'error') {
           reject(new FetchError(`redirect mode is set to error: ${request.url}`, 'no-redirect'))
           return
@@ -130,6 +142,7 @@ export default function fetch (url, opts = {}) {
       }
 
       // prepare response
+      debug('preparing response')
       let body = new PassThrough()
       res.on('error', err => body.emit('error', err))
       res.pipe(body)
@@ -156,6 +169,7 @@ export default function fetch (url, opts = {}) {
       // 5. content not modified response (304)
       if (!request.useElectronNet && request.method !== 'HEAD' && codings !== null &&
         res.statusCode !== 204 && res.statusCode !== 304) {
+        debug('decompressing response from', codings)
         // Be less strict when decoding compressed responses, since sometimes
         // servers send slightly invalid responses that are still accepted
         // by common browsers.
@@ -188,6 +202,7 @@ export default function fetch (url, opts = {}) {
       resolve(response)
     })
 
+    debug('writing to request')
     writeToStream(req, request)
   }))
 }
