@@ -1865,6 +1865,22 @@ const createTestSuite = (useElectronNet) => {
     })
   })
 
+  it('should work with google analytics', function () {
+    this.timeout(5000)
+    return fetch('https://www.google-analytics.com/debug/collect', {
+      url: 'https://www.google-analytics.com/debug/collect',
+      method: 'POST',
+      body: 'v=1&tid=UA-94008802-1&cid=9d0b0a45-35ca-4a52-915d-3b36f6c9c2a3&t=pageview&dh=http://example.com&dp=/test&dt=Test',
+      useElectronNet
+    }).then(res => {
+      expect(res.status).to.equal(200)
+      expect(res.ok).to.be.true()
+      return res.json()
+    }).then(res => {
+      console.log(res)
+    })
+  })
+
   function streamToPromise (stream, dataHandler) {
     return new Promise((resolve, reject) => {
       stream.on('data', (...args) => {
