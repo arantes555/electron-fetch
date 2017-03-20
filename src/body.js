@@ -371,25 +371,38 @@ export function writeToStream (dest, instance) {
 
   if (body === null) {
     // body is null
+    global.debug('body is null')
     dest.end()
+    global.debug('ended')
   } else if (typeof body === 'string') {
     // body is string
+    global.debug('body is a string', body)
     dest.write(body)
+    global.debug('body written')
     dest.end()
+    global.debug('ended')
   } else if (body instanceof Blob) {
     // body is blob
+    global.debug('body is a blob')
     dest.write(body[ BUFFER ])
+    global.debug('body written')
     dest.end()
+    global.debug('ended')
   } else if (Buffer.isBuffer(body)) {
     // body is buffer
+    global.debug('body is a buffer')
     dest.write(body)
+    global.debug('body written')
     dest.end()
+    global.debug('ended')
   } else {
+    global.debug('body is a stream')
     // body is stream
     if (instance.useElectronNet) {
       dest.chunkedEncoding = instance.chunkedEncoding
     }
     body.pipe(new PassThrough()) // I have to put a PassThrough because somehow, FormData streams are not eaten by electron/net
       .pipe(dest)
+    global.debug('body piped')
   }
 }

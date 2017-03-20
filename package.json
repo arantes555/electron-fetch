@@ -67,5 +67,10 @@
   },
   "dependencies": {
     "encoding": "^0.1.11"
+  },
+  "standard": {
+    "ignore": [
+      "lib"
+    ]
   }
 }

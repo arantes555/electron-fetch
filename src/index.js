@@ -29,6 +29,8 @@ const debug = (...args) => {
   if (process.env.DEBUG_FETCH) console.log('[FETCH]', ...args)
 }
 
+global.debug = debug
+
 isReady.then(() => debug('app is ready'))
 
 /**
@@ -83,6 +85,22 @@ export default function fetch (url, opts = {}) {
         reject(new FetchError(`network timeout at: ${request.url}`, 'request-timeout'))
       }, request.timeout)
     }
+
+    req.on('close', (...args) => {
+      debug('Got close with', ...args)
+    })
+
+    req.on('abort', (...args) => {
+      debug('Got abort with', ...args)
+    })
+
+    req.on('finish', (...args) => {
+      debug('Got finish with', ...args)
+    })
+
+    req.on('login', (...args) => {
+      debug('Got login with', ...args)
+    })
 
     req.on('error', err => {
       clearTimeout(reqTimeout)
