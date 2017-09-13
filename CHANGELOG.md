@@ -4,6 +4,11 @@ Changelog
 
 # electron-fetch 1.x
 
+## V1.1.0
+
+- Added option to pass proxy credentials on Electron. Thanks @CharlieHess!
+- Fixed a bug where `session` was not passed correctly. Thanks @tex0l!
+
 ## v1.0.0
 
 First electron-fetch version
