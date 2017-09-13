@@ -53,7 +53,7 @@ export default function fetch (url, opts = {}) {
     if (request.useElectronNet) {
       headers = options.headers
       delete options.headers
-      options.session = options.session || electron.session.fromPartition('electron-fetch')
+      options.session = opts.session || electron.session.fromPartition('electron-fetch')
     }
     const req = send(options)
     if (request.useElectronNet) {
@@ -81,7 +81,8 @@ export default function fetch (url, opts = {}) {
         if (opts.user && opts.password) {
           callback(opts.user, opts.password)
         } else {
-          callback()
+          req.abort()
+          reject(new FetchError(`login event received from ${authInfo.host} but no credentials provided`, 'proxy', {code: 'PROXY_AUTH_FAILED'}))
         }
       })
     }

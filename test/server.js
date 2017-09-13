@@ -1,13 +1,15 @@
 import * as http from 'http'
-import {parse} from 'url'
+import { parse } from 'url'
 import * as zlib from 'zlib'
-import {convert} from 'encoding'
-import {multipart as Multipart} from 'parted'
+import { convert } from 'encoding'
+import { multipart as Multipart } from 'parted'
+import proxy from 'proxy'
+import basicAuthParser from 'basic-auth-parser'
 
-export default class TestServer {
-  constructor () {
+export class TestServer {
+  constructor ({port = 30001} = {}) {
     this.server = http.createServer(this.router)
-    this.port = 30001
+    this.port = port
     this.hostname = 'localhost'
     this.server.on('error', function (err) {
       console.log(err.stack)
@@ -18,7 +20,7 @@ export default class TestServer {
   }
 
   start (cb) {
-    this.server.listen(this.port, this.hostname, cb)
+    this.server.listen(this.port, '127.0.0.1', this.hostname, cb)
   }
 
   stop (cb) {
@@ -134,7 +136,7 @@ export default class TestServer {
 
     if (p === '/cookie') {
       res.statusCode = 200
-      res.setHeader('Set-Cookie', [ 'a=1', 'b=1' ])
+      res.setHeader('Set-Cookie', ['a=1', 'b=1'])
       res.end('cookie')
     }
 
@@ -322,7 +324,7 @@ export default class TestServer {
     if (p === '/multipart') {
       res.statusCode = 200
       res.setHeader('Content-Type', 'application/json')
-      const parser = new Multipart(req.headers[ 'content-type' ])
+      const parser = new Multipart(req.headers['content-type'])
       let body = ''
       parser.on('part', function (field, part) {
         body += field + '=' + part
@@ -337,6 +339,40 @@ export default class TestServer {
       })
       req.pipe(parser)
     }
+  }
+}
+
+export class TestProxy {
+  constructor ({credentials = null, port = 30002} = {}) {
+    this.port = port
+    this.hostname = 'localhost'
+    this.server = proxy(http.createServer())
+    if (credentials && typeof credentials.username === 'string' && typeof credentials.password === 'string') {
+      this.server.authenticate = (req, fn) => {
+        const auth = req.headers['proxy-authorization']
+        if (!auth) {
+          // optimization: don't invoke the child process if no
+          // "Proxy-Authorization" header was given
+          return fn(null, false)
+        }
+        const parsed = basicAuthParser(auth)
+        return fn(null, parsed.username === credentials.username && parsed.password === credentials.password)
+      }
+    }
+    this.server.on('error', function (err) {
+      console.log(err.stack)
+    })
+    this.server.on('connection', function (socket) {
+      socket.setTimeout(1500)
+    })
+  }
+
+  start (cb) {
+    this.server.listen(this.port, '127.0.0.1', cb)
+  }
+
+  stop (cb) {
+    this.server.close(cb)
   }
 }
 
