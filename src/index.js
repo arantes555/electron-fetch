@@ -75,6 +75,18 @@ export default function fetch (url, opts = {}) {
       }, request.timeout)
     }
 
+    if (request.useElectronNet) {
+      // handle authenticating proxies
+      req.on('login', (authInfo, callback) => {
+        if (opts.user && opts.password) {
+          callback(opts.user, opts.password)
+        } else {
+          req.abort()
+          reject(new FetchError(`login event received from ${authInfo.host} but no credentials provided`))
+        }
+      })
+    }
+
     req.on('error', err => {
       clearTimeout(reqTimeout)
       reject(new FetchError(`request to ${request.url} failed, reason: ${err.message}`, 'system', err))
