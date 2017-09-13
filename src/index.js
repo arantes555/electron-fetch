@@ -81,7 +81,8 @@ export default function fetch (url, opts = {}) {
         if (opts.user && opts.password) {
           callback(opts.user, opts.password)
         } else {
-          callback()
+          req.abort()
+          reject(new FetchError(`login event received from ${authInfo.host} but no credentials provided`))
         }
       })
     }
