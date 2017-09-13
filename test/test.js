@@ -13,7 +13,7 @@ import { parse as parseURL } from 'url'
 import { URL } from 'whatwg-url'
 import * as fs from 'fs'
 
-import TestServer from './server'
+import { TestServer, TestProxy } from './server'
 
 // test subjects
 import fetch, {
@@ -38,15 +38,26 @@ const {expect} = chai
 const supportToString = ({[Symbol.toStringTag]: 'z'}).toString() === '[object z]'
 
 const local = new TestServer()
+const unauthenticatedProxy = new TestProxy({
+  port: 30002
+})
+const authenticatedProxy = new TestProxy({
+  credentials: {username: 'testuser', password: 'testpassword'},
+  port: 30003
+})
 const base = `http://${local.hostname}:${local.port}/`
 let url, opts
 
 before(done => {
-  local.start(done)
+  local.start(() =>
+    unauthenticatedProxy.start(() =>
+      authenticatedProxy.start(done)))
 })
 
 after(done => {
-  local.stop(done)
+  local.stop(() =>
+    unauthenticatedProxy.stop(() =>
+      authenticatedProxy.stop(done)))
 })
 
 const createTestSuite = (useElectronNet) => {
@@ -1900,6 +1911,59 @@ const createTestSuite = (useElectronNet) => {
         expect(res.data).to.equal(body)
       })
     })
+
+    if (useElectronNet) {
+      const electron = require('electron')
+      const unauthenticatedProxySession = electron.session.fromPartition('unauthenticated-proxy')
+      const authenticatedProxySession = electron.session.fromPartition('authenticated-proxy')
+      const waitForSessions = new Promise(resolve => unauthenticatedProxySession.setProxy({proxyRules: `http://${unauthenticatedProxy.hostname}:${unauthenticatedProxy.port}`}, () => resolve()))
+        .then(() => new Promise(resolve => authenticatedProxySession.setProxy({proxyRules: `http://${authenticatedProxy.hostname}:${authenticatedProxy.port}`}, () => resolve())))
+
+      it('should connect through unauthenticated proxy', () => {
+        url = `${base}plain`
+        return waitForSessions
+          .then(() => fetch(url, {
+            useElectronNet,
+            session: unauthenticatedProxySession
+          }))
+          .then(res => {
+            expect(res.headers.get('content-type')).to.equal('text/plain')
+            return res.text().then(result => {
+              expect(res.bodyUsed).to.be.true()
+              expect(result).to.be.a('string')
+              expect(result).to.equal('text')
+            })
+          })
+      })
+
+      it('should fail through authenticated proxy without credentials', () => {
+        url = `${base}plain`
+        return waitForSessions
+          .then(() => expect(fetch(url, {
+            useElectronNet,
+            session: authenticatedProxySession
+          })).to.eventually.be.rejected()) // TODO: check precise error when we manage to get it to fail
+      })
+
+      it('should connect through authenticated proxy with credentials', () => {
+        url = `${base}plain`
+        return waitForSessions
+          .then(() => fetch(url, {
+            useElectronNet,
+            session: authenticatedProxySession,
+            username: 'testuser',
+            password: 'testpassword'
+          }))
+          .then(res => {
+            expect(res.headers.get('content-type')).to.equal('text/plain')
+            return res.text().then(result => {
+              expect(res.bodyUsed).to.be.true()
+              expect(result).to.be.a('string')
+              expect(result).to.equal('text')
+            })
+          })
+      })
+    }
   })
 
   function streamToPromise (stream, dataHandler) {
