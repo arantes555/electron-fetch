@@ -1938,10 +1938,12 @@ const createTestSuite = (useElectronNet) => {
       it('should fail through authenticated proxy without credentials', () => {
         url = `${base}plain`
         return waitForSessions
-          .then(() => expect(fetch(url, {
-            useElectronNet,
-            session: authenticatedProxySession
-          })).to.eventually.be.rejectedWith(FetchError, 'login event received from localhost but no credentials provided')) // TODO: check precise error when we manage to get it to fail
+          .then(() => expect(
+            fetch(url, {
+              useElectronNet,
+              session: authenticatedProxySession
+            })
+          ).to.eventually.be.rejectedWith(FetchError).and.have.property('code', 'PROXY_AUTH_FAILED'))
       })
 
       it('should connect through authenticated proxy with credentials', () => {
