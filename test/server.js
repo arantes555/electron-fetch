@@ -363,7 +363,6 @@ export class TestProxy {
       console.log(err.stack)
     })
     this.server.on('connection', function (socket) {
-      console.log('Proxy connection')
       socket.setTimeout(1500)
     })
   }

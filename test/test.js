@@ -1907,7 +1907,6 @@ const createTestSuite = (useElectronNet) => {
         expect(res.ok).to.be.true()
         return res.json()
       }).then(res => {
-        console.log('res is', res)
         expect(res.data).to.equal(body)
       })
     })
@@ -1942,7 +1941,7 @@ const createTestSuite = (useElectronNet) => {
           .then(() => expect(fetch(url, {
             useElectronNet,
             session: authenticatedProxySession
-          })).to.eventually.be.rejected()) // TODO: check precise error when we manage to get it to fail
+          })).to.eventually.be.rejectedWith(FetchError, 'login event received from localhost but no credentials provided')) // TODO: check precise error when we manage to get it to fail
       })
 
       it('should connect through authenticated proxy with credentials', () => {
@@ -1951,7 +1950,7 @@ const createTestSuite = (useElectronNet) => {
           .then(() => fetch(url, {
             useElectronNet,
             session: authenticatedProxySession,
-            username: 'testuser',
+            user: 'testuser',
             password: 'testpassword'
           }))
           .then(res => {
