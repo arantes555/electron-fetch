@@ -30,14 +30,14 @@ export default class Headers {
    * @param {Object} init Response headers
    */
   constructor (init = undefined) {
-    this[ MAP ] = Object.create(null)
+    this[MAP] = Object.create(null)
 
     // We don't worry about converting prop to ByteString here as append()
     // will handle it.
     if (init == null) {
       // no op
     } else if (typeof init === 'object') {
-      const method = init[ Symbol.iterator ]
+      const method = init[Symbol.iterator]
       if (method != null) {
         if (typeof method !== 'function') {
           throw new TypeError('Header pairs must be iterable')
@@ -47,7 +47,7 @@ export default class Headers {
         // Note: per spec we have to first exhaust the lists then process them
         const pairs = []
         for (const pair of init) {
-          if (typeof pair !== 'object' || typeof pair[ Symbol.iterator ] !== 'function') {
+          if (typeof pair !== 'object' || typeof pair[Symbol.iterator] !== 'function') {
             throw new TypeError('Each header pair must be iterable')
           }
           pairs.push(Array.from(pair))
@@ -57,12 +57,12 @@ export default class Headers {
           if (pair.length !== 2) {
             throw new TypeError('Each header pair must be a name/value tuple')
           }
-          this.append(pair[ 0 ], pair[ 1 ])
+          this.append(pair[0], pair[1])
         }
       } else {
         // record<ByteString, ByteString>
         for (const key of Object.keys(init)) {
-          const value = init[ key ]
+          const value = init[key]
           this.append(key, value)
         }
       }
@@ -85,7 +85,7 @@ export default class Headers {
    * @return {string}
    */
   get (name) {
-    const list = this[ MAP ][ sanitizeName(name) ]
+    const list = this[MAP][sanitizeName(name)]
     if (!list) {
       return null
     }
@@ -103,7 +103,7 @@ export default class Headers {
     let pairs = getHeaderPairs(this)
     let i = 0
     while (i < pairs.length) {
-      const [ name, value ] = pairs[ i ]
+      const [name, value] = pairs[i]
       callback.call(thisArg, value, name, this)
       pairs = getHeaderPairs(this)
       i++
@@ -117,7 +117,7 @@ export default class Headers {
    * @param {string|Array.<string|*>|*} value Header value
    */
   set (name, value) {
-    this[ MAP ][ sanitizeName(name) ] = [ sanitizeValue(value) ]
+    this[MAP][sanitizeName(name)] = [sanitizeValue(value)]
   }
 
   /**
@@ -132,7 +132,7 @@ export default class Headers {
       return
     }
 
-    this[ MAP ][ sanitizeName(name) ].push(sanitizeValue(value))
+    this[MAP][sanitizeName(name)].push(sanitizeValue(value))
   }
 
   /**
@@ -142,7 +142,7 @@ export default class Headers {
    * @return {boolean}
    */
   has (name) {
-    return !!this[ MAP ][ sanitizeName(name) ]
+    return !!this[MAP][sanitizeName(name)]
   }
 
   /**
@@ -151,7 +151,7 @@ export default class Headers {
    * @param {string} name Header name
    */
   delete (name) {
-    delete this[ MAP ][ sanitizeName(name) ]
+    delete this[MAP][sanitizeName(name)]
   }
 
   /**
@@ -160,7 +160,7 @@ export default class Headers {
    * @return {Object}
    */
   raw () {
-    return this[ MAP ]
+    return this[MAP]
   }
 
   /**
@@ -192,7 +192,7 @@ export default class Headers {
     return createHeadersIterator(this, 'key+value')
   }
 }
-Headers.prototype.entries = Headers.prototype[ Symbol.iterator ]
+Headers.prototype.entries = Headers.prototype[Symbol.iterator]
 
 Object.defineProperty(Headers.prototype, Symbol.toStringTag, {
   value: 'HeadersPrototype',
@@ -202,11 +202,11 @@ Object.defineProperty(Headers.prototype, Symbol.toStringTag, {
 })
 
 function getHeaderPairs (headers, kind) {
-  if (kind === 'key') return Object.keys(headers[ MAP ]).sort().map(k => [ k ])
+  if (kind === 'key') return Object.keys(headers[MAP]).sort().map(k => [k])
   const pairs = []
-  for (let key of Object.keys(headers[ MAP ]).sort()) {
-    for (let value of headers[ MAP ][ key ]) {
-      pairs.push([ key, value ])
+  for (let key of Object.keys(headers[MAP]).sort()) {
+    for (let value of headers[MAP][key]) {
+      pairs.push([key, value])
     }
   }
   return pairs
@@ -216,7 +216,7 @@ const INTERNAL = Symbol('internal')
 
 function createHeadersIterator (target, kind) {
   const iterator = Object.create(HeadersIteratorPrototype)
-  iterator[ INTERNAL ] = {
+  iterator[INTERNAL] = {
     target,
     kind,
     index: 0
@@ -236,7 +236,7 @@ const HeadersIteratorPrototype = Object.setPrototypeOf({
       target,
       kind,
       index
-    } = this[ INTERNAL ]
+    } = this[INTERNAL]
     const values = getHeaderPairs(target, kind)
     const len = values.length
     if (index >= len) {
@@ -246,14 +246,14 @@ const HeadersIteratorPrototype = Object.setPrototypeOf({
       }
     }
 
-    const pair = values[ index ]
-    this[ INTERNAL ].index = index + 1
+    const pair = values[index]
+    this[INTERNAL].index = index + 1
 
     let result
     if (kind === 'key') {
-      result = pair[ 0 ]
+      result = pair[0]
     } else if (kind === 'value') {
-      result = pair[ 1 ]
+      result = pair[1]
     } else {
       result = pair
     }
@@ -264,7 +264,7 @@ const HeadersIteratorPrototype = Object.setPrototypeOf({
     }
   }
 }, Object.getPrototypeOf(
-  Object.getPrototypeOf([][ Symbol.iterator ]())
+  Object.getPrototypeOf([][Symbol.iterator]())
 ))
 
 Object.defineProperty(HeadersIteratorPrototype, Symbol.toStringTag, {

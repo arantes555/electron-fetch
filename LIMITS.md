@@ -30,5 +30,7 @@ Known differences
 
 - Cannot know if a certificate error happened when running on Electron (see https://github.com/electron/electron/issues/8074)
 
+- When running on Electron, if content-encoding is invalid an error is thrown. In node, it does not decompress content and passes it raw.
+
 [readable-stream]: https://nodejs.org/api/stream.html#stream_readable_streams
 [ERROR-HANDLING.md]: https://github.com/bitinn/node-fetch/blob/master/ERROR-HANDLING.md

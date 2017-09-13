@@ -138,12 +138,12 @@ function consumeBody (body) {
 
   // body is null
   if (this.body === null) {
-    return Promise.resolve(new Buffer(0))
+    return Promise.resolve(Buffer.alloc(0))
   }
 
   // body is string
   if (typeof this.body === 'string') {
-    return Promise.resolve(new Buffer(this.body))
+    return Promise.resolve(Buffer.from(this.body))
   }
 
   // body is blob
@@ -158,7 +158,7 @@ function consumeBody (body) {
 
   // istanbul ignore if: should never happen
   if (!(this.body instanceof Stream)) {
-    return Promise.resolve(new Buffer(0))
+    return Promise.resolve(Buffer.alloc(0))
   }
 
   // body is stream
