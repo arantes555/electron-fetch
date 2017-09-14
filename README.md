@@ -197,7 +197,9 @@ const defaultOptions = {
 	timeout: 0,         // req/res timeout in ms, it resets on redirect. 0 to disable (OS limit applies)
 	size: 0,            // maximum response body size in bytes. 0 to disable
 	session: session.fromPartition('electron-fetch'), // (/!\ only works when running on Electron) Electron Session object.,
-	useElectronNet: true // When running on Electron, defaults to true. On Node.js, defaults to false and cannot be set to true.
+	useElectronNet: true, // When running on Electron, defaults to true. On Node.js, defaults to false and cannot be set to true.
+	user: undefined,    // When running on Electron behind an authenticated HTTP proxy, username to use to authenticate
+	password: undefined // When running on Electron behind an authenticated HTTP proxy, password to use to authenticate
 }
 ```
 
