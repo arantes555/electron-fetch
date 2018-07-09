@@ -4,6 +4,11 @@ Changelog
 
 # electron-fetch 1.x
 
+## V1.2.0
+- Adding TypeScript typings (thanks @BurningEnlightenment)
+- Updating dependencies
+- Using electron's `defaultSession` by default
+
 ## V1.1.0
 
 - Added option to pass proxy credentials on Electron. Thanks @CharlieHess!

@@ -129,7 +129,7 @@ Body.mixIn = function (proto) {
  *
  * @return {Promise}
  */
-function consumeBody (body) {
+function consumeBody () {
   if (this[ DISTURBED ]) {
     return Promise.reject(new Error(`body used already for: ${this.url}`))
   }
@@ -163,7 +163,7 @@ function consumeBody (body) {
 
   // body is stream
   // get ready to actually consume the body
-  let accum = []
+  const accum = []
   let accumBytes = 0
   let abort = false
 
