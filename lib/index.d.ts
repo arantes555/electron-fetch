@@ -1,6 +1,6 @@
 import { Stream, Readable } from 'stream';
 
-export = fetch;
+export default fetch;
 
 declare function fetch(
   url: string,
