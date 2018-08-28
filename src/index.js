@@ -81,6 +81,14 @@ export default function fetch (url, opts = {}) {
         if (opts.user && opts.password) {
           callback(opts.user, opts.password)
         } else {
+          if (opts.onLogin) {
+            const ev = new PreventableEvent();
+            opts.onLogin(ev, authInfo, callback);
+            if (ev.defaultPrevented) {
+              // If the handler called `preventDefault()`, they're handling the callback
+              return;
+            }
+          }
           req.abort()
           reject(new FetchError(`login event received from ${authInfo.host} but no credentials provided`, 'proxy', {code: 'PROXY_AUTH_FAILED'}))
         }
@@ -202,6 +210,15 @@ export default function fetch (url, opts = {}) {
 
     writeToStream(req, request)
   }))
+}
+
+class PreventableEvent {
+  constructor() {
+    this.defaultPrevented = false;
+  }
+  preventDefault() {
+    this.defaultPrevented = true;
+  }
 }
 
 /**

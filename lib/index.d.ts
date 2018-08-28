@@ -86,6 +86,23 @@ declare namespace fetch {
     user?: string;
     // When running on Electron behind an authenticated HTTP proxy, password to use to authenticate
     password?: string;
+    onLogin?: (
+        event: PreventableEvent,
+        authInfo: AuthInfo,
+        callback: (username: string, password: string) => void
+    ) => void;
+  }
+  export interface PreventableEvent {
+    defaultPrevented: boolean;
+    preventDefault(): void;
+  }
+  // This comes from the Electron namespace:
+  export interface AuthInfo {
+      isProxy: boolean;
+      scheme: string;
+      host: string;
+      port: number;
+      realm: string;
   }
   export type RequestInfo = Request | string;
   export class Request implements Body {

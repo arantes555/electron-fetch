@@ -1968,6 +1968,30 @@ const createTestSuite = (useElectronNet) => {
             })
           })
       })
+
+      it('should connect through authenticated proxy with onLogin callback', () => {
+        url = `${base}plain`
+        return waitForSessions
+          .then(() => fetch(url, {
+            useElectronNet,
+            session: authenticatedProxySession,
+            onLogin (ev, authInfo, authCallback) {
+              ev.preventDefault()
+
+              setTimeout(() => {
+                authCallback('testuser', 'testpassword')
+              }, 10)
+            }
+          }))
+          .then(res => {
+            expect(res.headers.get('content-type')).to.equal('text/plain')
+            return res.text().then(result => {
+              expect(res.bodyUsed).to.be.true
+              expect(result).to.be.a('string')
+              expect(result).to.equal('text')
+            })
+          })
+      })
     }
   })
 
