@@ -78,7 +78,7 @@ function checkIsHttpToken (val) {
   }
   return true
 }
-export {checkIsHttpToken}
+export { checkIsHttpToken }
 
 /**
  * True if val contains an invalid field-vchar
@@ -116,4 +116,4 @@ function checkInvalidHeaderChar (val) {
   }
   return false
 }
-export {checkInvalidHeaderChar}
+export { checkInvalidHeaderChar }

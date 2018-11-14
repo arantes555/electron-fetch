@@ -56,7 +56,7 @@ $ npm install electron-fetch --save
 ```javascript
 import fetch from 'electron-fetch'
 // or
-// const fetch = require('electron-fetch');
+// const fetch = require('electron-fetch').default
 
 // plain text or html
 

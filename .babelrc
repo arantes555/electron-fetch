@@ -3,17 +3,12 @@
     "test": {
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
             "loose": true,
             "targets": {
-              "node": 4
-            },
-            "exclude": [
-              "transform-es2015-block-scoping",
-              "transform-es2015-classes",
-              "transform-es2015-for-of"
-            ]
+              "node": 6
+            }
           }
         ]
       ],
@@ -24,17 +19,12 @@
     "coverage": {
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
             "loose": true,
             "targets": {
-              "node": 4
-            },
-            "exclude": [
-              "transform-es2015-block-scoping",
-              "transform-es2015-classes",
-              "transform-es2015-for-of"
-            ]
+              "node": 6
+            }
           }
         ]
       ],
@@ -55,17 +45,12 @@
     "rollup": {
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
             "loose": true,
             "targets": {
-              "node": 4
+              "node": 6
             },
-            "exclude": [
-              "transform-es2015-block-scoping",
-              "transform-es2015-classes",
-              "transform-es2015-for-of"
-            ],
             "modules": false
           }
         ]

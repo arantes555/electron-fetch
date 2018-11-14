@@ -24,16 +24,16 @@ import Blob from '../src/blob.js'
 
 chai.use(chaiPromised)
 
-const {expect} = chai
+const { expect } = chai
 
-const supportToString = ({[Symbol.toStringTag]: 'z'}).toString() === '[object z]'
+const supportToString = ({ [Symbol.toStringTag]: 'z' }).toString() === '[object z]'
 
 const local = new TestServer()
 const unauthenticatedProxy = new TestProxy({
   port: 30002
 })
 const authenticatedProxy = new TestProxy({
-  credentials: {username: 'testuser', password: 'testpassword'},
+  credentials: { username: 'testuser', password: 'testpassword' },
   port: 30003
 })
 const base = `http://${local.hostname}:${local.port}/`
@@ -66,7 +66,7 @@ const createTestSuite = (useElectronNet) => {
   describe(`electron-fetch: ${useElectronNet ? 'electron' : 'node'}`, () => {
     it('should return a promise', function () {
       url = 'http://example.com/'
-      const p = fetch(url, {useElectronNet})
+      const p = fetch(url, { useElectronNet })
       expect(p).to.be.an.instanceof(Promise)
       expect(p).to.respondTo('then')
     })
@@ -88,30 +88,30 @@ const createTestSuite = (useElectronNet) => {
 
     it('should reject with error if url is protocol relative', function () {
       url = '//example.com/'
-      return expect(fetch(url, {useElectronNet})).to.eventually.be.rejectedWith(TypeError, 'Only absolute URLs are supported')
+      return expect(fetch(url, { useElectronNet })).to.eventually.be.rejectedWith(TypeError, 'Only absolute URLs are supported')
     })
 
     it('should reject with error if url is relative path', function () {
       url = '/some/path'
-      return expect(fetch(url, {useElectronNet})).to.eventually.be.rejectedWith(TypeError, 'Only absolute URLs are supported')
+      return expect(fetch(url, { useElectronNet })).to.eventually.be.rejectedWith(TypeError, 'Only absolute URLs are supported')
     })
 
     it('should reject with error if protocol is unsupported', function () {
       url = 'ftp://example.com/'
-      return expect(fetch(url, {useElectronNet})).to.eventually.be.rejectedWith(TypeError, 'Only HTTP(S) protocols are supported')
+      return expect(fetch(url, { useElectronNet })).to.eventually.be.rejectedWith(TypeError, 'Only HTTP(S) protocols are supported')
     })
 
     it('should reject with error on network failure', function () {
       this.timeout(5000) // on windows, 2s are not enough to get the network failure
       url = 'http://localhost:50000/'
-      return expect(fetch(url, {useElectronNet})).to.eventually.be.rejected
+      return expect(fetch(url, { useElectronNet })).to.eventually.be.rejected
         .and.be.an.instanceOf(FetchError)
-        .and.include({type: 'system', code: 'ECONNREFUSED', errno: 'ECONNREFUSED'})
+        .and.include({ type: 'system', code: 'ECONNREFUSED', errno: 'ECONNREFUSED' })
     })
 
     it('should resolve into response', function () {
       url = `${base}hello`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res).to.be.an.instanceof(Response)
         expect(res.headers).to.be.an.instanceof(Headers)
         expect(res.body).to.be.an.instanceof(stream.Transform)
@@ -126,7 +126,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should accept plain text response', function () {
       url = `${base}plain`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('text/plain')
         return res.text().then(result => {
           expect(res.bodyUsed).to.be.true
@@ -138,7 +138,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should accept html response (like plain text)', function () {
       url = `${base}html`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('text/html')
         return res.text().then(result => {
           expect(res.bodyUsed).to.be.true
@@ -150,12 +150,12 @@ const createTestSuite = (useElectronNet) => {
 
     it('should accept json response', function () {
       url = `${base}json`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('application/json')
         return res.json().then(result => {
           expect(res.bodyUsed).to.be.true
           expect(result).to.be.an('object')
-          expect(result).to.deep.equal({name: 'value'})
+          expect(result).to.deep.equal({ name: 'value' })
         })
       })
     })
@@ -163,7 +163,7 @@ const createTestSuite = (useElectronNet) => {
     it('should send request with custom headers', function () {
       url = `${base}inspect`
       opts = {
-        headers: {'x-custom-header': 'abc'},
+        headers: { 'x-custom-header': 'abc' },
         useElectronNet
       }
       return fetch(url, opts).then(res => {
@@ -176,7 +176,7 @@ const createTestSuite = (useElectronNet) => {
     it('should send request with custom Cookie headers', function () {
       url = `${base}inspect`
       opts = {
-        headers: {'Cookie': 'toto=tata'},
+        headers: { 'Cookie': 'toto=tata' },
         useElectronNet
       }
       return fetch(url, opts).then(res => {
@@ -189,7 +189,7 @@ const createTestSuite = (useElectronNet) => {
     it('should accept headers instance', function () {
       url = `${base}inspect`
       opts = {
-        headers: new Headers({'x-custom-header': 'abc'}),
+        headers: new Headers({ 'x-custom-header': 'abc' }),
         useElectronNet
       }
       return fetch(url, opts).then(res => {
@@ -231,7 +231,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should follow redirect code 301', function () {
       url = `${base}redirect/301`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`) // actually follows the redirects, just does not update the res.url ...
         expect(res.status).to.equal(200)
         expect(res.ok).to.be.true
@@ -240,7 +240,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should follow redirect code 302', function () {
       url = `${base}redirect/302`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
       })
@@ -248,7 +248,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should follow redirect code 303', function () {
       url = `${base}redirect/303`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
       })
@@ -256,7 +256,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should follow redirect code 307', function () {
       url = `${base}redirect/307`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
       })
@@ -264,7 +264,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should follow redirect code 308', function () {
       url = `${base}redirect/308`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
       })
@@ -272,7 +272,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should follow redirect chain', function () {
       url = `${base}redirect/chain`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         if (!useElectronNet) expect(res.url).to.equal(`${base}inspect`)
         expect(res.status).to.equal(200)
       })
@@ -417,7 +417,7 @@ const createTestSuite = (useElectronNet) => {
     it('should follow redirect code 301 and keep existing headers', function () {
       url = `${base}redirect/301`
       opts = {
-        headers: new Headers({'x-custom-header': 'abc'}),
+        headers: new Headers({ 'x-custom-header': 'abc' }),
         useElectronNet
       }
       return fetch(url, opts).then(res => {
@@ -430,7 +430,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should reject broken redirect', function () {
       url = `${base}error/redirect`
-      return expect(fetch(url, {useElectronNet})).to.eventually.be.rejected
+      return expect(fetch(url, { useElectronNet })).to.eventually.be.rejected
         .and.be.an.instanceOf(FetchError)
         .and.have.property('type', 'invalid-redirect')
     })
@@ -450,7 +450,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should handle client-error response', function () {
       url = `${base}error/400`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('text/plain')
         expect(res.status).to.equal(400)
         expect(res.statusText).to.equal('Bad Request')
@@ -465,7 +465,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should handle server-error response', function () {
       url = `${base}error/500`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('text/plain')
         expect(res.status).to.equal(500)
         expect(res.statusText).to.equal('Internal Server Error')
@@ -480,21 +480,21 @@ const createTestSuite = (useElectronNet) => {
 
     it('should handle network-error response', function () {
       url = `${base}error/reset`
-      return expect(fetch(url, {useElectronNet})).to.eventually.be.rejected
+      return expect(fetch(url, { useElectronNet })).to.eventually.be.rejected
         .and.be.an.instanceOf(FetchError)
         .and.have.property('code', 'ECONNRESET')
     })
 
     it('should handle DNS-error response', function () {
       url = 'http://domain.invalid'
-      return expect(fetch(url, {useElectronNet})).to.eventually.be.rejected
+      return expect(fetch(url, { useElectronNet })).to.eventually.be.rejected
         .and.be.an.instanceOf(FetchError)
         .and.have.property('code', 'ENOTFOUND')
     })
 
     it('should reject invalid json response', function () {
       url = `${base}error/json`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('application/json')
         return expect(res.json()).to.eventually.be.rejectedWith(Error)
       })
@@ -502,7 +502,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should handle no content response', function () {
       url = `${base}no-content`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(204)
         expect(res.statusText).to.equal('No Content')
         expect(res.ok).to.be.true
@@ -515,7 +515,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should handle no content response with gzip encoding', function () {
       url = `${base}no-content/gzip`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(204)
         expect(res.statusText).to.equal('No Content')
         expect(res.headers.get('content-encoding')).to.equal('gzip')
@@ -529,7 +529,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should handle not modified response', function () {
       url = `${base}not-modified`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(304)
         expect(res.statusText).to.equal('Not Modified')
         expect(res.ok).to.be.false
@@ -542,7 +542,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should handle not modified response with gzip encoding', function () {
       url = `${base}not-modified/gzip`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(304)
         expect(res.statusText).to.equal('Not Modified')
         expect(res.headers.get('content-encoding')).to.equal('gzip')
@@ -556,7 +556,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should decompress gzip response', function () {
       url = `${base}gzip`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('text/plain')
         return res.text().then(result => {
           expect(result).to.be.a('string')
@@ -567,7 +567,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should decompress slightly invalid gzip response', function () {
       url = `${base}gzip-truncated`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('text/plain')
         return res.text().then(result => {
           expect(result).to.be.a('string')
@@ -578,7 +578,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should decompress deflate response', function () {
       url = `${base}deflate`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('text/plain')
         return res.text().then(result => {
           expect(result).to.be.a('string')
@@ -589,7 +589,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should decompress deflate raw response from old apache server', function () {
       url = `${base}deflate-raw`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('text/plain')
         return res.text().then(result => {
           expect(result).to.be.a('string')
@@ -601,7 +601,7 @@ const createTestSuite = (useElectronNet) => {
     if (useElectronNet) {
       it('should throw if invalid content-encoding', function () {
         url = `${base}sdch`
-        return expect(fetch(url, {useElectronNet}))
+        return expect(fetch(url, { useElectronNet }))
           .to.eventually.be.rejected
           .and.be.an.instanceOf(FetchError)
           .and.have.property('code', 'Z_DATA_ERROR')
@@ -609,7 +609,7 @@ const createTestSuite = (useElectronNet) => {
     } else {
       it('should skip decompression if unsupported', function () {
         url = `${base}sdch`
-        return fetch(url, {useElectronNet}).then(res => {
+        return fetch(url, { useElectronNet }).then(res => {
           expect(res.headers.get('content-type')).to.equal('text/plain')
           return res.text().then(result => {
             expect(result).to.be.a('string')
@@ -621,7 +621,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should reject if response compression is invalid', function () {
       url = `${base}invalid-content-encoding`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('text/plain')
         return expect(res.text()).to.eventually.be.rejected
           .and.be.an.instanceOf(FetchError)
@@ -681,7 +681,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should set default User-Agent', function () {
       url = `${base}inspect`
-      return fetch(url, {useElectronNet}).then(res => res.json()).then(res => {
+      return fetch(url, { useElectronNet }).then(res => res.json()).then(res => {
         expect(res.headers['user-agent']).to.satisfy(s => s.startsWith('electron-fetch/'))
       })
     })
@@ -701,7 +701,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should set default Accept header', function () {
       url = `${base}inspect`
-      fetch(url, {useElectronNet}).then(res => res.json()).then(res => {
+      fetch(url, { useElectronNet }).then(res => res.json()).then(res => {
         expect(res.headers.accept).to.equal('*/*')
       })
     })
@@ -901,7 +901,7 @@ const createTestSuite = (useElectronNet) => {
       // note that fetch simply calls tostring on an object
       opts = {
         method: 'POST',
-        body: {a: 1},
+        body: { a: 1 },
         useElectronNet
       }
       return fetch(url, opts).then(res => {
@@ -1044,7 +1044,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should reject decoding body twice', function () {
       url = `${base}plain`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('content-type')).to.equal('text/plain')
         return res.text().then(() => {
           expect(res.bodyUsed).to.be.true
@@ -1085,7 +1085,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should only use UTF-8 decoding with text()', function () {
       url = `${base}encoding/euc-jp`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(200)
         return res.text().then(result => {
           expect(result).to.equal('<?xml version="1.0" encoding="EUC-JP"?><title>\ufffd\ufffd\ufffd\u0738\ufffd</title>')
@@ -1095,7 +1095,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should support encoding decode, xml dtd detect', function () {
       url = `${base}encoding/euc-jp`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(200)
         return res.textConverted().then(result => {
           expect(result).to.equal('<?xml version="1.0" encoding="EUC-JP"?><title>日本語</title>')
@@ -1105,7 +1105,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should support encoding decode, content-type detect', function () {
       url = `${base}encoding/shift-jis`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(200)
         return res.textConverted().then(result => {
           expect(result).to.equal('<div>日本語</div>')
@@ -1115,7 +1115,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should support encoding decode, html5 detect', function () {
       url = `${base}encoding/gbk`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(200)
         return res.textConverted().then(result => {
           expect(result).to.equal('<meta charset="gbk"><div>中文</div>')
@@ -1125,7 +1125,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should support encoding decode, html4 detect', function () {
       url = `${base}encoding/gb2312`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(200)
         return res.textConverted().then(result => {
           expect(result).to.equal('<meta http-equiv="Content-Type" content="text/html; charset=gb2312"><div>中文</div>')
@@ -1135,7 +1135,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should default to utf8 encoding', function () {
       url = `${base}encoding/utf8`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(200)
         expect(res.headers.get('content-type')).to.be.null
         return res.textConverted().then(result => {
@@ -1146,7 +1146,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should support uncommon content-type order, charset in front', function () {
       url = `${base}encoding/order1`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(200)
         return res.textConverted().then(result => {
           expect(result).to.equal('中文')
@@ -1156,7 +1156,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should support uncommon content-type order, end with qs', function () {
       url = `${base}encoding/order2`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(200)
         return res.textConverted().then(result => {
           expect(result).to.equal('中文')
@@ -1166,7 +1166,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should support chunked encoding, html4 detect', function () {
       url = `${base}encoding/chunked`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(200)
         const padding = 'a'.repeat(10)
         return res.textConverted().then(result => {
@@ -1177,7 +1177,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should only do encoding detection up to 1024 bytes', function () {
       url = `${base}encoding/invalid`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.status).to.equal(200)
         const padding = 'a'.repeat(1200)
         return res.textConverted().then(result => {
@@ -1188,7 +1188,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should allow piping response body as stream', function () {
       url = `${base}hello`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.body).to.be.an.instanceof(stream.Transform)
         return streamToPromise(res.body, chunk => {
           if (chunk === null) {
@@ -1201,7 +1201,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should allow cloning a response, and use both as stream', function () {
       url = `${base}hello`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         const r1 = res.clone()
         expect(res.body).to.be.an.instanceof(stream.Transform)
         expect(r1.body).to.be.an.instanceof(stream.Transform)
@@ -1221,10 +1221,10 @@ const createTestSuite = (useElectronNet) => {
 
     it('should allow cloning a json response and log it as text response', function () {
       url = `${base}json`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         const r1 = res.clone()
         return Promise.all([res.json(), r1.text()]).then(results => {
-          expect(results[0]).to.deep.equal({name: 'value'})
+          expect(results[0]).to.deep.equal({ name: 'value' })
           expect(results[1]).to.equal('{"name":"value"}')
         })
       })
@@ -1232,10 +1232,10 @@ const createTestSuite = (useElectronNet) => {
 
     it('should allow cloning a json response, and then log it as text response', function () {
       url = `${base}json`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         const r1 = res.clone()
         return res.json().then(result => {
-          expect(result).to.deep.equal({name: 'value'})
+          expect(result).to.deep.equal({ name: 'value' })
           return r1.text().then(result => {
             expect(result).to.equal('{"name":"value"}')
           })
@@ -1245,12 +1245,12 @@ const createTestSuite = (useElectronNet) => {
 
     it('should allow cloning a json response, first log as text response, then return json object', function () {
       url = `${base}json`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         const r1 = res.clone()
         return r1.text().then(result => {
           expect(result).to.equal('{"name":"value"}')
           return res.json().then(result => {
-            expect(result).to.deep.equal({name: 'value'})
+            expect(result).to.deep.equal({ name: 'value' })
           })
         })
       })
@@ -1258,7 +1258,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should not allow cloning a response after its been used', function () {
       url = `${base}hello`
-      return fetch(url, {useElectronNet}).then(res =>
+      return fetch(url, { useElectronNet }).then(res =>
         res.text().then(() => {
           expect(() => {
             res.clone()
@@ -1269,7 +1269,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should allow get all responses of a header', function () {
       url = `${base}cookie`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('set-cookie')).to.equal('a=1,b=1')
       })
     })
@@ -1363,7 +1363,7 @@ const createTestSuite = (useElectronNet) => {
 
     it('should allow deleting header', function () {
       url = `${base}cookie`
-      return fetch(url, {useElectronNet}).then(res => {
+      return fetch(url, { useElectronNet }).then(res => {
         res.headers.delete('set-cookie')
         expect(res.headers.get('set-cookie')).to.be.null
       })
@@ -1371,9 +1371,9 @@ const createTestSuite = (useElectronNet) => {
 
     it('should reject illegal header', function () {
       const headers = new Headers()
-      expect(() => new Headers({'He y': 'ok'})).to.throw(TypeError)
-      expect(() => new Headers({'Hé-y': 'ok'})).to.throw(TypeError)
-      expect(() => new Headers({'He-y': 'ăk'})).to.throw(TypeError)
+      expect(() => new Headers({ 'He y': 'ok' })).to.throw(TypeError)
+      expect(() => new Headers({ 'Hé-y': 'ok' })).to.throw(TypeError)
+      expect(() => new Headers({ 'He-y': 'ăk' })).to.throw(TypeError)
       expect(() => headers.append('Hé-y', 'ok')).to.throw(TypeError)
       expect(() => headers.delete('Hé-y')).to.throw(TypeError)
       expect(() => headers.get('Hé-y')).to.throw(TypeError)
@@ -1381,7 +1381,7 @@ const createTestSuite = (useElectronNet) => {
       expect(() => headers.set('Hé-y', 'ok')).to.throw(TypeError)
 
       // 'o k' is valid value but invalid name
-      expect(() => new Headers({'He-y': 'o k'})).not.to.throw(TypeError)
+      expect(() => new Headers({ 'He-y': 'o k' })).not.to.throw(TypeError)
     })
 
     it('should ignore unsupported attributes while reading headers', function () {
@@ -1397,7 +1397,7 @@ const createTestSuite = (useElectronNet) => {
       res.d = []
       res.e = 1
       res.f = [1, 2]
-      res.g = {a: 1}
+      res.g = { a: 1 }
       res.h = undefined
       res.i = null
       res.j = NaN
@@ -1487,13 +1487,13 @@ const createTestSuite = (useElectronNet) => {
       expect(() => new Headers([['b', '2', 'huh?']])).to.throw(TypeError)
       expect(() => new Headers(['b2'])).to.throw(TypeError)
       expect(() => new Headers('b2')).to.throw(TypeError)
-      expect(() => new Headers({[Symbol.iterator]: 42})).to.throw(TypeError)
+      expect(() => new Headers({ [Symbol.iterator]: 42 })).to.throw(TypeError)
     })
 
     it('should support fetch with Request instance', function () {
       url = `${base}hello`
       const req = new Request(url)
-      return fetch(req, {useElectronNet}).then(res => {
+      return fetch(req, { useElectronNet }).then(res => {
         expect(res.url).to.equal(url)
         expect(res.ok).to.be.true
         expect(res.status).to.equal(200)
@@ -1504,7 +1504,7 @@ const createTestSuite = (useElectronNet) => {
       url = `${base}hello`
       const urlObj = parseURL(url)
       const req = new Request(urlObj)
-      return fetch(req, {useElectronNet}).then(res => {
+      return fetch(req, { useElectronNet }).then(res => {
         expect(res.url).to.equal(url)
         expect(res.ok).to.be.true
         expect(res.status).to.equal(200)
@@ -1515,7 +1515,7 @@ const createTestSuite = (useElectronNet) => {
       url = `${base}hello`
       const urlObj = new URL(url)
       const req = new Request(urlObj)
-      return fetch(req, {useElectronNet}).then(res => {
+      return fetch(req, { useElectronNet }).then(res => {
         expect(res.url).to.equal(url)
         expect(res.ok).to.be.true
         expect(res.status).to.equal(200)
@@ -1527,7 +1527,7 @@ const createTestSuite = (useElectronNet) => {
 
       let length, type
 
-      return fetch(url, {useElectronNet}).then(res => res.blob()).then(blob => {
+      return fetch(url, { useElectronNet }).then(res => res.blob()).then(blob => {
         url = `${base}inspect`
         length = blob.size
         type = blob.type
@@ -1536,7 +1536,7 @@ const createTestSuite = (useElectronNet) => {
           body: blob,
           useElectronNet
         })
-      }).then(res => res.json()).then(({body, headers}) => {
+      }).then(res => res.json()).then(({ body, headers }) => {
         expect(body).to.equal('world')
         expect(headers['content-type']).to.equal(type)
         expect(headers['content-length']).to.equal(String(length))
@@ -1591,13 +1591,13 @@ const createTestSuite = (useElectronNet) => {
     })
 
     it('should throw error with GET/HEAD requests with body', function () {
-      expect(() => new Request('.', {body: ''}))
+      expect(() => new Request('.', { body: '' }))
         .to.throw(TypeError)
-      expect(() => new Request('.', {body: 'a'}))
+      expect(() => new Request('.', { body: 'a' }))
         .to.throw(TypeError)
-      expect(() => new Request('.', {body: '', method: 'HEAD'}))
+      expect(() => new Request('.', { body: '', method: 'HEAD' }))
         .to.throw(TypeError)
-      expect(() => new Request('.', {body: 'a', method: 'HEAD'}))
+      expect(() => new Request('.', { body: 'a', method: 'HEAD' }))
         .to.throw(TypeError)
     })
 
@@ -1919,8 +1919,8 @@ const createTestSuite = (useElectronNet) => {
       const electron = require('electron')
       const unauthenticatedProxySession = electron.session.fromPartition('unauthenticated-proxy')
       const authenticatedProxySession = electron.session.fromPartition('authenticated-proxy')
-      const waitForSessions = new Promise(resolve => unauthenticatedProxySession.setProxy({proxyRules: `http://${unauthenticatedProxy.hostname}:${unauthenticatedProxy.port}`}, () => resolve()))
-        .then(() => new Promise(resolve => authenticatedProxySession.setProxy({proxyRules: `http://${authenticatedProxy.hostname}:${authenticatedProxy.port}`}, () => resolve())))
+      const waitForSessions = new Promise(resolve => unauthenticatedProxySession.setProxy({ proxyRules: `http://${unauthenticatedProxy.hostname}:${unauthenticatedProxy.port}` }, () => resolve()))
+        .then(() => new Promise(resolve => authenticatedProxySession.setProxy({ proxyRules: `http://${authenticatedProxy.hostname}:${authenticatedProxy.port}` }, () => resolve())))
 
       it('should connect through unauthenticated proxy', () => {
         url = `${base}plain`

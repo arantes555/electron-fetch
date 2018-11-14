@@ -82,7 +82,7 @@ export default function fetch (url, opts = {}) {
           callback(opts.user, opts.password)
         } else {
           req.abort()
-          reject(new FetchError(`login event received from ${authInfo.host} but no credentials provided`, 'proxy', {code: 'PROXY_AUTH_FAILED'}))
+          reject(new FetchError(`login event received from ${authInfo.host} but no credentials provided`, 'proxy', { code: 'PROXY_AUTH_FAILED' }))
         }
       })
     }
