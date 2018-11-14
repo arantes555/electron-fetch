@@ -3,24 +3,25 @@
   "version": "1.2.1",
   "description": "A light-weight module that brings window.fetch to electron's background process",
   "main": "lib/index.js",
-  "typings": "lib/index.d.ts",
   "module": "lib/index.es.js",
+  "types": "index.d.ts",
   "files": [
     "lib/index.js",
     "lib/index.es.js",
-    "lib/index.d.ts"
+    "index.d.ts"
   ],
   "engines": {
-    "node": ">=4"
+    "node": ">=6"
   },
   "scripts": {
     "build": "cross-env BABEL_ENV=rollup rollup -c",
     "prepublishOnly": "npm run build",
-    "test": "npm run test:electron && npm run test:node && standard",
+    "test": "npm run test:electron && npm run test:node && npm run test:typings && standard",
+    "test:typings": "ts-node test/test-typescript.ts",
     "test:electron": "xvfb-maybe cross-env BABEL_ENV=test electron-mocha --require @babel/register test/test.js",
     "test:node": "cross-env BABEL_ENV=test mocha --require @babel/register test/test.js",
     "coverage": "xvfb-maybe cross-env BABEL_ENV=coverage electron-mocha --require @babel/register test/test.js -R test/coverage-reporter.js",
-    "report": "standard && npm run coverage && codecov -f coverage/coverage-final.json"
+    "report": "standard && npm run test:typings && npm run coverage && codecov -f coverage/coverage-final.json"
   },
   "repository": {
     "type": "git",
@@ -64,6 +65,8 @@
     "rollup": "^0.67.1",
     "rollup-plugin-babel": "^4.0.3",
     "standard": "^12.0.1",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.1.6",
     "whatwg-url": "^7.0.0",
     "xvfb-maybe": "^0.2.1"
   },
