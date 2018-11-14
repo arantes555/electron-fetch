@@ -17,6 +17,7 @@
     "build": "cross-env BABEL_ENV=rollup rollup -c",
     "prepublishOnly": "npm run build",
     "test": "npm run test:electron && npm run test:node && npm run test:typings && standard",
+    "pretest:typings": "npm run build",
     "test:typings": "ts-node test/test-typescript.ts",
     "test:electron": "xvfb-maybe cross-env BABEL_ENV=test electron-mocha --require @babel/register test/test.js",
     "test:node": "cross-env BABEL_ENV=test mocha --require @babel/register test/test.js",
