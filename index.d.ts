@@ -87,7 +87,7 @@ export interface RequestInit {
   // These properties are part of the Fetch Standard
   method?: string
   headers?: HeadersInit
-  body: BodyInit
+  body?: BodyInit
   // (/!\ only works when running on Node.js) set to `manual` to extract redirect headers, `error` to reject redirect
   redirect?: RequestRedirect
 
