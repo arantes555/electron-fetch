@@ -40,7 +40,7 @@ Why not simply use node-fetch? Well, Electron's `net` module does a better job t
 - Removed node-fetch specific options, such as specifying the `agent`, and `compression`.
 - Added electron-specific option to specify the `Session`.
 - Added electron-specific option `useElectronNet`, which can be set to false when running on Electron in order to behave as Node.js.
-- Removed possibility to use custom Promise implementation (it's 2017, `Promise` is available everywhere!).
+- Removed possibility to use custom Promise implementation (it's 2018, `Promise` is available everywhere!).
 - Removed the possibility to forbid content compression (incompatible with Electron's `net` module, and of limited interest)
 - [`standard`-ized](http://standardjs.com) the code.
 

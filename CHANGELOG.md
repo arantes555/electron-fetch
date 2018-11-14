@@ -4,6 +4,10 @@ Changelog
 
 # electron-fetch 1.x
 
+## V1.3.0
+- Fix TypeScript typings & add tests so they cannot break again
+- Updating dependencies
+
 ## V1.2.0
 - Adding TypeScript typings (thanks @BurningEnlightenment)
 - Updating dependencies
