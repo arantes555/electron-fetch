@@ -4,9 +4,9 @@
  * Body interface provides common methods for Request and Response
  */
 
-import {convert} from 'encoding'
-import Stream, {PassThrough} from 'stream'
-import Blob, {BUFFER} from './blob.js'
+import { convert } from 'encoding'
+import Stream, { PassThrough } from 'stream'
+import Blob, { BUFFER } from './blob.js'
 import FetchError from './fetch-error.js'
 
 const DISTURBED = Symbol('disturbed')

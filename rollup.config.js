@@ -5,17 +5,16 @@ import tweakDefault from './build/rollup-plugin'
 process.env.BABEL_ENV = 'rollup'
 
 export default {
-  entry: 'src/index.js',
-  exports: 'named',
+  input: 'src/index.js',
   plugins: [
     babel({
       runtimeHelpers: true
     }),
     tweakDefault()
   ],
-  targets: [
-    { dest: 'lib/index.js', format: 'cjs' },
-    { dest: 'lib/index.es.js', format: 'es' }
+  output: [
+    { file: 'lib/index.js', format: 'cjs', exports: 'named' },
+    { file: 'lib/index.es.js', format: 'es' }
   ],
   external: function (id) {
     if (isBuiltin(id)) {

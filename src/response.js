@@ -4,9 +4,9 @@
  * Response class provides content decoding
  */
 
-import {STATUS_CODES} from 'http'
+import { STATUS_CODES } from 'http'
 import Headers from './headers.js'
-import Body, {clone} from './body'
+import Body, { clone } from './body'
 
 /**
  * Response class

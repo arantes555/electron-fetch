@@ -7,7 +7,7 @@ import proxy from 'proxy'
 import basicAuthParser from 'basic-auth-parser'
 
 export class TestServer {
-  constructor ({port = 30001} = {}) {
+  constructor ({ port = 30001 } = {}) {
     this.server = http.createServer(this.router)
     this.port = port
     this.hostname = 'localhost'
@@ -343,7 +343,7 @@ export class TestServer {
 }
 
 export class TestProxy {
-  constructor ({credentials = null, port = 30002} = {}) {
+  constructor ({ credentials = null, port = 30002 } = {}) {
     this.port = port
     this.hostname = 'localhost'
     this.server = proxy(http.createServer())

@@ -4,9 +4,9 @@
  * Request class contains server only options
  */
 
-import {format as formatURL, parse as parseURL} from 'url'
+import { format as formatURL, parse as parseURL } from 'url'
 import Headers from './headers.js'
-import Body, {clone, extractContentType, getTotalBytes} from './body'
+import Body, { clone, extractContentType, getTotalBytes } from './body'
 
 const PARSED_URL = Symbol('url')
 
