@@ -1,0 +1,2 @@
+- For now, we keep electron@6 because electron@7 has issues : https://github.com/electron/electron/issues/21091
+- Mocha is fixed to the same version as electron-mocha's mocha, in order for coverage-reporter to work

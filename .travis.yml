@@ -11,20 +11,24 @@ install:
   - npm ci
 
 node_js:
-  - "6"
   - "8"
   - "10"
-  - "11"
+  - "12"
 
 env:
   - FORMDATA_VERSION=1.0.0
   - FORMDATA_VERSION=2.3.3
+  - ELECTRON_VERSION=4.2.12
+  - ELECTRON_VERSION=5.0.12
+  - ELECTRON_VERSION=6.1.4
+  # - ELECTRON_VERSION=7.1.1 # Disabled for now, because it is broken
 
 before_script:
   - 'if [ "$FORMDATA_VERSION" ]; then npm install form-data@^$FORMDATA_VERSION; fi'
+  - 'if [ "ELECTRON_VERSION" ]; then npm install electron@^ELECTRON_VERSION; fi'
 
 before_install:
-  - npm i -g npm@6.4.1
+  - npm i -g npm@6.13.0
 
 script: npm run report
 

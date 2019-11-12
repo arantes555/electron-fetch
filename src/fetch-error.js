@@ -27,7 +27,7 @@ export default function FetchError (message, type, systemError) {
   if (regex.test(message)) {
     let errorCode = regex.exec(message)[1]
     // istanbul ignore else
-    if (Object.prototype.hasOwnProperty.call(netErrorMap, [errorCode])) errorCode = netErrorMap[errorCode]
+    if (Object.prototype.hasOwnProperty.call(netErrorMap, errorCode)) errorCode = netErrorMap[errorCode]
     systemError = { code: errorCode }
   }
   this.message = message

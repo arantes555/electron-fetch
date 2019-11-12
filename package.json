@@ -22,7 +22,7 @@
     "test:typings": "ts-node test/test-typescript.ts",
     "test:electron": "xvfb-maybe cross-env BABEL_ENV=test electron-mocha --require @babel/register test/test.js",
     "test:node": "cross-env BABEL_ENV=test mocha --require @babel/register test/test.js",
-    "coverage": "xvfb-maybe cross-env BABEL_ENV=coverage electron-mocha --require @babel/register test/test.js -R test/coverage-reporter.js",
+    "coverage": "xvfb-maybe cross-env BABEL_ENV=coverage electron-mocha --require @babel/register test/test.js --reporter test/coverage-reporter.js",
     "report": "npm run lint && npm run test:typings && npm run coverage && codecov -f coverage/coverage-final.json"
   },
   "repository": {
@@ -58,7 +58,7 @@
     "is-builtin-module": "^3.0.0",
     "istanbul-api": "^2.1.6",
     "istanbul-lib-coverage": "^2.0.5",
-    "mocha": "^6.2.2",
+    "mocha": "^5.2.0",
     "nyc": "^14.1.1",
     "parted": "^0.1.1",
     "promise": "^8.0.3",
