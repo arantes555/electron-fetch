@@ -7,6 +7,7 @@ import { spawn } from 'child_process'
 import * as stream from 'stream'
 import resumer from 'resumer'
 import FormData from 'form-data'
+// eslint-disable-next-line node/no-deprecated-api
 import { parse as parseURL } from 'url'
 import { URL } from 'whatwg-url'
 import * as fs from 'fs'
@@ -176,13 +177,13 @@ const createTestSuite = (useElectronNet) => {
     it('should send request with custom Cookie headers', function () {
       url = `${base}inspect`
       opts = {
-        headers: { 'Cookie': 'toto=tata' },
+        headers: { Cookie: 'toto=tata' },
         useElectronNet
       }
       return fetch(url, opts).then(res => {
         return res.json()
       }).then(res => {
-        expect(res.headers['cookie']).to.equal('toto=tata')
+        expect(res.headers.cookie).to.equal('toto=tata')
       })
     })
 
@@ -210,7 +211,7 @@ const createTestSuite = (useElectronNet) => {
       return fetch(url, opts).then(res => {
         return res.json()
       }).then(res => {
-        expect(res.headers['host']).to.equal('example.com')
+        expect(res.headers.host).to.equal('example.com')
       })
     })
 
@@ -225,7 +226,7 @@ const createTestSuite = (useElectronNet) => {
       return fetch(url, opts).then(res => {
         return res.json()
       }).then(res => {
-        expect(res.headers['connection']).to.equal('close')
+        expect(res.headers.connection).to.equal('close')
       })
     })
 
@@ -704,7 +705,7 @@ const createTestSuite = (useElectronNet) => {
       url = `${base}inspect`
       opts = {
         headers: {
-          'accept': 'application/json'
+          accept: 'application/json'
         },
         useElectronNet
       }
@@ -870,7 +871,7 @@ const createTestSuite = (useElectronNet) => {
       form.append('a', '1')
 
       const headers = form.getHeaders()
-      headers['b'] = '2'
+      headers.b = '2'
 
       url = `${base}multipart`
       opts = {
@@ -1300,7 +1301,7 @@ const createTestSuite = (useElectronNet) => {
       expect(headers).to.satisfy(i => isIterable(i))
 
       const result = []
-      for (let pair of headers) {
+      for (const pair of headers) {
         result.push(pair)
       }
       expect(result).to.deep.equal([
@@ -1405,23 +1406,23 @@ const createTestSuite = (useElectronNet) => {
 
       const h1Raw = h1.raw()
 
-      expect(h1Raw['a']).to.include('string')
-      expect(h1Raw['b']).to.include('1,2')
-      expect(h1Raw['c']).to.include('')
-      expect(h1Raw['d']).to.include('')
-      expect(h1Raw['e']).to.include('1')
-      expect(h1Raw['f']).to.include('1,2')
-      expect(h1Raw['g']).to.include('[object Object]')
-      expect(h1Raw['h']).to.include('undefined')
-      expect(h1Raw['i']).to.include('null')
-      expect(h1Raw['j']).to.include('NaN')
-      expect(h1Raw['k']).to.include('true')
-      expect(h1Raw['l']).to.include('false')
-      expect(h1Raw['m']).to.include('test')
-      expect(h1Raw['n']).to.include('1,2')
-      expect(h1Raw['n']).to.include('3,4')
+      expect(h1Raw.a).to.include('string')
+      expect(h1Raw.b).to.include('1,2')
+      expect(h1Raw.c).to.include('')
+      expect(h1Raw.d).to.include('')
+      expect(h1Raw.e).to.include('1')
+      expect(h1Raw.f).to.include('1,2')
+      expect(h1Raw.g).to.include('[object Object]')
+      expect(h1Raw.h).to.include('undefined')
+      expect(h1Raw.i).to.include('null')
+      expect(h1Raw.j).to.include('NaN')
+      expect(h1Raw.k).to.include('true')
+      expect(h1Raw.l).to.include('false')
+      expect(h1Raw.m).to.include('test')
+      expect(h1Raw.n).to.include('1,2')
+      expect(h1Raw.n).to.include('3,4')
 
-      expect(h1Raw['z']).to.be.undefined
+      expect(h1Raw.z).to.be.undefined
     })
 
     it('should wrap headers', function () {
@@ -1438,16 +1439,16 @@ const createTestSuite = (useElectronNet) => {
       h3.append('a', '2')
       const h3Raw = h3.raw()
 
-      expect(h1Raw['a']).to.include('1')
-      expect(h1Raw['a']).to.not.include('2')
+      expect(h1Raw.a).to.include('1')
+      expect(h1Raw.a).to.not.include('2')
 
-      expect(h2Raw['a']).to.include('1')
-      expect(h2Raw['a']).to.not.include('2')
-      expect(h2Raw['b']).to.include('1')
+      expect(h2Raw.a).to.include('1')
+      expect(h2Raw.a).to.not.include('2')
+      expect(h2Raw.b).to.include('1')
 
-      expect(h3Raw['a']).to.include('1')
-      expect(h3Raw['a']).to.include('2')
-      expect(h3Raw['b']).to.include('1')
+      expect(h3Raw.a).to.include('1')
+      expect(h3Raw.a).to.include('2')
+      expect(h3Raw.b).to.include('1')
     })
 
     it('should accept headers as an iterable of tuples', function () {

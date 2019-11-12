@@ -14,11 +14,11 @@
  */
 
 const netErrorMap = {
-  'ERR_CONNECTION_REFUSED': 'ECONNREFUSED',
-  'ERR_EMPTY_RESPONSE': 'ECONNRESET',
-  'ERR_NAME_NOT_RESOLVED': 'ENOTFOUND',
-  'ERR_CONTENT_DECODING_FAILED': 'Z_DATA_ERROR',
-  'ERR_CONTENT_DECODING_INIT_FAILED': 'Z_DATA_ERROR'
+  ERR_CONNECTION_REFUSED: 'ECONNREFUSED',
+  ERR_EMPTY_RESPONSE: 'ECONNRESET',
+  ERR_NAME_NOT_RESOLVED: 'ENOTFOUND',
+  ERR_CONTENT_DECODING_FAILED: 'Z_DATA_ERROR',
+  ERR_CONTENT_DECODING_INIT_FAILED: 'Z_DATA_ERROR'
 }
 
 export default function FetchError (message, type, systemError) {
@@ -27,7 +27,7 @@ export default function FetchError (message, type, systemError) {
   if (regex.test(message)) {
     let errorCode = regex.exec(message)[1]
     // istanbul ignore else
-    if (netErrorMap.hasOwnProperty(errorCode)) errorCode = netErrorMap[errorCode]
+    if (Object.prototype.hasOwnProperty.call(netErrorMap, [errorCode])) errorCode = netErrorMap[errorCode]
     systemError = { code: errorCode }
   }
   this.message = message

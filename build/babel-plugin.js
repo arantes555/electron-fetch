@@ -10,7 +10,7 @@ module.exports = ({ types: t }) => ({
           return
         }
 
-        for (let path of program.get('body')) {
+        for (const path of program.get('body')) {
           if (path.isExpressionStatement()) {
             const expr = path.get('expression')
             if (expr.isAssignmentExpression() &&

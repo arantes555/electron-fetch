@@ -14,11 +14,11 @@ export default class Blob {
       configurable: true
     })
 
-    this[ CLOSED ] = false
-    this[ TYPE ] = ''
+    this[CLOSED] = false
+    this[TYPE] = ''
 
-    const blobParts = arguments[ 0 ]
-    const options = arguments[ 1 ]
+    const blobParts = arguments[0]
+    const options = arguments[1]
 
     const buffers = []
 
@@ -26,7 +26,7 @@ export default class Blob {
       const a = blobParts
       const length = Number(a.length)
       for (let i = 0; i < length; i++) {
-        const element = a[ i ]
+        const element = a[i]
         let buffer
         if (element instanceof Buffer) {
           buffer = element
@@ -35,7 +35,7 @@ export default class Blob {
         } else if (element instanceof ArrayBuffer) {
           buffer = Buffer.from(new Uint8Array(element))
         } else if (element instanceof Blob) {
-          buffer = element[ BUFFER ]
+          buffer = element[BUFFER]
         } else {
           buffer = Buffer.from(typeof element === 'string' ? element : String(element))
         }
@@ -43,31 +43,31 @@ export default class Blob {
       }
     }
 
-    this[ BUFFER ] = Buffer.concat(buffers)
+    this[BUFFER] = Buffer.concat(buffers)
 
-    let type = options && options.type !== undefined && String(options.type).toLowerCase()
+    const type = options && options.type !== undefined && String(options.type).toLowerCase()
     if (type && !/[^\u0020-\u007E]/.test(type)) {
-      this[ TYPE ] = type
+      this[TYPE] = type
     }
   }
 
   get size () {
-    return this[ CLOSED ] ? 0 : this[ BUFFER ].length
+    return this[CLOSED] ? 0 : this[BUFFER].length
   }
 
   get type () {
-    return this[ TYPE ]
+    return this[TYPE]
   }
 
   get isClosed () {
-    return this[ CLOSED ]
+    return this[CLOSED]
   }
 
   slice () {
     const size = this.size
 
-    const start = arguments[ 0 ]
-    const end = arguments[ 1 ]
+    const start = arguments[0]
+    const end = arguments[1]
     let relativeStart, relativeEnd
     if (start === undefined) {
       relativeStart = 0
@@ -85,19 +85,19 @@ export default class Blob {
     }
     const span = Math.max(relativeEnd - relativeStart, 0)
 
-    const buffer = this[ BUFFER ]
+    const buffer = this[BUFFER]
     const slicedBuffer = buffer.slice(
       relativeStart,
       relativeStart + span
     )
-    const blob = new Blob([], { type: arguments[ 2 ] })
-    blob[ BUFFER ] = slicedBuffer
-    blob[ CLOSED ] = this[ CLOSED ]
+    const blob = new Blob([], { type: arguments[2] })
+    blob[BUFFER] = slicedBuffer
+    blob[CLOSED] = this[CLOSED]
     return blob
   }
 
   close () {
-    this[ CLOSED ] = true
+    this[CLOSED] = true
   }
 }
 

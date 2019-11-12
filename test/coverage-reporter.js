@@ -13,7 +13,7 @@ function Istanbul (runner) {
 
     coverageMap.merge(global.__coverage__ || {})
 
-    mainReporter.addAll([ 'text', 'json', 'lcov' ])
+    mainReporter.addAll(['text', 'json', 'lcov'])
     mainReporter.write(coverageMap, {})
   })
 }

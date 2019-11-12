@@ -38,14 +38,14 @@ export default function Body (body, { size = 0, timeout = 0 } = {}) {
     body = String(body)
   }
   this.body = body
-  this[ DISTURBED ] = false
+  this[DISTURBED] = false
   this.size = size
   this.timeout = timeout
 }
 
 Body.prototype = {
   get bodyUsed () {
-    return this[ DISTURBED ]
+    return this[DISTURBED]
   },
 
   /**
@@ -63,7 +63,7 @@ Body.prototype = {
    * @return {Promise}
    */
   blob () {
-    let ct = (this.headers && this.headers.get('content-type')) || ''
+    const ct = (this.headers && this.headers.get('content-type')) || ''
     return consumeBody.call(this).then(buf => Object.assign(
       // Prevent copying
       new Blob([], {
@@ -130,11 +130,11 @@ Body.mixIn = function (proto) {
  * @return {Promise}
  */
 function consumeBody () {
-  if (this[ DISTURBED ]) {
+  if (this[DISTURBED]) {
     return Promise.reject(new Error(`body used already for: ${this.url}`))
   }
 
-  this[ DISTURBED ] = true
+  this[DISTURBED] = true
 
   // body is null
   if (this.body === null) {
@@ -148,7 +148,7 @@ function consumeBody () {
 
   // body is blob
   if (this.body instanceof Blob) {
-    return Promise.resolve(this.body[ BUFFER ])
+    return Promise.resolve(this.body[BUFFER])
   }
 
   // body is buffer
@@ -220,7 +220,7 @@ function consumeBody () {
 function convertBody (buffer, headers) {
   const ct = headers.get('content-type')
   let charset = 'utf-8'
-  let res, str
+  let res
 
   // header
   if (ct) {
@@ -228,7 +228,7 @@ function convertBody (buffer, headers) {
   }
 
   // no charset in content type, peek at response body for at most 1024 bytes
-  str = buffer.slice(0, 1024).toString()
+  const str = buffer.slice(0, 1024).toString()
 
   // html5
   if (!res && str) {
@@ -378,7 +378,7 @@ export function writeToStream (dest, instance) {
     dest.end()
   } else if (body instanceof Blob) {
     // body is blob
-    dest.write(body[ BUFFER ])
+    dest.write(body[BUFFER])
     dest.end()
   } else if (Buffer.isBuffer(body)) {
     // body is buffer

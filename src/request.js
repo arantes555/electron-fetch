@@ -4,6 +4,7 @@
  * Request class contains server only options
  */
 
+// eslint-disable-next-line node/no-deprecated-api
 import { format as formatURL, parse as parseURL } from 'url'
 import Headers from './headers.js'
 import Body, { clone, extractContentType, getTotalBytes } from './body'
@@ -36,14 +37,14 @@ export default class Request {
       parsedURL = parseURL(input.url)
     }
 
-    let method = init.method || input.method || 'GET'
+    const method = init.method || input.method || 'GET'
 
     if ((init.body != null || (input instanceof Request && input.body !== null)) &&
       (method === 'GET' || method === 'HEAD')) {
       throw new TypeError('Request with GET/HEAD method cannot have body')
     }
 
-    let inputBody = init.body != null
+    const inputBody = init.body != null
       ? init.body
       : input instanceof Request && input.body !== null
         ? clone(input)
@@ -86,7 +87,7 @@ export default class Request {
     this.counter = init.counter || input.counter || 0
     this.session = init.session || input.session
 
-    this[ PARSED_URL ] = parsedURL
+    this[PARSED_URL] = parsedURL
     Object.defineProperty(this, Symbol.toStringTag, {
       value: 'Request',
       writable: false,
@@ -96,7 +97,7 @@ export default class Request {
   }
 
   get url () {
-    return formatURL(this[ PARSED_URL ])
+    return formatURL(this[PARSED_URL])
   }
 
   /**
@@ -119,7 +120,7 @@ Object.defineProperty(Request.prototype, Symbol.toStringTag, {
 })
 
 export function getNodeRequestOptions (request) {
-  const parsedURL = request[ PARSED_URL ]
+  const parsedURL = request[PARSED_URL]
   const headers = new Headers(request.headers)
 
   // fetch step 3

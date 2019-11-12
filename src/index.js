@@ -4,6 +4,7 @@
  * a request API compatible with window.fetch
  */
 
+// eslint-disable-next-line node/no-deprecated-api
 import { resolve as resolveURL } from 'url'
 import * as http from 'http'
 import * as https from 'https'
@@ -18,7 +19,7 @@ import FetchError from './fetch-error'
 
 let electron
 // istanbul ignore else
-if (process.versions[ 'electron' ]) {
+if (process.versions.electron) {
   electron = require('electron')
 }
 const isReady = (!electron || electron.app.isReady())
@@ -45,7 +46,7 @@ export default function fetch (url, opts = {}) {
 
     // http.request only support string as host header, this hack make custom host header possible
     if (options.headers.host) {
-      options.headers.host = options.headers.host[ 0 ]
+      options.headers.host = options.headers.host[0]
     }
 
     // send request
@@ -59,10 +60,10 @@ export default function fetch (url, opts = {}) {
     }
     const req = send(options)
     if (request.useElectronNet) {
-      for (let headerName in headers) {
-        if (typeof headers[ headerName ] === 'string') req.setHeader(headerName, headers[ headerName ])
+      for (const headerName in headers) {
+        if (typeof headers[headerName] === 'string') req.setHeader(headerName, headers[headerName])
         else {
-          for (let headerValue of headers[ headerName ]) {
+          for (const headerValue of headers[headerName]) {
             req.setHeader(headerName, headerValue)
           }
         }
@@ -131,12 +132,12 @@ export default function fetch (url, opts = {}) {
       // normalize location header for manual redirect mode
       const headers = new Headers()
       for (const name of Object.keys(res.headers)) {
-        if (Array.isArray(res.headers[ name ])) {
-          for (const val of res.headers[ name ]) {
+        if (Array.isArray(res.headers[name])) {
+          for (const val of res.headers[name]) {
             headers.append(name, val)
           }
         } else {
-          headers.append(name, res.headers[ name ])
+          headers.append(name, res.headers[name])
         }
       }
       if (request.redirect === 'manual' && headers.has('location')) {
@@ -188,7 +189,7 @@ export default function fetch (url, opts = {}) {
           const raw = res.pipe(new PassThrough())
           return raw.once('data', chunk => {
             // see http://stackoverflow.com/questions/37519828
-            if ((chunk[ 0 ] & 0x0F) === 0x08) {
+            if ((chunk[0] & 0x0F) === 0x08) {
               body = body.pipe(zlib.createInflate())
             } else {
               body = body.pipe(zlib.createInflateRaw())

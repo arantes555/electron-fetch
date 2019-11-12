@@ -16,13 +16,14 @@
   "scripts": {
     "build": "cross-env BABEL_ENV=rollup rollup -c",
     "prepublishOnly": "npm run build",
+    "lint": "standard",
     "test": "npm run test:electron && npm run test:node && npm run test:typings && standard",
     "pretest:typings": "npm run build",
     "test:typings": "ts-node test/test-typescript.ts",
     "test:electron": "xvfb-maybe cross-env BABEL_ENV=test electron-mocha --require @babel/register test/test.js",
     "test:node": "cross-env BABEL_ENV=test mocha --require @babel/register test/test.js",
     "coverage": "xvfb-maybe cross-env BABEL_ENV=coverage electron-mocha --require @babel/register test/test.js -R test/coverage-reporter.js",
-    "report": "standard && npm run test:typings && npm run coverage && codecov -f coverage/coverage-final.json"
+    "report": "npm run lint && npm run test:typings && npm run coverage && codecov -f coverage/coverage-final.json"
   },
   "repository": {
     "type": "git",

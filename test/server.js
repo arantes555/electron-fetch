@@ -1,4 +1,5 @@
 import * as http from 'http'
+// eslint-disable-next-line node/no-deprecated-api
 import { parse } from 'url'
 import * as zlib from 'zlib'
 import { convert } from 'encoding'
@@ -28,7 +29,7 @@ export class TestServer {
   }
 
   router (req, res) {
-    let p = parse(req.url).pathname
+    const p = parse(req.url).pathname
 
     if (p === '/hello') {
       res.statusCode = 200

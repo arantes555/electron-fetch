@@ -204,8 +204,8 @@ Object.defineProperty(Headers.prototype, Symbol.toStringTag, {
 function getHeaderPairs (headers, kind) {
   if (kind === 'key') return Object.keys(headers[MAP]).sort().map(k => [k])
   const pairs = []
-  for (let key of Object.keys(headers[MAP]).sort()) {
-    for (let value of headers[MAP][key]) {
+  for (const key of Object.keys(headers[MAP]).sort()) {
+    for (const value of headers[MAP][key]) {
       pairs.push([key, value])
     }
   }
