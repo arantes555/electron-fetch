@@ -1,5 +1,6 @@
 import { Readable, Stream } from 'stream'
 import { Session } from 'electron'
+import { Agent } from 'https'
 
 export default fetch
 
@@ -101,6 +102,7 @@ export interface RequestInit {
   // maximum response body size in bytes. 0 to disable
   size?: number
   session?: Session
+  agent?: Agent,
   useElectronNet?: boolean
   // When running on Electron behind an authenticated HTTP proxy, username to use to authenticate
   user?: string

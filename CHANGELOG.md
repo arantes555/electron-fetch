@@ -4,6 +4,11 @@ Changelog
 
 # electron-fetch 1.x
 
+## V1.4.0
+- Add `agent` option when not using `electron.net`
+- Remove tolerance for slightly invalid GZip responses, as it is broken in recent node versions
+- Update all dependencies
+
 ## V1.3.0
 - Fix TypeScript typings & add tests so they cannot break again
 - Updating dependencies

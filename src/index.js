@@ -54,6 +54,8 @@ export default function fetch (url, opts = {}) {
       headers = options.headers
       delete options.headers
       options.session = opts.session || electron.session.defaultSession // we have to use a persistent session here, because of https://github.com/electron/electron/issues/13587
+    } else {
+      if (opts.agent) options.agent = opts.agent
     }
     const req = send(options)
     if (request.useElectronNet) {
@@ -172,13 +174,14 @@ export default function fetch (url, opts = {}) {
         // servers send slightly invalid responses that are still accepted
         // by common browsers.
         // Always using Z_SYNC_FLUSH is what cURL does.
-        const zlibOptions = {
-          flush: zlib.Z_SYNC_FLUSH,
-          finishFlush: zlib.Z_SYNC_FLUSH
-        }
+        // /!\ This is disabled for now, because it seems broken in recent node
+        // const zlibOptions = {
+        //   flush: zlib.Z_SYNC_FLUSH,
+        //   finishFlush: zlib.Z_SYNC_FLUSH
+        // }
 
         if (codings === 'gzip' || codings === 'x-gzip') { // for gzip
-          body = body.pipe(zlib.createGunzip(zlibOptions))
+          body = body.pipe(zlib.createGunzip())
         } else if (codings === 'deflate' || codings === 'x-deflate') { // for deflate
           // handle the infamous raw deflate response from old servers
           // a hack for old IIS and Apache servers
@@ -186,9 +189,9 @@ export default function fetch (url, opts = {}) {
           return raw.once('data', chunk => {
             // see http://stackoverflow.com/questions/37519828
             if ((chunk[ 0 ] & 0x0F) === 0x08) {
-              body = body.pipe(zlib.createInflate(zlibOptions))
+              body = body.pipe(zlib.createInflate())
             } else {
-              body = body.pipe(zlib.createInflateRaw(zlibOptions))
+              body = body.pipe(zlib.createInflateRaw())
             }
             const response = new Response(body, responseOptions)
             resolve(response)
