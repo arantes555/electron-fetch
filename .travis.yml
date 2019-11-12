@@ -25,7 +25,7 @@ env:
 
 before_script:
   - 'if [ "$FORMDATA_VERSION" ]; then npm install form-data@^$FORMDATA_VERSION; fi'
-  - 'if [ "ELECTRON_VERSION" ]; then npm install electron@^ELECTRON_VERSION; fi'
+  - 'if [ "$ELECTRON_VERSION" ]; then npm install electron@^ELECTRON_VERSION; fi'
 
 before_install:
   - npm i -g npm@6.13.0
