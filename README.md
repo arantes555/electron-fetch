@@ -9,6 +9,7 @@ electron-fetch
 A light-weight module that brings `window.fetch` to Electron's background process.
 Forked from [`node-fetch`](https://github.com/bitinn/node-fetch).
 
+⚠❗️ WARNING: For now, a lot of things are broken on electron7. You can follow the github issues at https://github.com/electron/electron/labels/component%2Fnet
 
 ## Motivation
 

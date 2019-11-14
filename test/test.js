@@ -611,18 +611,17 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
-    if (!useElectronNet || parseInt(process.versions.electron) < 4 || parseInt(process.versions.electron) >= 7) {
-      // TODO: broken on electron >= 4, so we disable it for the moment. It seems fixed on electron-7, but lots of other things are broken there
-      it('should reject if response compression is invalid', function () {
-        url = `${base}invalid-content-encoding`
-        return fetch(url, { useElectronNet }).then(res => {
-          expect(res.headers.get('content-type')).to.equal('text/plain')
-          return expect(res.text()).to.eventually.be.rejected
-            .and.be.an.instanceOf(FetchError)
-            .and.have.property('code', 'Z_DATA_ERROR')
-        })
+    it('should reject if response compression is invalid', function () {
+      // broken on electron 4 <= version < 7, so we disable it. It seems fixed on electron-7, but lots of other things are broken there
+      if (useElectronNet && parseInt(process.versions.electron) >= 4 && parseInt(process.versions.electron) < 7) return this.skip()
+      url = `${base}invalid-content-encoding`
+      return fetch(url, { useElectronNet }).then(res => {
+        expect(res.headers.get('content-type')).to.equal('text/plain')
+        return expect(res.text()).to.eventually.be.rejected
+          .and.be.an.instanceOf(FetchError)
+          .and.have.property('code', 'Z_DATA_ERROR')
       })
-    }
+    })
 
     it('should allow custom timeout', function () {
       this.timeout(500)
@@ -1263,6 +1262,7 @@ const createTestSuite = (useElectronNet) => {
     })
 
     it('should allow get all responses of a header', function () {
+      // TODO: broken on electron@7 https://github.com/electron/electron/issues/20631
       url = `${base}cookie`
       return fetch(url, { useElectronNet }).then(res => {
         expect(res.headers.get('set-cookie')).to.equal('a=1,b=1')
@@ -1881,17 +1881,16 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
-    if (!useElectronNet) { // TODO: does not work on electron, see https://github.com/electron/electron/issues/8074
-      it('should throw on https with bad cert', function () {
-        this.timeout(5000)
-        url = 'https://expired.badssl.com//'
-        opts = {
-          method: 'GET',
-          useElectronNet
-        }
-        return expect(fetch(url, opts)).to.eventually.be.rejectedWith(FetchError)
-      })
-    }
+    it('should throw on https with bad cert', function () {
+      if (useElectronNet && parseInt(process.versions.electron) < 7) return this.skip() // https://github.com/electron/electron/issues/8074
+      this.timeout(5000)
+      url = 'https://expired.badssl.com//'
+      opts = {
+        method: 'GET',
+        useElectronNet
+      }
+      return expect(fetch(url, opts)).to.eventually.be.rejectedWith(FetchError)
+    })
 
     it('should send an https post request', function () {
       this.timeout(5000)

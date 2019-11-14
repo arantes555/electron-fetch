@@ -1,2 +1,4 @@
-- For now, we keep electron@6 because electron@7 has issues : https://github.com/electron/electron/issues/21091
+- For now, we keep electron@6 because electron@7 has issues :
+  - https://github.com/electron/electron/issues/20631
+  - TODO: open the other issues
 - Mocha is fixed to the same version as electron-mocha's mocha, in order for coverage-reporter to work

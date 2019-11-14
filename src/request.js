@@ -59,6 +59,7 @@ export default class Request {
     this.method = method.toUpperCase()
     this.redirect = init.redirect || input.redirect || 'follow'
     this.headers = new Headers(init.headers || input.headers || {})
+    this.headers.delete('Content-Length') // user cannot set content-length themself as per fetch spec
     this.chunkedEncoding = false
     this.useElectronNet = init.useElectronNet !== undefined // have to do this instead of || because it can be set to false
       ? init.useElectronNet
@@ -149,7 +150,7 @@ export function getNodeRequestOptions (request) {
     }
   }
   if (contentLengthValue) {
-    headers.set('Content-Length', contentLengthValue)
+    if (!request.useElectronNet) headers.set('Content-Length', contentLengthValue)
   } else {
     request.chunkedEncoding = true
   }
