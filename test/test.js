@@ -829,6 +829,31 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
+    it('should allow POST request with empty readable stream as body', function () {
+      const body = new stream.PassThrough().end()
+
+      url = `${base}inspect`
+      opts = {
+        method: 'POST',
+        body,
+        useElectronNet
+      }
+
+      return fetch(url, opts).then(res => {
+        return res.json()
+      }).then(res => {
+        expect(res.method).to.equal('POST')
+        expect(res.body).to.equal('')
+        expect(res.headers['content-type']).to.be.undefined
+        if (useElectronNet) {
+          expect(res.headers['transfer-encoding']).to.equal('chunked')
+          expect(res.headers['content-length']).to.be.undefined
+        } else {
+          expect(res.headers['content-length']).to.eql('0')
+        }
+      })
+    })
+
     it('should allow POST request with form-data as body', function () {
       const form = new FormData()
       form.append('a', '1')
