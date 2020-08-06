@@ -51,6 +51,9 @@ const deepEqual = (value, expectedValue) => {
 }
 const deepIteratesOver = (value, expectedValue) => deepEqual(Array.from(value), Array.from(expectedValue))
 
+const isElectronGreaterThan = (majorVersion) =>
+  process.versions.electron && Number(process.versions.electron.split('.')[0]) >= majorVersion
+
 before(done => {
   local.start(() =>
     unauthenticatedProxy.start(() =>
@@ -200,20 +203,22 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
-    it('should accept custom host header', function () {
-      url = `${base}inspect`
-      opts = {
-        headers: {
-          host: 'example.com'
-        },
-        useElectronNet
-      }
-      return fetch(url, opts).then(res => {
-        return res.json()
-      }).then(res => {
-        expect(res.headers.host).to.equal('example.com')
+    if (!useElectronNet || !isElectronGreaterThan(7)) {
+      it('should accept custom host header', function () {
+        url = `${base}inspect`
+        opts = {
+          headers: {
+            host: 'example.com'
+          },
+          useElectronNet
+        }
+        return fetch(url, opts).then(res => {
+          return res.json()
+        }).then(res => {
+          expect(res.headers.host).to.equal('example.com')
+        })
       })
-    })
+    }
 
     it('should accept connection header', function () {
       url = `${base}inspect`
