@@ -72,6 +72,12 @@ export default function fetch (url, opts = {}) {
     }
     let reqTimeout
 
+    if (opts.signal) {
+      opts.signal.addEventListener('abort', () => {
+        req.abort()
+      })
+    }
+
     if (request.timeout) {
       reqTimeout = setTimeout(() => {
         req.abort()
