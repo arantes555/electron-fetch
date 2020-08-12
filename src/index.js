@@ -155,6 +155,13 @@ export default function fetch (url, opts = {}) {
       let body = new PassThrough()
       res.on('error', err => body.emit('error', err))
       res.pipe(body)
+
+      if (opts.signal && request.useElectronNet) {
+        opts.signal.addEventListener('abort', () => {
+          body.end()
+        })
+      }
+
       const responseOptions = {
         url: request.url,
         status: res.statusCode,
