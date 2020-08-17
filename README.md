@@ -9,8 +9,6 @@ electron-fetch
 A light-weight module that brings `window.fetch` to Electron's background process.
 Forked from [`node-fetch`](https://github.com/bitinn/node-fetch).
 
-⚠❗️ WARNING: For now, a lot of things are broken on electron7. You can follow the github issues at https://github.com/electron/electron/labels/component%2Fnet
-
 ## Motivation
 
 Instead of implementing `XMLHttpRequest` over Electron's `net` module to run browser-specific [Fetch polyfill](https://github.com/github/fetch), why not go from native `net.request` to `fetch` API directly? Hence `electron-fetch`, minimal code for a `window.fetch` compatible API on Electron's background runtime.

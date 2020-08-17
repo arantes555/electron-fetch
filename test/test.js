@@ -9,7 +9,7 @@ import resumer from 'resumer'
 import FormData from 'form-data'
 // eslint-disable-next-line node/no-deprecated-api
 import { parse as parseURL } from 'url'
-import { URL } from 'whatwg-url'
+import { URL } from 'whatwg-url' // TODO: remove
 import * as fs from 'fs'
 import assert from 'assert'
 
@@ -50,9 +50,6 @@ const deepEqual = (value, expectedValue) => {
   }
 }
 const deepIteratesOver = (value, expectedValue) => deepEqual(Array.from(value), Array.from(expectedValue))
-
-const isElectronGreaterThan = (majorVersion) =>
-  process.versions.electron && Number(process.versions.electron.split('.')[0]) >= majorVersion
 
 before(done => {
   local.start(() =>
@@ -203,22 +200,21 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
-    if (!useElectronNet || !isElectronGreaterThan(7)) {
-      it('should accept custom host header', function () {
-        url = `${base}inspect`
-        opts = {
-          headers: {
-            host: 'example.com'
-          },
-          useElectronNet
-        }
-        return fetch(url, opts).then(res => {
-          return res.json()
-        }).then(res => {
-          expect(res.headers.host).to.equal('example.com')
-        })
+    it('should accept custom host header', function () {
+      if (useElectronNet && parseInt(process.versions.electron) >= 7) return this.skip() // https://github.com/electron/electron/issues/21148
+      url = `${base}inspect`
+      opts = {
+        headers: {
+          host: 'example.com'
+        },
+        useElectronNet
+      }
+      return fetch(url, opts).then(res => {
+        return res.json()
+      }).then(res => {
+        expect(res.headers.host).to.equal('example.com')
       })
-    }
+    })
 
     it('should accept connection header', function () {
       url = `${base}inspect`
@@ -617,7 +613,7 @@ const createTestSuite = (useElectronNet) => {
     })
 
     it('should reject if response compression is invalid', function () {
-      // broken on electron 4 <= version < 7, so we disable it. It seems fixed on electron-7, but lots of other things are broken there
+      // broken on electron 4 <= version < 7, so we disable it. It seems fixed on electron >= 7
       if (useElectronNet && parseInt(process.versions.electron) >= 4 && parseInt(process.versions.electron) < 7) return this.skip()
       url = `${base}invalid-content-encoding`
       return fetch(url, { useElectronNet }).then(res => {
@@ -809,8 +805,7 @@ const createTestSuite = (useElectronNet) => {
     })
 
     it('should allow POST request with readable stream as body', function () {
-      let body = resumer().queue('a=1').end()
-      body = body.pipe(new stream.PassThrough())
+      const body = resumer().queue('a=1').end()
 
       url = `${base}inspect`
       opts = {
@@ -848,7 +843,7 @@ const createTestSuite = (useElectronNet) => {
         if (useElectronNet) {
           expect(res.headers['transfer-encoding']).to.equal('chunked')
           expect(res.headers['content-length']).to.be.undefined
-        } else {
+        } else { // node automatically detects empty stream and sets content-length to 0
           expect(res.headers['content-length']).to.eql('0')
         }
       })

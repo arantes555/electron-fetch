@@ -1,5 +1,5 @@
 // Inspired from https://github.com/MarshallOfSound/Google-Play-Music-Desktop-Player-UNOFFICIAL-
-const istanbulAPI = require('istanbul-api')
+const istanbulAPI = require('istanbul-api') // TODO: deprecated, change this
 const libCoverage = require('istanbul-lib-coverage')
 const specReporter = require('mocha/lib/reporters/spec.js')
 const inherits = require('mocha/lib/utils').inherits

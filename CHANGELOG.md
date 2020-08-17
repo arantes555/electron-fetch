@@ -4,6 +4,10 @@ Changelog
 
 # electron-fetch 1.x
 
+## Unreleased
+- Fix requests with empty stream as body & tests on electron >= 7 (thanks @taratatach)
+- Update all dependencies
+
 ## V1.4.0
 - Fix a few problems with electron@7 (other things are still broken)
 - Add `agent` option when not using `electron.net`
