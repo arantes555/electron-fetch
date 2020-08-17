@@ -4,7 +4,7 @@ Changelog
 
 # electron-fetch 1.x
 
-## Unreleased
+## V1.5.0
 - Fix requests with empty stream as body & tests on electron >= 7 (thanks @taratatach)
 - Update all dependencies
 
