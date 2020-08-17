@@ -49,6 +49,11 @@ export default function fetch (url, opts = {}) {
       options.headers.host = options.headers.host[0]
     }
 
+    if (request.signal && request.signal.aborted) {
+      reject(new FetchError('request aborted', 'abort'))
+      return
+    }
+
     // send request
     let headers
     if (request.useElectronNet) {
@@ -72,9 +77,14 @@ export default function fetch (url, opts = {}) {
     }
     let reqTimeout
 
-    if (opts.signal) {
-      opts.signal.addEventListener('abort', () => {
-        req.abort()
+    if (request.signal) {
+      request.signal.addEventListener('abort', () => {
+        reject(new FetchError('request aborted', 'abort'))
+        if (request.useElectronNet) {
+          req.abort()
+        } else {
+          req.destroy(new FetchError('request aborted', 'abort'))
+        }
       })
     }
 
@@ -156,9 +166,9 @@ export default function fetch (url, opts = {}) {
       res.on('error', err => body.emit('error', err))
       res.pipe(body)
 
-      if (opts.signal && request.useElectronNet) {
-        opts.signal.addEventListener('abort', () => {
-          body.end()
+      if (request.signal) {
+        request.signal.addEventListener('abort', () => {
+          body.destroy(new FetchError('request aborted', 'abort'))
         })
       }
 

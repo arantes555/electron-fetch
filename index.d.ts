@@ -89,6 +89,7 @@ export interface RequestInit {
   method?: string
   headers?: HeadersInit
   body?: BodyInit
+  signal: AbortSignal
   // (/!\ only works when running on Node.js) set to `manual` to extract redirect headers, `error` to reject redirect
   redirect?: RequestRedirect
 
@@ -121,6 +122,7 @@ export class Request implements Body {
   readonly headers: Headers
 
   readonly redirect: RequestRedirect
+  readonly signal: AbortSignal
 
   clone (): Request
 
