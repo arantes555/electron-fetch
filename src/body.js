@@ -388,6 +388,10 @@ export function writeToStream (dest, instance) {
     // body is stream
     if (instance.useElectronNet) {
       dest.chunkedEncoding = instance.chunkedEncoding
+
+      // Force a first write to start the request otherwise an empty body stream
+      // will cause an error when closing the dest stream with Electron v7.
+      dest.write('')
     }
     body.pipe(new PassThrough()) // I have to put a PassThrough because somehow, FormData streams are not eaten by electron/net
       .pipe(dest)

@@ -51,6 +51,9 @@ const deepEqual = (value, expectedValue) => {
 }
 const deepIteratesOver = (value, expectedValue) => deepEqual(Array.from(value), Array.from(expectedValue))
 
+const isElectronGreaterThan = (majorVersion) =>
+  process.versions.electron && Number(process.versions.electron.split('.')[0]) >= majorVersion
+
 before(done => {
   local.start(() =>
     unauthenticatedProxy.start(() =>
@@ -200,20 +203,22 @@ const createTestSuite = (useElectronNet) => {
       })
     })
 
-    it('should accept custom host header', function () {
-      url = `${base}inspect`
-      opts = {
-        headers: {
-          host: 'example.com'
-        },
-        useElectronNet
-      }
-      return fetch(url, opts).then(res => {
-        return res.json()
-      }).then(res => {
-        expect(res.headers.host).to.equal('example.com')
+    if (!useElectronNet || !isElectronGreaterThan(7)) {
+      it('should accept custom host header', function () {
+        url = `${base}inspect`
+        opts = {
+          headers: {
+            host: 'example.com'
+          },
+          useElectronNet
+        }
+        return fetch(url, opts).then(res => {
+          return res.json()
+        }).then(res => {
+          expect(res.headers.host).to.equal('example.com')
+        })
       })
-    })
+    }
 
     it('should accept connection header', function () {
       url = `${base}inspect`
@@ -821,6 +826,31 @@ const createTestSuite = (useElectronNet) => {
         expect(res.headers['transfer-encoding']).to.equal('chunked')
         expect(res.headers['content-type']).to.be.undefined
         expect(res.headers['content-length']).to.be.undefined
+      })
+    })
+
+    it('should allow POST request with empty readable stream as body', function () {
+      const body = new stream.PassThrough().end()
+
+      url = `${base}inspect`
+      opts = {
+        method: 'POST',
+        body,
+        useElectronNet
+      }
+
+      return fetch(url, opts).then(res => {
+        return res.json()
+      }).then(res => {
+        expect(res.method).to.equal('POST')
+        expect(res.body).to.equal('')
+        expect(res.headers['content-type']).to.be.undefined
+        if (useElectronNet) {
+          expect(res.headers['transfer-encoding']).to.equal('chunked')
+          expect(res.headers['content-length']).to.be.undefined
+        } else {
+          expect(res.headers['content-length']).to.eql('0')
+        }
       })
     })
 
