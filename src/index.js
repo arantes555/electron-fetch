@@ -55,7 +55,7 @@ export default function fetch (url, opts = {}) {
       headers = options.headers
       delete options.headers
       options.session = opts.session || electron.session.defaultSession // we have to use a persistent session here, because of https://github.com/electron/electron/issues/13587
-      options.useSessionCookies = true
+      options.useSessionCookies = request.useSessionCookies
     } else {
       if (opts.agent) options.agent = opts.agent
     }
@@ -156,7 +156,8 @@ export default function fetch (url, opts = {}) {
         headers: headers,
         size: request.size,
         timeout: request.timeout,
-        useElectronNet: request.useElectronNet
+        useElectronNet: request.useElectronNet,
+        useSessionCookies: request.useSessionCookies
       }
 
       // HTTP-network fetch step 16.1.2
