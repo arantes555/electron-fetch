@@ -2003,6 +2003,137 @@ const createTestSuite = (useElectronNet) => {
             })
           })
       })
+
+      it('should send cookies stored in session if requested', function () {
+        url = `${base}setCookies`
+        return waitForSessions
+          .then(() => fetch(url, {
+            useElectronNet,
+            session: unauthenticatedProxySession
+          }))
+          .then(res => {
+            return unauthenticatedProxySession.cookies.get({}).then(cookies =>
+              assert(deepEqual(cookies, [
+                {
+                  domain: 'localhost',
+                  hostOnly: true,
+                  httpOnly: false,
+                  name: 'type',
+                  path: '/',
+                  secure: false,
+                  session: true,
+                  value: 'ninja'
+                },
+                {
+                  domain: 'localhost',
+                  hostOnly: true,
+                  httpOnly: false,
+                  name: 'language',
+                  path: '/',
+                  secure: false,
+                  session: true,
+                  value: 'javascript'
+                }
+              ]))
+            )
+          })
+          .then(() => fetch(`${base}inspect`, {
+            useElectronNet,
+            useSessionCookies: true,
+            session: unauthenticatedProxySession
+          }))
+          .then(res => res.json())
+          .then(res => {
+            expect(res.headers.cookie).to.equal('type=ninja; language=javascript')
+          })
+      })
+
+      it('should not send cookies stored in session by default', function () {
+        url = `${base}setCookies`
+        return waitForSessions
+          .then(() => fetch(url, {
+            useElectronNet,
+            session: unauthenticatedProxySession
+          }))
+          .then(res => {
+            return unauthenticatedProxySession.cookies.get({}).then(cookies =>
+              assert(deepEqual(cookies, [
+                {
+                  domain: 'localhost',
+                  hostOnly: true,
+                  httpOnly: false,
+                  name: 'type',
+                  path: '/',
+                  secure: false,
+                  session: true,
+                  value: 'ninja'
+                },
+                {
+                  domain: 'localhost',
+                  hostOnly: true,
+                  httpOnly: false,
+                  name: 'language',
+                  path: '/',
+                  secure: false,
+                  session: true,
+                  value: 'javascript'
+                }
+              ]))
+            )
+          })
+          .then(() => fetch(`${base}inspect`, {
+            useElectronNet,
+            session: unauthenticatedProxySession
+          }))
+          .then(res => res.json())
+          .then(res => {
+            expect(res.headers.cookie).to.equal(undefined)
+          })
+      })
+
+      it('should not send cookies stored in session if asked not to', function () {
+        url = `${base}setCookies`
+        return waitForSessions
+          .then(() => fetch(url, {
+            useElectronNet,
+            session: unauthenticatedProxySession
+          }))
+          .then(res => {
+            return unauthenticatedProxySession.cookies.get({}).then(cookies =>
+              assert(deepEqual(cookies, [
+                {
+                  domain: 'localhost',
+                  hostOnly: true,
+                  httpOnly: false,
+                  name: 'type',
+                  path: '/',
+                  secure: false,
+                  session: true,
+                  value: 'ninja'
+                },
+                {
+                  domain: 'localhost',
+                  hostOnly: true,
+                  httpOnly: false,
+                  name: 'language',
+                  path: '/',
+                  secure: false,
+                  session: true,
+                  value: 'javascript'
+                }
+              ]))
+            )
+          })
+          .then(() => fetch(`${base}inspect`, {
+            useElectronNet,
+            useSessionCookies: false,
+            session: unauthenticatedProxySession
+          }))
+          .then(res => res.json())
+          .then(res => {
+            expect(res.headers.cookie).to.equal(undefined)
+          })
+      })
     }
   })
 

@@ -72,6 +72,12 @@ export default class Request {
       this.useElectronNet = Boolean(process.versions.electron)
     }
 
+    if (this.useElectronNet) {
+      this.useSessionCookies = init.useSessionCookies !== undefined
+        ? init.useSessionCookies
+        : input.useSessionCookies
+    }
+
     if (init.body != null) {
       const contentType = extractContentType(this)
       if (contentType !== null && !this.headers.has('Content-Type')) {
