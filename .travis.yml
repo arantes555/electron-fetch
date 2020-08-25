@@ -29,7 +29,9 @@ jobs:
     - node_js: "12"
       env: ELECTRON_VERSION=8.5.0
     - node_js: "12"
-      env: ELECTRON_VERSION=9.2.0
+      env: ELECTRON_VERSION=9.2.1
+    - node_js: "12"
+      env: ELECTRON_VERSION=10.0.0
 
 before_script:
   - 'if [ "$FORMDATA_VERSION" ]; then npm install form-data@^$FORMDATA_VERSION; fi'

@@ -2012,30 +2012,6 @@ const createTestSuite = (useElectronNet) => {
           useElectronNet,
           session: testCookiesSession
         })
-          .then(res => testCookiesSession.cookies.get({}).then(cookies =>
-            assert(deepEqual(cookies, [
-              {
-                domain: 'localhost',
-                hostOnly: true,
-                httpOnly: false,
-                name: 'type',
-                path: '/',
-                secure: false,
-                session: true,
-                value: 'ninja'
-              },
-              {
-                domain: 'localhost',
-                hostOnly: true,
-                httpOnly: false,
-                name: 'language',
-                path: '/',
-                secure: false,
-                session: true,
-                value: 'javascript'
-              }
-            ]))
-          ))
           .then(() => fetch(`${base}inspect`, {
             useElectronNet,
             useSessionCookies: true,
@@ -2054,30 +2030,6 @@ const createTestSuite = (useElectronNet) => {
           useElectronNet,
           session: testCookiesSession
         })
-          .then(res => testCookiesSession.cookies.get({}).then(cookies =>
-            assert(deepEqual(cookies, [
-              {
-                domain: 'localhost',
-                hostOnly: true,
-                httpOnly: false,
-                name: 'type',
-                path: '/',
-                secure: false,
-                session: true,
-                value: 'ninja'
-              },
-              {
-                domain: 'localhost',
-                hostOnly: true,
-                httpOnly: false,
-                name: 'language',
-                path: '/',
-                secure: false,
-                session: true,
-                value: 'javascript'
-              }
-            ]))
-          ))
           .then(() => fetch(`${base}inspect`, {
             useElectronNet,
             session: testCookiesSession
@@ -2095,30 +2047,6 @@ const createTestSuite = (useElectronNet) => {
           useElectronNet,
           session: testCookiesSession
         })
-          .then(res => testCookiesSession.cookies.get({}).then(cookies =>
-            assert(deepEqual(cookies, [
-              {
-                domain: 'localhost',
-                hostOnly: true,
-                httpOnly: false,
-                name: 'type',
-                path: '/',
-                secure: false,
-                session: true,
-                value: 'ninja'
-              },
-              {
-                domain: 'localhost',
-                hostOnly: true,
-                httpOnly: false,
-                name: 'language',
-                path: '/',
-                secure: false,
-                session: true,
-                value: 'javascript'
-              }
-            ]))
-          ))
           .then(() => fetch(`${base}inspect`, {
             useElectronNet,
             useSessionCookies: false,

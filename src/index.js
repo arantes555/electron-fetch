@@ -54,7 +54,7 @@ export default function fetch (url, opts = {}) {
     if (request.useElectronNet) {
       headers = options.headers
       delete options.headers
-      options.session = opts.session || electron.session.defaultSession // we have to use a persistent session here, because of https://github.com/electron/electron/issues/13587
+      options.session = opts.session || electron.session.defaultSession
       options.useSessionCookies = request.useSessionCookies
     } else {
       if (opts.agent) options.agent = opts.agent
