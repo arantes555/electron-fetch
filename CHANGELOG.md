@@ -4,6 +4,9 @@ Changelog
 
 # electron-fetch 1.x
 
+## Unreleased
+- Add option `useSessionCookies` to use session cookies when running on Electron >=7 (thanks @taratatach)
+
 ## V1.5.0
 - Fix requests with empty stream as body & tests on electron >= 7 (thanks @taratatach)
 - Update all dependencies

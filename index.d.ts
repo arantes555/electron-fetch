@@ -104,6 +104,7 @@ export interface RequestInit {
   session?: Session
   agent?: Agent,
   useElectronNet?: boolean
+  useSessionCookies?: boolean
   // When running on Electron behind an authenticated HTTP proxy, username to use to authenticate
   user?: string
   // When running on Electron behind an authenticated HTTP proxy, password to use to authenticate
@@ -134,6 +135,8 @@ export class Request implements Body {
   session?: Session
   // (/!\ only works when running on Electron, throws when set to true on Node.js)
   useElectronNet: boolean
+  // (/!\ only works when running on Electron)
+  useSessionCookies?: boolean
 
   ////////////////////////////////////////////////////////////////////////////
   // Body impl

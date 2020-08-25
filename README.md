@@ -37,7 +37,7 @@ Why not simply use node-fetch? Well, Electron's `net` module does a better job t
 ## Difference from node-fetch
 
 - Removed node-fetch specific options, such as `compression`.
-- Added electron-specific option to specify the `Session`.
+- Added electron-specific options to specify the `Session` & to enable using cookies from it.
 - Added electron-specific option `useElectronNet`, which can be set to false when running on Electron in order to behave as Node.js.
 - Removed possibility to use custom Promise implementation (it's 2018, `Promise` is available everywhere!).
 - Removed the possibility to forbid content compression (incompatible with Electron's `net` module, and of limited interest)
@@ -198,6 +198,7 @@ const defaultOptions = {
 	session: session.defaultSession, // (/!\ only works when running on Electron) Electron Session object.,
 	agent: null,        // (/!\ only works when useElectronNet is false) Node HTTP Agent.,
 	useElectronNet: true, // When running on Electron, defaults to true. On Node.js, defaults to false and cannot be set to true.
+	useSessionCookies: true, // (/!\ only works when running on Electron >= 7) Whether or not to automatically send cookies from session.,
 	user: undefined,    // When running on Electron behind an authenticated HTTP proxy, username to use to authenticate
 	password: undefined // When running on Electron behind an authenticated HTTP proxy, password to use to authenticate
 }
@@ -239,6 +240,7 @@ The following electron-fetch extension properties are provided:
 - `session` (/!\ only works when running on Electron)
 - `agent` (/!\ only works when running on Node.js)
 - `useElectronNet` (/!\ only works when running on Electron, throws when set to true on Node.js)
+- `useSessionCookies` (/!\ only works when running on Electron >= 7)
 
 See [options](#fetch-options) for exact meaning of these extensions.
 

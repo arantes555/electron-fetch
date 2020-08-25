@@ -1936,6 +1936,7 @@ const createTestSuite = (useElectronNet) => {
 
     if (useElectronNet) {
       const electron = require('electron')
+      const testCookiesSession = electron.session.fromPartition('test-cookies')
       const unauthenticatedProxySession = electron.session.fromPartition('unauthenticated-proxy')
       const authenticatedProxySession = electron.session.fromPartition('authenticated-proxy')
       const waitForSessions = parseInt(process.versions.electron) < 6
@@ -2005,42 +2006,40 @@ const createTestSuite = (useElectronNet) => {
       })
 
       it('should send cookies stored in session if requested', function () {
+        if (parseInt(process.versions.electron) < 7) return this.skip()
         url = `${base}setCookies`
-        return waitForSessions
-          .then(() => fetch(url, {
-            useElectronNet,
-            session: unauthenticatedProxySession
-          }))
-          .then(res => {
-            return unauthenticatedProxySession.cookies.get({}).then(cookies =>
-              assert(deepEqual(cookies, [
-                {
-                  domain: 'localhost',
-                  hostOnly: true,
-                  httpOnly: false,
-                  name: 'type',
-                  path: '/',
-                  secure: false,
-                  session: true,
-                  value: 'ninja'
-                },
-                {
-                  domain: 'localhost',
-                  hostOnly: true,
-                  httpOnly: false,
-                  name: 'language',
-                  path: '/',
-                  secure: false,
-                  session: true,
-                  value: 'javascript'
-                }
-              ]))
-            )
-          })
+        return fetch(url, {
+          useElectronNet,
+          session: testCookiesSession
+        })
+          .then(res => testCookiesSession.cookies.get({}).then(cookies =>
+            assert(deepEqual(cookies, [
+              {
+                domain: 'localhost',
+                hostOnly: true,
+                httpOnly: false,
+                name: 'type',
+                path: '/',
+                secure: false,
+                session: true,
+                value: 'ninja'
+              },
+              {
+                domain: 'localhost',
+                hostOnly: true,
+                httpOnly: false,
+                name: 'language',
+                path: '/',
+                secure: false,
+                session: true,
+                value: 'javascript'
+              }
+            ]))
+          ))
           .then(() => fetch(`${base}inspect`, {
             useElectronNet,
             useSessionCookies: true,
-            session: unauthenticatedProxySession
+            session: testCookiesSession
           }))
           .then(res => res.json())
           .then(res => {
@@ -2049,41 +2048,39 @@ const createTestSuite = (useElectronNet) => {
       })
 
       it('should not send cookies stored in session by default', function () {
+        if (parseInt(process.versions.electron) < 7) return this.skip()
         url = `${base}setCookies`
-        return waitForSessions
-          .then(() => fetch(url, {
-            useElectronNet,
-            session: unauthenticatedProxySession
-          }))
-          .then(res => {
-            return unauthenticatedProxySession.cookies.get({}).then(cookies =>
-              assert(deepEqual(cookies, [
-                {
-                  domain: 'localhost',
-                  hostOnly: true,
-                  httpOnly: false,
-                  name: 'type',
-                  path: '/',
-                  secure: false,
-                  session: true,
-                  value: 'ninja'
-                },
-                {
-                  domain: 'localhost',
-                  hostOnly: true,
-                  httpOnly: false,
-                  name: 'language',
-                  path: '/',
-                  secure: false,
-                  session: true,
-                  value: 'javascript'
-                }
-              ]))
-            )
-          })
+        return fetch(url, {
+          useElectronNet,
+          session: testCookiesSession
+        })
+          .then(res => testCookiesSession.cookies.get({}).then(cookies =>
+            assert(deepEqual(cookies, [
+              {
+                domain: 'localhost',
+                hostOnly: true,
+                httpOnly: false,
+                name: 'type',
+                path: '/',
+                secure: false,
+                session: true,
+                value: 'ninja'
+              },
+              {
+                domain: 'localhost',
+                hostOnly: true,
+                httpOnly: false,
+                name: 'language',
+                path: '/',
+                secure: false,
+                session: true,
+                value: 'javascript'
+              }
+            ]))
+          ))
           .then(() => fetch(`${base}inspect`, {
             useElectronNet,
-            session: unauthenticatedProxySession
+            session: testCookiesSession
           }))
           .then(res => res.json())
           .then(res => {
@@ -2092,42 +2089,40 @@ const createTestSuite = (useElectronNet) => {
       })
 
       it('should not send cookies stored in session if asked not to', function () {
+        if (parseInt(process.versions.electron) < 7) return this.skip()
         url = `${base}setCookies`
-        return waitForSessions
-          .then(() => fetch(url, {
-            useElectronNet,
-            session: unauthenticatedProxySession
-          }))
-          .then(res => {
-            return unauthenticatedProxySession.cookies.get({}).then(cookies =>
-              assert(deepEqual(cookies, [
-                {
-                  domain: 'localhost',
-                  hostOnly: true,
-                  httpOnly: false,
-                  name: 'type',
-                  path: '/',
-                  secure: false,
-                  session: true,
-                  value: 'ninja'
-                },
-                {
-                  domain: 'localhost',
-                  hostOnly: true,
-                  httpOnly: false,
-                  name: 'language',
-                  path: '/',
-                  secure: false,
-                  session: true,
-                  value: 'javascript'
-                }
-              ]))
-            )
-          })
+        return fetch(url, {
+          useElectronNet,
+          session: testCookiesSession
+        })
+          .then(res => testCookiesSession.cookies.get({}).then(cookies =>
+            assert(deepEqual(cookies, [
+              {
+                domain: 'localhost',
+                hostOnly: true,
+                httpOnly: false,
+                name: 'type',
+                path: '/',
+                secure: false,
+                session: true,
+                value: 'ninja'
+              },
+              {
+                domain: 'localhost',
+                hostOnly: true,
+                httpOnly: false,
+                name: 'language',
+                path: '/',
+                secure: false,
+                session: true,
+                value: 'javascript'
+              }
+            ]))
+          ))
           .then(() => fetch(`${base}inspect`, {
             useElectronNet,
             useSessionCookies: false,
-            session: unauthenticatedProxySession
+            session: testCookiesSession
           }))
           .then(res => res.json())
           .then(res => {
