@@ -77,15 +77,17 @@ export default function fetch (url, opts = {}) {
     }
     let reqTimeout
 
+    const abortRequest = () => {
+      reject(new FetchError('request aborted', 'abort'))
+      if (request.useElectronNet) {
+        req.abort()
+      } else {
+        req.destroy(new FetchError('request aborted', 'abort'))
+      }
+    }
+
     if (request.signal) {
-      request.signal.addEventListener('abort', () => {
-        reject(new FetchError('request aborted', 'abort'))
-        if (request.useElectronNet) {
-          req.abort()
-        } else {
-          req.destroy(new FetchError('request aborted', 'abort'))
-        }
-      })
+      request.signal.addEventListener('abort', abortRequest)
     }
 
     if (request.timeout) {
@@ -109,11 +111,18 @@ export default function fetch (url, opts = {}) {
 
     req.on('error', err => {
       clearTimeout(reqTimeout)
+      if (request.signal) {
+        request.signal.removeEventListener('abort', abortRequest)
+      }
+
       reject(new FetchError(`request to ${request.url} failed, reason: ${err.message}`, 'system', err))
     })
 
     req.on('response', res => {
       clearTimeout(reqTimeout)
+      if (request.signal) {
+        request.signal.removeEventListener('abort', abortRequest)
+      }
 
       // handle redirect
       if (fetch.isRedirect(res.statusCode) && request.redirect !== 'manual') {
@@ -166,9 +175,14 @@ export default function fetch (url, opts = {}) {
       res.on('error', err => body.emit('error', err))
       res.pipe(body)
 
+      const abortBody = () => {
+        body.destroy(new FetchError('request aborted', 'abort'))
+      }
+
       if (request.signal) {
-        request.signal.addEventListener('abort', () => {
-          body.destroy(new FetchError('request aborted', 'abort'))
+        request.signal.addEventListener('abort', abortBody)
+        res.on('end', () => {
+          request.signal.removeEventListener('abort', abortBody)
         })
       }
 

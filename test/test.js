@@ -652,7 +652,6 @@ const createTestSuite = (useElectronNet) => {
     })
 
     it('should handle aborts before request', function () {
-      this.timeout(500)
       const abort = new AbortController()
       abort.abort()
       url = `${base}timeout`
@@ -666,7 +665,6 @@ const createTestSuite = (useElectronNet) => {
     })
 
     it('should handle aborts during a request', function () {
-      this.timeout(500)
       const abort = new AbortController()
       setTimeout(() => {
         abort.abort()
@@ -682,7 +680,6 @@ const createTestSuite = (useElectronNet) => {
     })
 
     it('should handle aborts during a response', function () {
-      this.timeout(500)
       const abort = new AbortController()
       setTimeout(() => {
         abort.abort()
@@ -697,6 +694,35 @@ const createTestSuite = (useElectronNet) => {
         return expect(res.text()).to.eventually.be.rejectedWith(FetchError)
           .and.to.satisfy(e => e.message.endsWith('request aborted'))
       })
+    })
+
+    it('should handle aborts after request finish', function () {
+      const abort = new AbortController()
+      url = `${base}hello`
+      opts = {
+        useElectronNet,
+        signal: abort.signal
+      }
+
+      return fetch(url, opts).then(r => r.text()).then(r => {
+        abort.abort()
+      })
+    })
+
+    it('should handle aborts after request error', function () {
+      const abort = new AbortController()
+      url = `${base}error/reset`
+      opts = {
+        useElectronNet,
+        signal: abort.signal
+      }
+
+      return expect(fetch(url, opts)).to.eventually.be.rejected
+        .and.be.an.instanceOf(FetchError)
+        .and.have.property('code', 'ECONNRESET')
+        .then(() => {
+          abort.abort()
+        })
     })
 
     it('should clear internal timeout on fetch response', function (done) { // these tests don't make much sense on electron..
