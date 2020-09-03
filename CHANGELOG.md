@@ -4,6 +4,9 @@ Changelog
 
 # electron-fetch 1.x
 
+## V1.7.1
+- Fix type declaration of `signal` parameter
+
 ## V1.7.0
 - Add AbortController support (thanks @Informatic)
 - Update all dependencies
