@@ -190,6 +190,7 @@ const defaultOptions = {
 	headers: {},        // request headers. format is the identical to that accepted by the Headers constructor (see below)
 	body: null,         // request body. can be null, a string, a Buffer, a Blob, or a Node.js Readable stream
 	redirect: 'follow', // (/!\ only works when running on Node.js) set to `manual` to extract redirect headers, `error` to reject redirect
+    signal: null,       // the AbortSignal from an AbortController instance.
 
 	// The following properties are electron-fetch extensions
 	follow: 20,         // (/!\ only works when running on Node.js) maximum redirect count. 0 to not follow redirect

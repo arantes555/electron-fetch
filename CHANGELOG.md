@@ -4,6 +4,10 @@ Changelog
 
 # electron-fetch 1.x
 
+## V1.7.0
+- Add AbortController support (thanks @Informatic)
+- Update all dependencies
+
 ## V1.6.0
 - Add option `useSessionCookies` to use session cookies when running on Electron >=7 (thanks @taratatach)
 - Update all dependencies
