@@ -11,8 +11,7 @@ import FormData from 'form-data'
 import { parse as parseURL } from 'url'
 import { URL } from 'whatwg-url' // TODO: remove
 import * as fs from 'fs'
-import assert from 'assert'
-import AbortController from 'abort-controller'
+import { AbortController } from 'abortcontroller-polyfill/dist/cjs-ponyfill'
 
 import { TestProxy, TestServer } from './server'
 // test subjects
@@ -26,7 +25,7 @@ import Blob from '../src/blob.js'
 
 chai.use(chaiPromised)
 
-const { expect } = chai
+const { expect, assert } = chai
 
 const supportToString = ({ [Symbol.toStringTag]: 'z' }).toString() === '[object z]'
 
@@ -659,9 +658,11 @@ const createTestSuite = (useElectronNet) => {
         useElectronNet,
         signal: abort.signal
       }
-      return expect(fetch(url, opts)).to.eventually.be.rejected
-        .and.be.an.instanceOf(FetchError)
+      return expect(fetch(url, opts)).to.eventually.be.rejectedWith(FetchError)
         .and.have.property('type', 'abort')
+        .then(() => {
+          assert.isUndefined(abort.signal.listeners.abort)
+        })
     })
 
     it('should handle aborts during a request', function () {
@@ -674,9 +675,14 @@ const createTestSuite = (useElectronNet) => {
         useElectronNet,
         signal: abort.signal
       }
-      return expect(fetch(url, opts)).to.eventually.be.rejected
-        .and.be.an.instanceOf(FetchError)
+      assert.isUndefined(abort.signal.listeners.abort)
+      const fetchPromise = fetch(url, opts)
+      assert.notDeepEqual(abort.signal.listeners.abort, [])
+      return expect(fetchPromise).to.eventually.be.rejectedWith(FetchError)
         .and.have.property('type', 'abort')
+        .then(() => {
+          assert.deepEqual(abort.signal.listeners.abort, [])
+        })
     })
 
     it('should handle aborts during a response', function () {
@@ -689,11 +695,17 @@ const createTestSuite = (useElectronNet) => {
         useElectronNet,
         signal: abort.signal
       }
-      return fetch(url, opts).then(res => {
-        expect(res.ok).to.be.true
-        return expect(res.text()).to.eventually.be.rejectedWith(FetchError)
-          .and.to.satisfy(e => e.message.endsWith('request aborted'))
-      })
+      assert.isUndefined(abort.signal.listeners.abort)
+      return fetch(url, opts)
+        .then(res => {
+          expect(res.ok).to.be.true
+          assert.notDeepEqual(abort.signal.listeners.abort, [])
+          return expect(res.text()).to.eventually.be.rejectedWith(FetchError)
+            .and.to.satisfy(e => e.message.endsWith('request aborted')) // checking `.property('type', 'abort')` would not work, as the abort error on the response stream is caught by the `.text()` code and re-thrown
+        })
+        .then(() => {
+          assert.deepEqual(abort.signal.listeners.abort, [])
+        })
     })
 
     it('should handle aborts after request finish', function () {
@@ -704,9 +716,15 @@ const createTestSuite = (useElectronNet) => {
         signal: abort.signal
       }
 
-      return fetch(url, opts).then(r => r.text()).then(r => {
-        abort.abort()
-      })
+      assert.isUndefined(abort.signal.listeners.abort)
+      return fetch(url, opts)
+        .then(res => {
+          return res.text()
+        })
+        .then(r => {
+          assert.deepEqual(abort.signal.listeners.abort, [])
+          abort.abort()
+        })
     })
 
     it('should handle aborts after request error', function () {
@@ -717,10 +735,11 @@ const createTestSuite = (useElectronNet) => {
         signal: abort.signal
       }
 
-      return expect(fetch(url, opts)).to.eventually.be.rejected
-        .and.be.an.instanceOf(FetchError)
+      assert.isUndefined(abort.signal.listeners.abort)
+      return expect(fetch(url, opts)).to.eventually.be.rejectedWith(FetchError)
         .and.have.property('code', 'ECONNRESET')
         .then(() => {
+          assert.deepEqual(abort.signal.listeners.abort, [])
           abort.abort()
         })
     })

@@ -78,11 +78,12 @@ export default function fetch (url, opts = {}) {
     let reqTimeout
 
     const abortRequest = () => {
-      reject(new FetchError('request aborted', 'abort'))
+      const err = new FetchError('request aborted', 'abort')
+      reject(err)
       if (request.useElectronNet) {
         req.abort()
       } else {
-        req.destroy(new FetchError('request aborted', 'abort'))
+        req.destroy(err)
       }
     }
 
@@ -92,8 +93,13 @@ export default function fetch (url, opts = {}) {
 
     if (request.timeout) {
       reqTimeout = setTimeout(() => {
-        req.abort()
-        reject(new FetchError(`network timeout at: ${request.url}`, 'request-timeout'))
+        const err = new FetchError(`network timeout at: ${request.url}`, 'request-timeout')
+        reject(err)
+        if (request.useElectronNet) {
+          req.abort()
+        } else {
+          req.destroy(err)
+        }
       }, request.timeout)
     }
 
@@ -116,6 +122,13 @@ export default function fetch (url, opts = {}) {
       }
 
       reject(new FetchError(`request to ${request.url} failed, reason: ${err.message}`, 'system', err))
+    })
+
+    req.on('abort', () => {
+      clearTimeout(reqTimeout)
+      if (request.signal) {
+        request.signal.removeEventListener('abort', abortRequest)
+      }
     })
 
     req.on('response', res => {
@@ -176,12 +189,16 @@ export default function fetch (url, opts = {}) {
       res.pipe(body)
 
       const abortBody = () => {
-        body.destroy(new FetchError('request aborted', 'abort'))
+        res.destroy()
+        res.emit('error', new FetchError('request aborted', 'abort')) // separated from the `.destroy()` because somehow Node's IncomingMessage streams do not emit errors on destroy
       }
 
       if (request.signal) {
         request.signal.addEventListener('abort', abortBody)
         res.on('end', () => {
+          request.signal.removeEventListener('abort', abortBody)
+        })
+        res.on('error', () => {
           request.signal.removeEventListener('abort', abortBody)
         })
       }

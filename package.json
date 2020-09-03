@@ -45,7 +45,7 @@
     "@babel/core": "^7.11.4",
     "@babel/preset-env": "^7.11.0",
     "@babel/register": "^7.10.5",
-    "abort-controller": "^3.0.0",
+    "abortcontroller-polyfill": "^1.5.0",
     "babel-eslint": "^10.1.0",
     "babel-plugin-istanbul": "^6.0.0",
     "basic-auth-parser": "0.0.2",
