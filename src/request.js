@@ -58,6 +58,7 @@ export default class Request {
     // fetch spec options
     this.method = method.toUpperCase()
     this.redirect = init.redirect || input.redirect || 'follow'
+    this.signal = init.signal || input.signal || null
     this.headers = new Headers(init.headers || input.headers || {})
     this.headers.delete('Content-Length') // user cannot set content-length themself as per fetch spec
     this.chunkedEncoding = false

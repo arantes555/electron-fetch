@@ -12,6 +12,7 @@ import { parse as parseURL } from 'url'
 import { URL } from 'whatwg-url' // TODO: remove
 import * as fs from 'fs'
 import assert from 'assert'
+import AbortController from 'abort-controller'
 
 import { TestProxy, TestServer } from './server'
 // test subjects
@@ -648,6 +649,80 @@ const createTestSuite = (useElectronNet) => {
         return expect(res.text()).to.eventually.be.rejectedWith(FetchError)
           .and.have.property('type', 'body-timeout')
       })
+    })
+
+    it('should handle aborts before request', function () {
+      const abort = new AbortController()
+      abort.abort()
+      url = `${base}timeout`
+      opts = {
+        useElectronNet,
+        signal: abort.signal
+      }
+      return expect(fetch(url, opts)).to.eventually.be.rejected
+        .and.be.an.instanceOf(FetchError)
+        .and.have.property('type', 'abort')
+    })
+
+    it('should handle aborts during a request', function () {
+      const abort = new AbortController()
+      setTimeout(() => {
+        abort.abort()
+      }, 100)
+      url = `${base}timeout`
+      opts = {
+        useElectronNet,
+        signal: abort.signal
+      }
+      return expect(fetch(url, opts)).to.eventually.be.rejected
+        .and.be.an.instanceOf(FetchError)
+        .and.have.property('type', 'abort')
+    })
+
+    it('should handle aborts during a response', function () {
+      const abort = new AbortController()
+      setTimeout(() => {
+        abort.abort()
+      }, 100)
+      url = `${base}slow`
+      opts = {
+        useElectronNet,
+        signal: abort.signal
+      }
+      return fetch(url, opts).then(res => {
+        expect(res.ok).to.be.true
+        return expect(res.text()).to.eventually.be.rejectedWith(FetchError)
+          .and.to.satisfy(e => e.message.endsWith('request aborted'))
+      })
+    })
+
+    it('should handle aborts after request finish', function () {
+      const abort = new AbortController()
+      url = `${base}hello`
+      opts = {
+        useElectronNet,
+        signal: abort.signal
+      }
+
+      return fetch(url, opts).then(r => r.text()).then(r => {
+        abort.abort()
+      })
+    })
+
+    it('should handle aborts after request error', function () {
+      const abort = new AbortController()
+      url = `${base}error/reset`
+      opts = {
+        useElectronNet,
+        signal: abort.signal
+      }
+
+      return expect(fetch(url, opts)).to.eventually.be.rejected
+        .and.be.an.instanceOf(FetchError)
+        .and.have.property('code', 'ECONNRESET')
+        .then(() => {
+          abort.abort()
+        })
     })
 
     it('should clear internal timeout on fetch response', function (done) { // these tests don't make much sense on electron..

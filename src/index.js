@@ -49,6 +49,11 @@ export default function fetch (url, opts = {}) {
       options.headers.host = options.headers.host[0]
     }
 
+    if (request.signal && request.signal.aborted) {
+      reject(new FetchError('request aborted', 'abort'))
+      return
+    }
+
     // send request
     let headers
     if (request.useElectronNet) {
@@ -72,6 +77,19 @@ export default function fetch (url, opts = {}) {
     }
     let reqTimeout
 
+    const abortRequest = () => {
+      reject(new FetchError('request aborted', 'abort'))
+      if (request.useElectronNet) {
+        req.abort()
+      } else {
+        req.destroy(new FetchError('request aborted', 'abort'))
+      }
+    }
+
+    if (request.signal) {
+      request.signal.addEventListener('abort', abortRequest)
+    }
+
     if (request.timeout) {
       reqTimeout = setTimeout(() => {
         req.abort()
@@ -93,11 +111,18 @@ export default function fetch (url, opts = {}) {
 
     req.on('error', err => {
       clearTimeout(reqTimeout)
+      if (request.signal) {
+        request.signal.removeEventListener('abort', abortRequest)
+      }
+
       reject(new FetchError(`request to ${request.url} failed, reason: ${err.message}`, 'system', err))
     })
 
     req.on('response', res => {
       clearTimeout(reqTimeout)
+      if (request.signal) {
+        request.signal.removeEventListener('abort', abortRequest)
+      }
 
       // handle redirect
       if (fetch.isRedirect(res.statusCode) && request.redirect !== 'manual') {
@@ -149,6 +174,18 @@ export default function fetch (url, opts = {}) {
       let body = new PassThrough()
       res.on('error', err => body.emit('error', err))
       res.pipe(body)
+
+      const abortBody = () => {
+        body.destroy(new FetchError('request aborted', 'abort'))
+      }
+
+      if (request.signal) {
+        request.signal.addEventListener('abort', abortBody)
+        res.on('end', () => {
+          request.signal.removeEventListener('abort', abortBody)
+        })
+      }
+
       const responseOptions = {
         url: request.url,
         status: res.statusCode,
