@@ -190,6 +190,13 @@ export default function fetch (url, opts = {}) {
 
       const abortBody = () => {
         res.destroy()
+
+        if (request.useElectronNet) {
+          req.abort()
+        } else {
+          req.destroy()
+        }
+
         res.emit('error', new FetchError('request aborted', 'abort')) // separated from the `.destroy()` because somehow Node's IncomingMessage streams do not emit errors on destroy
       }
 

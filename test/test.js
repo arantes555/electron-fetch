@@ -685,6 +685,28 @@ const createTestSuite = (useElectronNet) => {
         })
     })
 
+    it('should handle aborts during a never ending request', function () {
+      const abort = new AbortController()
+      url = `${base}never-ending`
+      opts = {
+        useElectronNet,
+        signal: abort.signal
+      }
+      assert.isUndefined(abort.signal.listeners.abort)
+      return fetch(url, opts)
+        .then(res => {
+          setTimeout(() => {
+            abort.abort()
+          }, 100)
+
+          return res.text()
+        })
+        .catch(err => {
+          expect(err).to.have.property('message').that.matches(/request aborted/)
+          assert.deepEqual(abort.signal.listeners.abort, [])
+        })
+    })
+
     it('should handle aborts during a response', function () {
       const abort = new AbortController()
       setTimeout(() => {

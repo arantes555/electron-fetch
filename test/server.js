@@ -126,6 +126,30 @@ export class TestServer {
       }, 1000)
     }
 
+    if (p === '/never-ending') {
+      res.statusCode = 200
+      res.setHeader('Content-Type', 'text/plain')
+
+      const interval = setInterval(() => {
+        res.write('hello ' + Date.now())
+      })
+
+      let aborted = false
+
+      setTimeout(() => {
+        if (!aborted) {
+          clearInterval(interval)
+          res.end()
+          throw new Error('request was not aborted')
+        }
+      }, 1000)
+
+      req.once('aborted', () => {
+        aborted = true
+        clearInterval(interval)
+      })
+    }
+
     if (p === '/slow') {
       res.statusCode = 200
       res.setHeader('Content-Type', 'text/plain')
