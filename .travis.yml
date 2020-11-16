@@ -19,19 +19,17 @@ jobs:
     - node_js: "12"
       env: FORMDATA_VERSION=2.5.1
     - node_js: "12"
-      env: ELECTRON_VERSION=4.2.12
-    - node_js: "12"
       env: ELECTRON_VERSION=5.0.13
     - node_js: "12"
       env: ELECTRON_VERSION=6.1.12
     - node_js: "12"
       env: ELECTRON_VERSION=7.3.3
     - node_js: "12"
-      env: ELECTRON_VERSION=8.5.1
+      env: ELECTRON_VERSION=8.5.3
     - node_js: "12"
-      env: ELECTRON_VERSION=9.3.0
+      env: ELECTRON_VERSION=9.3.4
     - node_js: "12"
-      env: ELECTRON_VERSION=10.1.1
+      env: ELECTRON_VERSION=10.1.5
 
 before_script:
   - 'if [ "$FORMDATA_VERSION" ]; then npm install form-data@^$FORMDATA_VERSION; fi'
