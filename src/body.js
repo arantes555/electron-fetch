@@ -175,6 +175,7 @@ function consumeBody () {
       resTimeout = setTimeout(() => {
         abort = true
         reject(new FetchError(`Response timeout while trying to fetch ${this.url} (over ${this.timeout}ms)`, 'body-timeout'))
+        this.body.emit('cancel-request')
       }, this.timeout)
     }
 
@@ -191,6 +192,7 @@ function consumeBody () {
       if (this.size && accumBytes + chunk.length > this.size) {
         abort = true
         reject(new FetchError(`content size at ${this.url} over limit: ${this.size}`, 'max-size'))
+        this.body.emit('cancel-request')
         return
       }
 

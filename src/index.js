@@ -77,14 +77,18 @@ export default function fetch (url, opts = {}) {
     }
     let reqTimeout
 
+    const cancelRequest = () => {
+      if (request.useElectronNet) {
+        req.abort() // in electron, `req.destroy()` does not send abort to server
+      } else {
+        req.destroy() // in node.js, `req.abort()` is deprecated
+      }
+    }
     const abortRequest = () => {
       const err = new FetchError('request aborted', 'abort')
       reject(err)
-      if (request.useElectronNet) {
-        req.abort()
-      } else {
-        req.destroy(err)
-      }
+      cancelRequest()
+      req.emit('error', err)
     }
 
     if (request.signal) {
@@ -95,11 +99,7 @@ export default function fetch (url, opts = {}) {
       reqTimeout = setTimeout(() => {
         const err = new FetchError(`network timeout at: ${request.url}`, 'request-timeout')
         reject(err)
-        if (request.useElectronNet) {
-          req.abort()
-        } else {
-          req.destroy(err)
-        }
+        cancelRequest()
       }, request.timeout)
     }
 
@@ -109,7 +109,7 @@ export default function fetch (url, opts = {}) {
         if (opts.user && opts.password) {
           callback(opts.user, opts.password)
         } else {
-          req.abort()
+          cancelRequest()
           reject(new FetchError(`login event received from ${authInfo.host} but no credentials provided`, 'proxy', { code: 'PROXY_AUTH_FAILED' }))
         }
       })
@@ -187,6 +187,8 @@ export default function fetch (url, opts = {}) {
       let body = new PassThrough()
       res.on('error', err => body.emit('error', err))
       res.pipe(body)
+      body.on('error', cancelRequest)
+      body.on('cancel-request', cancelRequest)
 
       const abortBody = () => {
         res.destroy()
