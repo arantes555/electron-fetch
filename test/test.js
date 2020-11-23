@@ -1,5 +1,5 @@
+/* eslint-env mocha */
 /* eslint-disable no-unused-expressions */
-/* global describe, it, before, after */
 // test tools
 import chai from 'chai'
 import chaiPromised from 'chai-as-promised'
@@ -29,7 +29,7 @@ const { expect, assert } = chai
 
 const supportToString = ({ [Symbol.toStringTag]: 'z' }).toString() === '[object z]'
 
-const local = new TestServer()
+const testServer = new TestServer()
 const unauthenticatedProxy = new TestProxy({
   port: 30002
 })
@@ -37,7 +37,7 @@ const authenticatedProxy = new TestProxy({
   credentials: { username: 'testuser', password: 'testpassword' },
   port: 30003
 })
-const base = `http://${local.hostname}:${local.port}/`
+const base = `http://${testServer.hostname}:${testServer.port}/`
 let url, opts
 
 const isIterable = (value) => value != null && typeof value[Symbol.iterator] === 'function'
@@ -52,19 +52,26 @@ const deepEqual = (value, expectedValue) => {
 const deepIteratesOver = (value, expectedValue) => deepEqual(Array.from(value), Array.from(expectedValue))
 
 before(done => {
-  local.start(() =>
+  testServer.start(() =>
     unauthenticatedProxy.start(() =>
       authenticatedProxy.start(done)))
 })
 
 after(done => {
-  local.stop(() =>
+  testServer.stop(() =>
     unauthenticatedProxy.stop(() =>
       authenticatedProxy.stop(done)))
 })
 
 const createTestSuite = (useElectronNet) => {
   describe(`electron-fetch: ${useElectronNet ? 'electron' : 'node'}`, () => {
+    afterEach('Check server connexion closed', () =>
+      new Promise(resolve => setTimeout((resolve), 10))
+        .then(() => {
+          if (testServer.inFlightRequests !== 0) throw new Error('Server request not finished')
+        })
+    )
+
     it('should return a promise', function () {
       url = 'http://example.com/'
       const p = fetch(url, { useElectronNet })
