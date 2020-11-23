@@ -4,6 +4,10 @@ Changelog
 
 # electron-fetch 1.x
 
+## V1.7.2
+- Properly cancel request to server on a abort / timeout / error
+- update dependencies
+
 ## V1.7.1
 - Fix type declaration of `signal` parameter
 

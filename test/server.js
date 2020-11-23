@@ -346,13 +346,6 @@ export class TestServer {
         })
         req.pipe(parser)
       }
-
-      if (p === '/setCookies') {
-        res.statusCode = 200
-        res.setHeader('Content-Type', 'text/plain')
-        res.setHeader('Set-Cookie', ['type=ninja', 'language=javascript'])
-        res.end('text')
-      }
     }
   }
 }

@@ -2042,13 +2042,13 @@ const createTestSuite = (useElectronNet) => {
       const authenticatedProxySession = electron.session.fromPartition('authenticated-proxy')
       const waitForSessions = parseInt(process.versions.electron) < 6
         ? new Promise(resolve => unauthenticatedProxySession.setProxy({
-          proxyRules: `http://${unauthenticatedProxy.hostname}:${unauthenticatedProxy.port}`,
-          proxyBypassRules: '<-loopback>'
-        }, () => resolve()))
-          .then(() => new Promise(resolve => authenticatedProxySession.setProxy({
-            proxyRules: `http://${authenticatedProxy.hostname}:${authenticatedProxy.port}`,
+            proxyRules: `http://${unauthenticatedProxy.hostname}:${unauthenticatedProxy.port}`,
             proxyBypassRules: '<-loopback>'
-          }, () => resolve())))
+          }, () => resolve()))
+            .then(() => new Promise(resolve => authenticatedProxySession.setProxy({
+              proxyRules: `http://${authenticatedProxy.hostname}:${authenticatedProxy.port}`,
+              proxyBypassRules: '<-loopback>'
+            }, () => resolve())))
         : unauthenticatedProxySession.setProxy({
           proxyRules: `http://${unauthenticatedProxy.hostname}:${unauthenticatedProxy.port}`,
           proxyBypassRules: '<-loopback>'
@@ -2108,9 +2108,10 @@ const createTestSuite = (useElectronNet) => {
 
       it('should send cookies stored in session if requested', function () {
         if (parseInt(process.versions.electron) < 7) return this.skip()
-        url = `${base}setCookies`
+        url = `${base}cookie`
         return fetch(url, {
           useElectronNet,
+          useSessionCookies: true, // For electron >= 11, this is necessary to save received cookies. For electron from 7 to 10, it does not change anything.
           session: testCookiesSession
         })
           .then(() => fetch(`${base}inspect`, {
@@ -2120,15 +2121,16 @@ const createTestSuite = (useElectronNet) => {
           }))
           .then(res => res.json())
           .then(res => {
-            expect(res.headers.cookie).to.equal('type=ninja; language=javascript')
+            expect(res.headers.cookie).to.equal('a=1; b=1')
           })
       })
 
       it('should not send cookies stored in session by default', function () {
         if (parseInt(process.versions.electron) < 7) return this.skip()
-        url = `${base}setCookies`
+        url = `${base}cookie`
         return fetch(url, {
           useElectronNet,
+          useSessionCookies: true, // For electron >= 11, this is necessary to save received cookies. For electron from 7 to 10, it does not change anything.
           session: testCookiesSession
         })
           .then(() => fetch(`${base}inspect`, {
@@ -2143,9 +2145,10 @@ const createTestSuite = (useElectronNet) => {
 
       it('should not send cookies stored in session if asked not to', function () {
         if (parseInt(process.versions.electron) < 7) return this.skip()
-        url = `${base}setCookies`
+        url = `${base}cookie`
         return fetch(url, {
           useElectronNet,
+          useSessionCookies: true, // For electron >= 11, this is necessary to save received cookies. For electron from 7 to 10, it does not change anything.
           session: testCookiesSession
         })
           .then(() => fetch(`${base}inspect`, {

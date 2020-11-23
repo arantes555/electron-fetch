@@ -241,7 +241,7 @@ The following electron-fetch extension properties are provided:
 - `session` (/!\ only works when running on Electron)
 - `agent` (/!\ only works when running on Node.js)
 - `useElectronNet` (/!\ only works when running on Electron, throws when set to true on Node.js)
-- `useSessionCookies` (/!\ only works when running on Electron >= 7)
+- `useSessionCookies` (/!\ only works when running on Electron >= 7. For electron < 11, it saves received cookies regardless of this option, but only sends them if true. For electron >= 11, it saves them only if true.)
 
 See [options](#fetch-options) for exact meaning of these extensions.
 
