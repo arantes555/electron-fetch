@@ -22,9 +22,9 @@ let electron
 if (process.versions.electron) {
   electron = require('electron')
 }
-const isReady = (!electron || electron.app.isReady())
-  ? Promise.resolve()
-  : new Promise(resolve => electron.app.once('ready', resolve))
+const isReady = electron && electron.app && electron.app.isReady()
+  ? new Promise(resolve => electron.app.once('ready', resolve))
+  : Promise.resolve()
 
 /**
  * Fetch function
