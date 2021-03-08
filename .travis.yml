@@ -19,6 +19,8 @@ jobs:
     - node_js: "12"
       env: FORMDATA_VERSION=2.5.1
     - node_js: "12"
+      env: FORMDATA_VERSION=3.0.1
+    - node_js: "12"
       env: ELECTRON_VERSION=5.0.13
     - node_js: "12"
       env: ELECTRON_VERSION=6.1.12
