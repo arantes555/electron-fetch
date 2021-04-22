@@ -350,6 +350,13 @@ const createTestSuite = (useElectronNet) => {
             expect(resBody.headers['user-agent']).to.satisfy(s => s.startsWith('electron-fetch/1.0 electron'))
           })
       })
+
+      it('should not allow the agent option', function () {
+        url = `${base}inspect`
+        opts = { agent: 'fake agent' }
+        return expect(fetch(url, opts)).to.eventually.be.rejected
+          .and.be.an.instanceOf(Error, '"agent" option is only supported with "useElectronNet" disabled')
+      })
     } else {
       it('should obey maximum redirect, reject case', function () { // Not compatible with electron.net
         url = `${base}redirect/chain`
