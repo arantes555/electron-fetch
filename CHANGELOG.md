@@ -4,6 +4,10 @@ Changelog
 
 # electron-fetch 1.x
 
+## V1.7.4
+- Fix typing of fetch function to accept RequestInfo
+- update dependencies
+
 ## V1.7.3
 - Fix execution in electron renderer process (it still does not make sense to use electron-fetch in renderer, so it runs only in node mode, but at least it does not crash)
 - update dependencies
