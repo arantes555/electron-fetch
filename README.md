@@ -389,8 +389,8 @@ Thanks to [node-fetch](https://github.com/bitinn/node-fetch) for providing a sol
 
 [npm-image]: https://img.shields.io/npm/v/electron-fetch.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/electron-fetch
-[travis-image]: https://img.shields.io/travis/arantes555/electron-fetch.svg?style=flat-square
-[travis-url]: https://travis-ci.org/arantes555/electron-fetch
+[travis-image]: https://img.shields.io/travis/com/arantes555/electron-fetch.svg?style=flat-square
+[travis-url]: https://travis-ci.com/arantes555/electron-fetch
 [codecov-image]: https://img.shields.io/codecov/c/github/arantes555/electron-fetch.svg?style=flat-square
 [codecov-url]: https://codecov.io/gh/arantes555/electron-fetch
 [ERROR-HANDLING.md]: https://github.com/arantes555/electron-fetch/blob/master/ERROR-HANDLING.md
