@@ -51,13 +51,14 @@ const deepEqual = (value, expectedValue) => {
 }
 const deepIteratesOver = (value, expectedValue) => deepEqual(Array.from(value), Array.from(expectedValue))
 
-before(done => {
+before(function (done) {
   testServer.start(() =>
     unauthenticatedProxy.start(() =>
       authenticatedProxy.start(done)))
 })
 
-after(done => {
+after(function (done) {
+  this.timeout(5000)
   testServer.stop(() =>
     unauthenticatedProxy.stop(() =>
       authenticatedProxy.stop(done)))
