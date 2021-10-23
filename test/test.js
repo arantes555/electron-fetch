@@ -58,7 +58,7 @@ before(function (done) {
 })
 
 after(function (done) {
-  this.timeout(5000)
+  this.timeout(10000)
   testServer.stop(() =>
     unauthenticatedProxy.stop(() =>
       authenticatedProxy.stop(done)))
