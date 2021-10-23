@@ -23,7 +23,7 @@
     "test:electron": "xvfb-maybe cross-env BABEL_ENV=test electron-mocha --require @babel/register test/test.js",
     "test:node": "cross-env BABEL_ENV=test mocha --require @babel/register test/test.js",
     "coverage": "xvfb-maybe cross-env BABEL_ENV=coverage electron-mocha --require @babel/register test/test.js --reporter test/coverage-reporter.js",
-    "report": "npm run lint && npm run test:typings && npm run coverage && codecov -f coverage/coverage-final.json"
+    "report": "npm run coverage && codecov -f coverage/coverage-final.json"
   },
   "repository": {
     "type": "git",
