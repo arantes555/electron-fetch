@@ -6,10 +6,11 @@ import { convert } from 'encoding'
 import { multipart as Multipart } from 'parted'
 import proxy from 'proxy'
 import basicAuthParser from 'basic-auth-parser'
+import stoppable from 'stoppable'
 
 export class TestServer {
   constructor ({ port = 30001 } = {}) {
-    this.server = http.createServer(this.getRouter())
+    this.server = stoppable(http.createServer(this.getRouter()), 1000)
     this.port = port
     this.hostname = 'localhost'
     this.server.on('error', function (err) {
@@ -26,7 +27,7 @@ export class TestServer {
   }
 
   stop (cb) {
-    this.server.close(cb)
+    this.server.stop(cb)
   }
 
   getRouter () {
@@ -354,7 +355,7 @@ export class TestProxy {
   constructor ({ credentials = null, port = 30002 } = {}) {
     this.port = port
     this.hostname = 'localhost'
-    this.server = proxy(http.createServer())
+    this.server = stoppable(proxy(http.createServer()), 1000)
     if (credentials && typeof credentials.username === 'string' && typeof credentials.password === 'string') {
       this.server.authenticate = (req, fn) => {
         const auth = req.headers['proxy-authorization']
@@ -380,7 +381,7 @@ export class TestProxy {
   }
 
   stop (cb) {
-    this.server.close(cb)
+    this.server.stop(cb)
   }
 }
 
