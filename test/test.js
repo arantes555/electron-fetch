@@ -60,7 +60,13 @@ before(function (done) {
 after(function (done) {
   this.timeout(10000)
   const t0 = Date.now()
+
+  testServer.server.getConnections((err, count) => console.log('testServer getConnections : ', err, count))
+  unauthenticatedProxy.server.getConnections((err, count) => console.log('unauthenticatedProxy getConnections : ', err, count))
+  authenticatedProxy.server.getConnections((err, count) => console.log('authenticatedProxy getConnections : ', err, count))
+
   console.log('Stopping servers...')
+
   testServer.stop((err) => {
     if (err) console.error('ERROR in testServer.stop :', err)
     else console.log(`testServer.stop finished after ${Date.now() - t0}ms`)
