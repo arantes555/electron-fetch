@@ -32,6 +32,6 @@ jobs:
       - run: npm ci
       # - run: npm install electron@^${{ matrix.electron-version }}
       # - run: npm install form-data@^${{ matrix.formdata-version }}
-      - run: dig domain.invalid
-      - run: dig domain.invalid @8.8.8.8
+      - run: dig this-is-an-invalid-domain.com
+      - run: dig this-is-an-invalid-domain.com @8.8.8.8
       - run: npm run report
