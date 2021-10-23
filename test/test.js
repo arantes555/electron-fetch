@@ -59,9 +59,16 @@ before(function (done) {
 
 after(function (done) {
   this.timeout(10000)
-  testServer.stop(() =>
-    unauthenticatedProxy.stop(() =>
-      authenticatedProxy.stop(done)))
+  testServer.stop((err) => {
+    if (err) console.error('ERROR in testServer.stop :', err)
+    unauthenticatedProxy.stop((err) => {
+      if (err) console.error('ERROR in unauthenticatedProxy.stop :', err)
+      authenticatedProxy.stop((err) => {
+        if (err) console.error('ERROR in authenticatedProxy.stop :', err)
+        done()
+      })
+    })
+  })
 })
 
 const createTestSuite = (useElectronNet) => {
