@@ -59,12 +59,16 @@ before(function (done) {
 
 after(function (done) {
   this.timeout(10000)
+  const t0 = Date.now()
   testServer.stop((err) => {
     if (err) console.error('ERROR in testServer.stop :', err)
+    else console.log(`testServer.stop finished after ${Date.now() - t0}ms`)
     unauthenticatedProxy.stop((err) => {
       if (err) console.error('ERROR in unauthenticatedProxy.stop :', err)
+      else console.log(`unauthenticatedProxy.stop finished after ${Date.now() - t0}ms`)
       authenticatedProxy.stop((err) => {
         if (err) console.error('ERROR in authenticatedProxy.stop :', err)
+        else console.log(`authenticatedProxy.stop finished after ${Date.now() - t0}ms`)
         done()
       })
     })
