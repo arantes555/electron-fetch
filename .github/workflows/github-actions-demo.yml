@@ -22,10 +22,14 @@ jobs:
       matrix:
         electron-version: [ 5.0.13, 6.1.12, 7.3.3, 8.5.5, 9.4.4, 10.4.7, 11.5.0, 12.2.2, 13.6.0, 14.2.0, 15.3.0 ]
         include:
-          - formdata-version: 1.0.0
-          - formdata-version: 2.5.1
-          - formdata-version: 3.0.1
-          - formdata-version: 4.0.0
+          - electron-version: 15.3.0
+            formdata-version: 1.0.0
+          - electron-version: 15.3.0
+            formdata-version: 2.5.1
+          - electron-version: 15.3.0
+            formdata-version: 3.0.1
+          - electron-version: 15.3.0
+            formdata-version: 4.0.0
     steps:
       - uses: actions/checkout@v2
       - name: Install Node.js 14
