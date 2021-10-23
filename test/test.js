@@ -60,6 +60,7 @@ before(function (done) {
 after(function (done) {
   this.timeout(10000)
   const t0 = Date.now()
+  console.log('Stopping servers...')
   testServer.stop((err) => {
     if (err) console.error('ERROR in testServer.stop :', err)
     else console.log(`testServer.stop finished after ${Date.now() - t0}ms`)
