@@ -61,7 +61,9 @@ after(function (done) {
   this.timeout(5000)
   testServer.stop(() =>
     unauthenticatedProxy.stop(() =>
-      authenticatedProxy.stop(done)))
+      authenticatedProxy.stop(done)
+    )
+  )
 })
 
 const createTestSuite = (useElectronNet) => {
@@ -496,7 +498,9 @@ const createTestSuite = (useElectronNet) => {
     })
 
     it('should handle DNS-error response', function () {
-      url = 'http://domain.invalid'
+      // The domain may be invalid, but we must use a valid TLD, or github-actions DNS server responds with
+      // `status: SERVFAIL`, which triggers an unexpected `EAI_AGAIN` error in node
+      url = 'http://this-is-an-invalid-domain.com'
       return expect(fetch(url, { useElectronNet })).to.eventually.be.rejected
         .and.be.an.instanceOf(FetchError)
         .and.have.property('code', 'ENOTFOUND')
