@@ -411,6 +411,13 @@ const createTestSuite = (useElectronNet) => {
           .and.be.an.instanceOf(FetchError)
           .and.have.property('type', 'no-redirect')
       })
+
+      it('should not allow the onLogin option', function () {
+        url = `${base}inspect`
+        opts = { onLogin: () => Promise.resolve(undefined), useElectronNet }
+        return expect(fetch(url, opts)).to.eventually.be.rejected
+          .and.be.an.instanceOf(Error, '"onLogin" option is only supported with "useElectronNet" enabled')
+      })
     }
 
     it('should support redirect mode, manual flag when there is no redirect', function () { // Pretty useless on electron, but why not
@@ -2063,6 +2070,12 @@ const createTestSuite = (useElectronNet) => {
             proxyBypassRules: '<-loopback>'
           }))
 
+      afterEach('Clear authenticated proxy session auth cache', () => {
+        return parseInt(process.versions.electron) < 6
+          ? new Promise(resolve => authenticatedProxySession.clearAuthCache({ type: 'password' }, () => resolve()))
+          : authenticatedProxySession.clearAuthCache()
+      })
+
       it('should connect through unauthenticated proxy', () => {
         url = `${base}plain`
         return waitForSessions
@@ -2107,6 +2120,47 @@ const createTestSuite = (useElectronNet) => {
               expect(res.bodyUsed).to.be.true
               expect(result).to.be.a('string')
               expect(result).to.equal('text')
+            })
+          })
+      })
+
+      it('should connect through authenticated proxy with onLogin callback', () => {
+        url = `${base}plain`
+        return waitForSessions
+          .then(() => fetch(url, {
+            useElectronNet,
+            session: authenticatedProxySession,
+            onLogin (authInfo) {
+              return Promise.resolve({ username: 'testuser', password: 'testpassword' })
+            }
+          }))
+          .then(res => {
+            expect(res.headers.get('content-type')).to.equal('text/plain')
+            return res.text().then(result => {
+              expect(res.bodyUsed).to.be.true
+              expect(result).to.be.a('string')
+              expect(result).to.equal('text')
+            })
+          })
+      })
+
+      it('should fail through authenticated proxy when credentials not returned from onLogin handler', () => {
+        url = `${base}plain`
+        return waitForSessions
+          .then(() => fetch(url, {
+            useElectronNet,
+            session: authenticatedProxySession,
+            onLogin (authInfo) {
+              return Promise.resolve()
+            }
+          }))
+          .then(res => {
+            expect(res.status).to.equal(407)
+            expect(res.statusText).to.equal('Proxy Authentication Required')
+            expect(res.ok).to.be.false
+            return res.text().then(result => {
+              expect(result).to.be.a('string')
+              expect(result).to.be.empty
             })
           })
       })

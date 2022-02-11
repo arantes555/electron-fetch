@@ -1,5 +1,5 @@
 import { Readable, Stream } from 'stream'
-import { Session } from 'electron'
+import { AuthInfo, Session } from 'electron'
 import { Agent } from 'https'
 
 export default fetch
@@ -110,6 +110,11 @@ export interface RequestInit {
   user?: string
   // When running on Electron behind an authenticated HTTP proxy, password to use to authenticate
   password?: string
+  /**
+   * When running on Electron behind an authenticated HTTP proxy, handler of `electron.ClientRequest`'s `login` event.
+   * Can be used for acquiring proxy credentials in an async manner (e.g. prompting the user).
+   */
+  onLogin?: (authInfo: AuthInfo) => Promise<{ username: string, password: string } | undefined>
 }
 
 export type RequestInfo = Request | string

@@ -202,6 +202,7 @@ const defaultOptions = {
 	useSessionCookies: true, // (/!\ only works when running on Electron >= 7) Whether or not to automatically send cookies from session.,
 	user: undefined,    // When running on Electron behind an authenticated HTTP proxy, username to use to authenticate
 	password: undefined // When running on Electron behind an authenticated HTTP proxy, password to use to authenticate
+	onLogin: undefined // When running on Electron behind an authenticated HTTP proxy, handler of electron.ClientRequest's login event. Can be used for acquiring proxy credentials in an async manner (e.g. prompting the user).
 }
 ```
 
