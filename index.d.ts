@@ -10,6 +10,7 @@ declare function fetch (
 ): Promise<Response>
 
 export class FetchError extends Error {
+  new (message: string, type: string, systemError?: { code: number }): FetchError;
   type: string;
   code?: number;
 }
