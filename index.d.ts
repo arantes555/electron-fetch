@@ -22,7 +22,7 @@ export enum FetchErrorType {
 }
 
 export class FetchError extends Error {
-  new (message: string, type: FetchErrorType, systemError?: { code: number }): FetchError;
+  constructor(message: string, type: FetchErrorType, systemError?: { code: number });
   type: string;
   code?: number;
 }
