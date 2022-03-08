@@ -9,8 +9,20 @@ declare function fetch (
   options?: RequestInit
 ): Promise<Response>
 
+export enum FetchErrorType {
+  BodyTimeout = "body-timeout",
+  System = "system",
+  MaxSize = "max-size",
+  Abort = "abort",
+  RequestTimeout = "request-timeout",
+  Proxy = "proxy",
+  NoRedirect = "no-redirect",
+  MaxRedirect = "max-redirect",
+  InvalidRedirect = "invalid-redirect",
+}
+
 export class FetchError extends Error {
-  new (message: string, type: string, systemError?: { code: number }): FetchError;
+  new (message: string, type: FetchErrorType, systemError?: { code: number }): FetchError;
   type: string;
   code?: number;
 }
