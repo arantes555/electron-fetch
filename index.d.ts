@@ -9,7 +9,10 @@ declare function fetch (
   options?: RequestInit
 ): Promise<Response>
 
-export class FetchError extends Error {}
+export class FetchError extends Error {
+  type: string;
+  code?: number;
+}
 
 export type HeadersInit = Headers | string[][] | { [key: string]: string }
 
