@@ -2071,7 +2071,7 @@ const createTestSuite = (useElectronNet) => {
           }))
 
       afterEach('Clear authenticated proxy session auth cache', () => {
-        return parseInt(process.versions.electron) < 6
+        return parseInt(process.versions.electron) < 7
           ? new Promise(resolve => authenticatedProxySession.clearAuthCache({ type: 'password' }, () => resolve()))
           : authenticatedProxySession.clearAuthCache()
       })
