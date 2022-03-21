@@ -161,6 +161,14 @@ fetch('http://httpbin.org/post', { method: 'POST', body: form, headers: form.get
 	const json = await res.json()
 	console.log(json)
 })()
+
+// providing proxy credentials (electron-specific)
+
+fetch(url, {
+  onLogin (authInfo) { // this 'authInfo' is the one received by the 'login' event. See https://www.electronjs.org/docs/latest/api/client-request#event-login
+    return Promise.resolve({ username: 'testuser', password: 'testpassword' })
+  }
+}))
 ```
 
 See [test cases](https://github.com/arantes555/electron-fetch/blob/master/test/test.js) for more examples.
