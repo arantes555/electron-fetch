@@ -161,6 +161,14 @@ fetch('http://httpbin.org/post', { method: 'POST', body: form, headers: form.get
 	const json = await res.json()
 	console.log(json)
 })()
+
+// providing proxy credentials (electron-specific)
+
+fetch(url, {
+  onLogin (authInfo) { // this 'authInfo' is the one received by the 'login' event. See https://www.electronjs.org/docs/latest/api/client-request#event-login
+    return Promise.resolve({ username: 'testuser', password: 'testpassword' })
+  }
+}))
 ```
 
 See [test cases](https://github.com/arantes555/electron-fetch/blob/master/test/test.js) for more examples.
@@ -202,6 +210,7 @@ const defaultOptions = {
 	useSessionCookies: true, // (/!\ only works when running on Electron >= 7) Whether or not to automatically send cookies from session.,
 	user: undefined,    // When running on Electron behind an authenticated HTTP proxy, username to use to authenticate
 	password: undefined // When running on Electron behind an authenticated HTTP proxy, password to use to authenticate
+	onLogin: undefined // When running on Electron behind an authenticated HTTP proxy, handler of electron.ClientRequest's login event. Can be used for acquiring proxy credentials in an async manner (e.g. prompting the user).
 }
 ```
 

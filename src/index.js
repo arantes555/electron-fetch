@@ -64,6 +64,7 @@ export default function fetch (url, opts = {}) {
       options.useSessionCookies = request.useSessionCookies
     } else {
       if (opts.agent) options.agent = opts.agent
+      if (opts.onLogin) reject(new Error('"onLogin" option is only supported with "useElectronNet" enabled'))
     }
     const req = send(options)
     if (request.useElectronNet) {
@@ -109,9 +110,20 @@ export default function fetch (url, opts = {}) {
       req.on('login', (authInfo, callback) => {
         if (opts.user && opts.password) {
           callback(opts.user, opts.password)
+        } else if (opts.onLogin) {
+          opts.onLogin(authInfo).then(credentials => {
+            if (credentials) {
+              callback(credentials.username, credentials.password)
+            } else {
+              callback()
+            }
+          }).catch(error => {
+            cancelRequest()
+            reject(error)
+          })
         } else {
           cancelRequest()
-          reject(new FetchError(`login event received from ${authInfo.host} but no credentials provided`, 'proxy', { code: 'PROXY_AUTH_FAILED' }))
+          reject(new FetchError(`login event received from ${authInfo.host} but no credentials or onLogin handler provided`, 'proxy', { code: 'PROXY_AUTH_FAILED' }))
         }
       })
     }
