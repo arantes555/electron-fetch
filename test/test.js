@@ -2165,6 +2165,20 @@ const createTestSuite = (useElectronNet) => {
           })
       })
 
+      it('should fail through authenticated proxy when onLogin handler rejects', () => {
+        url = `${base}plain`
+        return waitForSessions
+          .then(() => expect(
+            fetch(url, {
+              useElectronNet,
+              session: authenticatedProxySession,
+              onLogin (authInfo) {
+                return Promise.reject(new Error('onLogin failed'))
+              }
+            })
+          ).to.eventually.be.rejectedWith(Error, 'onLogin failed'))
+      })
+
       it('should send cookies stored in session if requested', function () {
         if (parseInt(process.versions.electron) < 7) return this.skip()
         url = `${base}cookie`

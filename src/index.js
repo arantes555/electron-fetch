@@ -117,6 +117,9 @@ export default function fetch (url, opts = {}) {
             } else {
               callback()
             }
+          }).catch(error => {
+            cancelRequest()
+            reject(error)
           })
         } else {
           cancelRequest()
