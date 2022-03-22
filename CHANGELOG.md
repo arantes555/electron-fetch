@@ -4,6 +4,11 @@ Changelog
 
 # electron-fetch 1.x
 
+## v1.8.0
+- Fix typings for FetchError
+- Add 'onLogin' handler
+- Update dependencies
+
 ## V1.7.4
 - Fix typing of fetch function to accept RequestInfo
 - update dependencies

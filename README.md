@@ -168,7 +168,7 @@ fetch(url, {
   onLogin (authInfo) { // this 'authInfo' is the one received by the 'login' event. See https://www.electronjs.org/docs/latest/api/client-request#event-login
     return Promise.resolve({ username: 'testuser', password: 'testpassword' })
   }
-}))
+})
 ```
 
 See [test cases](https://github.com/arantes555/electron-fetch/blob/master/test/test.js) for more examples.
@@ -209,8 +209,8 @@ const defaultOptions = {
 	useElectronNet: true, // When running on Electron, defaults to true. On Node.js, defaults to false and cannot be set to true.
 	useSessionCookies: true, // (/!\ only works when running on Electron >= 7) Whether or not to automatically send cookies from session.,
 	user: undefined,    // When running on Electron behind an authenticated HTTP proxy, username to use to authenticate
-	password: undefined // When running on Electron behind an authenticated HTTP proxy, password to use to authenticate
-	onLogin: undefined // When running on Electron behind an authenticated HTTP proxy, handler of electron.ClientRequest's login event. Can be used for acquiring proxy credentials in an async manner (e.g. prompting the user).
+	password: undefined, // When running on Electron behind an authenticated HTTP proxy, password to use to authenticate
+	onLogin: undefined // When running on Electron behind an authenticated HTTP proxy, handler of electron.ClientRequest's login event. Can be used for acquiring proxy credentials in an async manner (e.g. prompting the user). Receives an `AuthInfo` object, and must return a `Promise<{ username: string, password: string }>`.
 }
 ```
 
@@ -218,13 +218,13 @@ const defaultOptions = {
 
 If no values are set, the following request headers will be sent automatically:
 
-Header            | Value
------------------ | --------------------------------------------------------
-`Accept-Encoding` | `gzip,deflate`
-`Accept`          | `*/*`
-`Connection`      | `close`
-`Content-Length`  | _(automatically calculated, if possible)_
-`User-Agent`      | `electron-fetch/1.0 (+https://github.com/arantes555/electron-fetch)`
+| Header            | Value                                                                |
+|-------------------|----------------------------------------------------------------------|
+| `Accept-Encoding` | `gzip,deflate`                                                       |
+| `Accept`          | `*/*`                                                                |
+| `Connection`      | `close`                                                              |
+| `Content-Length`  | _(automatically calculated, if possible)_                            |
+| `User-Agent`      | `electron-fetch/1.0 (+https://github.com/arantes555/electron-fetch)` |
 
 <a id="class-request"></a>
 ### Class: Request

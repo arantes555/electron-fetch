@@ -20,17 +20,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        electron-version: [ 5.0.13, 6.1.12, 7.3.3, 8.5.5, 9.4.4, 10.4.7, 11.5.0, 12.2.2, 13.6.0, 14.2.0, 15.3.0 ]
+        electron-version: [ 5.0.13, 6.1.12, 7.3.3, 8.5.5, 9.4.4, 10.4.7, 11.5.0, 12.2.3, 13.6.9, 14.2.7, 15.4.1, 16.1.0, 17.1.2 ]
         formdata-version: [ 4.0.0 ]
         include:
-          - electron-version: 15.3.0
+          - electron-version: 17.1.2
             formdata-version: 1.0.0
-          - electron-version: 15.3.0
+          - electron-version: 17.1.2
             formdata-version: 2.5.1
-          - electron-version: 15.3.0
+          - electron-version: 17.1.2
             formdata-version: 3.0.1
-          - electron-version: 15.3.0
-            formdata-version: 4.0.0
     steps:
       - uses: actions/checkout@v2
       - name: Install Node.js 14
