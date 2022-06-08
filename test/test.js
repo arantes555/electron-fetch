@@ -214,14 +214,14 @@ const createTestSuite = (useElectronNet) => {
       // for some reason, Node.js parses the header value differently
       // so this test doesn't work in node, only in electron
       it('should reject with error when headers contain invalid symbols', function () {
-        url = `https://gov.am/en/`
+        url = 'https://gov.am/en/'
         // node doesn't allow setting an invalid header, so have to use an external resource
         opts = {
           useElectronNet
         }
         return expect(fetch(url, opts)).to.eventually.be.rejected
           .and.be.an.instanceOf(FetchError)
-          .and.satisfy(({ message }) => message.includes(`Invalid response:`), "Message does not contain the string `Invalid response:`")
+          .and.satisfy(({ message }) => message.includes('Invalid response:'), 'Message does not contain the string `Invalid response:`')
       })
     }
 

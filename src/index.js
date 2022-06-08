@@ -274,9 +274,8 @@ export default function fetch (url, opts = {}) {
 
         const response = new Response(body, responseOptions)
         resolve(response)
-
       } catch (error) {
-        reject(new FetchError(`Invalid response: ${error.message}`, 'invalid-response'));
+        reject(new FetchError(`Invalid response: ${error.message}`, 'invalid-response'))
         cancelRequest()
       }
     })
