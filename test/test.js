@@ -214,7 +214,7 @@ const createTestSuite = (useElectronNet) => {
       // for some reason, Node.js parses the header value differently
       // so this test doesn't work in node, only in electron
       it('should reject with error when headers contain invalid symbols', function () {
-        this.timeout(5000)
+        this.timeout(10000)
         url = 'https://www.gov.am/en/'
         // node doesn't allow setting an invalid header, so have to use an external resource
         opts = {
