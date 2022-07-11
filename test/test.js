@@ -7,7 +7,7 @@ import { spawn } from 'child_process'
 import * as stream from 'stream'
 import resumer from 'resumer'
 import FormData from 'form-data'
-// eslint-disable-next-line node/no-deprecated-api
+// eslint-disable-next-line n/no-deprecated-api
 import { parse as parseURL } from 'url'
 import { URL } from 'whatwg-url' // TODO: remove
 import * as fs from 'fs'
@@ -2072,13 +2072,13 @@ const createTestSuite = (useElectronNet) => {
       const authenticatedProxySession = electron.session.fromPartition('authenticated-proxy')
       const waitForSessions = parseInt(process.versions.electron) < 6
         ? new Promise(resolve => unauthenticatedProxySession.setProxy({
-            proxyRules: `http://${unauthenticatedProxy.hostname}:${unauthenticatedProxy.port}`,
+          proxyRules: `http://${unauthenticatedProxy.hostname}:${unauthenticatedProxy.port}`,
+          proxyBypassRules: '<-loopback>'
+        }, () => resolve()))
+          .then(() => new Promise(resolve => authenticatedProxySession.setProxy({
+            proxyRules: `http://${authenticatedProxy.hostname}:${authenticatedProxy.port}`,
             proxyBypassRules: '<-loopback>'
-          }, () => resolve()))
-            .then(() => new Promise(resolve => authenticatedProxySession.setProxy({
-              proxyRules: `http://${authenticatedProxy.hostname}:${authenticatedProxy.port}`,
-              proxyBypassRules: '<-loopback>'
-            }, () => resolve())))
+          }, () => resolve())))
         : unauthenticatedProxySession.setProxy({
           proxyRules: `http://${unauthenticatedProxy.hostname}:${unauthenticatedProxy.port}`,
           proxyBypassRules: '<-loopback>'

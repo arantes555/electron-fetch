@@ -1,5 +1,5 @@
 import * as http from 'http'
-// eslint-disable-next-line node/no-deprecated-api
+// eslint-disable-next-line n/no-deprecated-api
 import { parse } from 'url'
 import * as zlib from 'zlib'
 import { convert } from 'encoding'
@@ -342,7 +342,7 @@ export class TestServer {
             method: req.method,
             url: req.url,
             headers: req.headers,
-            body: body
+            body
           }))
         })
         req.pipe(parser)

@@ -4,7 +4,7 @@
  * Request class contains server only options
  */
 
-// eslint-disable-next-line node/no-deprecated-api
+// eslint-disable-next-line n/no-deprecated-api
 import { format as formatURL, parse as parseURL } from 'url'
 import Headers from './headers.js'
 import Body, { clone, extractContentType, getTotalBytes } from './body'

@@ -4,7 +4,7 @@
  * a request API compatible with window.fetch
  */
 
-// eslint-disable-next-line node/no-deprecated-api
+// eslint-disable-next-line n/no-deprecated-api
 import { resolve as resolveURL } from 'url'
 import * as http from 'http'
 import * as https from 'https'
@@ -223,7 +223,7 @@ export default function fetch (url, opts = {}) {
           url: request.url,
           status: res.statusCode,
           statusText: res.statusMessage,
-          headers: headers,
+          headers,
           size: request.size,
           timeout: request.timeout,
           useElectronNet: request.useElectronNet,
