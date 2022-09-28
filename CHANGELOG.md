@@ -4,6 +4,10 @@ Changelog
 
 # electron-fetch 1.x
 
+## v1.9.1
+- Fix typings for FetchError's `code` attribute
+- Update dependencies
+
 ## v1.9.0
 - Fix handling of invalid headers (thanks wheezard)
 - Update dependencies

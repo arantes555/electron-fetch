@@ -22,9 +22,9 @@ export enum FetchErrorType {
 }
 
 export class FetchError extends Error {
-  constructor(message: string, type: FetchErrorType, systemError?: { code: number });
+  constructor(message: string, type: FetchErrorType, systemError?: { code: string });
   type: string;
-  code?: number;
+  code?: string;
 }
 
 export type HeadersInit = Headers | string[][] | { [key: string]: string }

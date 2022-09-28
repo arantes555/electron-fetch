@@ -20,14 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        electron-version: [ 5.0.13, 6.1.12, 7.3.3, 8.5.5, 9.4.4, 10.4.7, 11.5.0, 12.2.3, 13.6.9, 14.2.9, 15.5.7, 16.2.8, 17.4.10, 18.3.5, 19.0.8 ]
+        electron-version: [ 5.0.13, 6.1.12, 7.3.3, 8.5.5, 9.4.4, 10.4.7, 11.5.0, 12.2.3, 13.6.9, 14.2.9, 15.5.7, 16.2.8, 17.4.11, 18.3.15, 19.1.0, 20.2.0, 21.0.0 ]
         formdata-version: [ 4.0.0 ]
         include:
-          - electron-version: 19.0.8
+          - electron-version: 21.0.0
             formdata-version: 1.0.0
-          - electron-version: 19.0.8
+          - electron-version: 21.0.0
             formdata-version: 2.5.1
-          - electron-version: 19.0.8
+          - electron-version: 21.0.0
             formdata-version: 3.0.1
     steps:
       - uses: actions/checkout@v2
