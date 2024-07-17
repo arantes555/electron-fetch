@@ -214,6 +214,8 @@ const defaultOptions = {
 }
 ```
 
+If no agent is specified, the default agent provided by Node.js is used. Note that [this changed in Node.js 19](https://github.com/nodejs/node/blob/4267b92604ad78584244488e7f7508a690cb80d0/lib/_http_agent.js#L564) to have `keepalive` true by default. If you wish to enable `keepalive` in an earlier version of Node.js, you can override the agent as per the following code sample.
+
 ##### Default Headers
 
 If no values are set, the following request headers will be sent automatically:
@@ -222,7 +224,6 @@ If no values are set, the following request headers will be sent automatically:
 |-------------------|----------------------------------------------------------------------|
 | `Accept-Encoding` | `gzip,deflate`                                                       |
 | `Accept`          | `*/*`                                                                |
-| `Connection`      | `close`                                                              |
 | `Content-Length`  | _(automatically calculated, if possible)_                            |
 | `User-Agent`      | `electron-fetch/1.0 (+https://github.com/arantes555/electron-fetch)` |
 

@@ -4,6 +4,9 @@ Changelog
 
 # electron-fetch 1.x
 
+## Unreleased
+- Fix compatibility with node >= 19 by backporting https://github.com/node-fetch/node-fetch/pull/1765/files
+
 ## v1.9.1
 - Fix typings for FetchError's `code` attribute
 - Update dependencies

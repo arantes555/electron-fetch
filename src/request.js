@@ -170,10 +170,6 @@ export function getNodeRequestOptions (request) {
   // HTTP-network-or-cache fetch step 16
   headers.set('Accept-Encoding', 'gzip,deflate')
 
-  if (!headers.has('Connection')) {
-    headers.set('Connection', 'close')
-  }
-
   // HTTP-network fetch step 4
   // chunked encoding is handled by Node.js when not running in electron
 
