@@ -58,6 +58,8 @@ export default function fetch (url, opts = {}) {
     // send request
     let headers
     if (request.useElectronNet) {
+      if (opts.agent) reject(new Error('"agent" option is only supported with "useElectronNet" disabled'))
+
       headers = options.headers
       delete options.headers
       options.session = opts.session || electron.session.defaultSession
