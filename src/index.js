@@ -10,6 +10,7 @@ import * as http from 'http'
 import * as https from 'https'
 import * as zlib from 'zlib'
 import { PassThrough } from 'stream'
+import { createRequire } from 'module';
 
 import { writeToStream } from './body'
 import Response from './response'
@@ -20,7 +21,8 @@ import FetchError from './fetch-error'
 let electron
 // istanbul ignore else
 if (process.versions.electron) {
-  electron = require('electron')
+  const cjsRequire = createRequire(import.meta.url);
+  electron = cjsRequire('electron')
 }
 
 const isReady = electron && electron.app && !electron.app.isReady()
